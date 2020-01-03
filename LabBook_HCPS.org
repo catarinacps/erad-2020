@@ -285,10 +285,11 @@ for partition in $PARTITIONLIST; do
     echo
 
     # change the gppd-info to sinfo when porting
+    ALLNODES=$(gppd-info --long --Node -S NODELIST -p $partition -h | awk '{print $1 "_" $5}')
     if [ -z ${NODELIST+x} ]; then
-        nodes=$(gppd-info --long --Node -S NODELIST -p $partition -h | awk '{print $1 "_" $5}' | paste -s -d" " -)
+        nodes=$(paste -s -d" " - <<<$ALLNODES)
     else
-        nodes=$(grep $partition <<<$NODELIST)
+        nodes=$(grep $(grep $partition <<<$NODELIST) <<<$ALLNODES | paste -s -d" " -)
     fi
 
     for execution in $nodes; do
