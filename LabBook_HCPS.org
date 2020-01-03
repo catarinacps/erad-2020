@@ -43,7 +43,10 @@ own topic in my lab-book.
 
 *** Active items
 
-Empty!
+**** TODO Run the first experiment!
+- State "TODO"       from              [2020-01-03 sex 14:15]
+
+As its kinda time-critical right now.
 
 *** Secondary items
 
@@ -315,7 +318,7 @@ popd
 
 ** 1 - Overview - makespan only                                      :EXP01:
 
-Something about this experiment!
+Only a makespan analysis of all different runtime options, no tracing involved.
 
 *** Design
 
@@ -727,7 +730,6 @@ tar czf $EXP_DIR/data/${EXP_NAME}_data.tar.gz *
 popd
 rm -rf $SCRATCH/*
 #+end_src
-
 
 * Resources
 :PROPERTIES:
