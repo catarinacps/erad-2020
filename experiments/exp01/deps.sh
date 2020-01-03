@@ -16,7 +16,7 @@ pushd $HOME
 
 if [ ! -d $SPACK_DIR ]; then
     echo "spack not yet installed!"
-    git clone git@github.com:viniciusvgp/customSpack.git $SPACK_DIR
+    git clone http://gitlab+deploy-token-127235:BZMob8RJoRPZAdLtsstX@gitlab.com/viniciusvgp/customSpack.git $SPACK_DIR
     $SPACK_DIR/install_spack.sh -symr
 fi
 
