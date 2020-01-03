@@ -24,8 +24,6 @@ assignment/paper about QR Factorization analysis.
 - [[#experiments][Experiments]]
   - [[#preamble][Preamble]]
     - [[#launching-the-experiments][Launching the experiments]]
-    - [[#doing-data-analysis][Doing data analysis]]
-    - [[#installing-dependencies][Installing dependencies]]
   - [[#1---overview---makespan-only][1 - Overview - makespan only]]
     - [[#design][Design]]
     - [[#dependencies][Dependencies]]
@@ -311,52 +309,6 @@ for partition in $PARTITIONLIST; do
         fi
     done
 done
-
-popd
-#+end_src
-
-*** Doing data analysis
-
-In order to use the R tools I've used, please run the following source block to
-load them up:
-
-#+begin_src R :session :results none
-options(crayon.enabled=FALSE)
-library(DoE.base)
-library(tidyverse)
-#+end_src
-
-*** Installing dependencies
-
-I'll install dependencies in =$HOME/Installs/spack= directory but you can put
-them anywhere really, just pass to the =launch.sh= script the path to the
-directory you'll use.
-
-So, let's first start by cleaning up the directory I'll use to store the
-symbolic links:
-
-#+begin_src bash :exports both :results output
-pushd $HOME
-
-rm -rf Installs/spack
-mkdir Installs/spack
-
-popd
-#+end_src
-
-...and lets also install =spack= at =$HOME/spack=
-
-#+begin_src bash :exports both :results output
-pushd $HOME
-
-# install spack
-git clone https://github.com/spack/spack.git
-# source spack env variables
-. spack/share/spack/setup-env.sh
-# add the solverstack INRIA repo
-git clone https://gitlab.inria.fr/solverstack/spack-repo.git solverstack
-# and add it to spack
-spack repo add solverstack
 
 popd
 #+end_src
