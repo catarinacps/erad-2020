@@ -440,10 +440,9 @@ if [ ! -d $SPACK_DIR ]; then
     echo "spack not yet installed!"
     git clone git@github.com:viniciusvgp/customSpack.git $SPACK_DIR
     $SPACK_DIR/install_spack.sh -symr
-    . $SPACK_DIR/src/spack/share/spack/setup-env.sh
-else
-    . $SPACK_DIR/src/spack/share/spack/setup-env.sh
 fi
+
+. $SPACK_DIR/src/spack/share/spack/setup-env.sh
 
 # get current node info
 ARCH=$(spack arch)
