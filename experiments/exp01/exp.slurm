@@ -49,7 +49,6 @@ OPENBLAS_PATH=$(readlink -f $INSTALL/openblas-0.3.7)
 LIBKOMP_PATH=$(readlink -f $INSTALL/libkomp-master)
 KSTAR_PATH=$(readlink -f $INSTALL/kstar-starpu-master)
 
-
 PATH+=:$STARPU_PATH/bin
 PATH+=:$KSTAR_PATH/bin
 export PATH=$PATH
@@ -99,9 +98,9 @@ while read -r id runtime matrix num_blocks; do
     # execute given runtime and log results
 
    LD_LIBRARY_PATH_NOW=
-   LD_LIBRARY_PATH_NOW+=:$LAPACK_PATH/lib
+   LD_LIBRARY_PATH_NOW+=$LAPACK_PATH/lib
 
-   if [[ $runtime = starpu ]] || [[ $runtime = kstar-starpu ]]; then
+   if [[ $runtime = starpu ]] || [[ $runtime = kstar_starpu ]]; then
        LD_LIBRARY_PATH_NOW+=:$HDF5_PATH/lib
        LD_LIBRARY_PATH_NOW+=:$OPENBLAS_PATH/lib
        LD_LIBRARY_PATH_NOW+=:$STARPU_PATH/lib

@@ -339,7 +339,7 @@ suppressMessages(library(DoE.base))
 
 matrix = c(1024, 2048, 4096, 8192, 16384, 32768)
 nb = c(32, 64, 128, 256, 512)
-method = c("starpu", "libomp", "libgomp", "libkomp-gcc", "libkomp_clang", "kstar_starpu")
+method = c("starpu", "libomp", "libgomp", "libkomp_gcc", "libkomp_clang", "kstar_starpu")
 
 complete <- fac.design(
   nfactors=3,
@@ -640,7 +640,6 @@ OPENBLAS_PATH=$(readlink -f $INSTALL/openblas-0.3.7)
 LIBKOMP_PATH=$(readlink -f $INSTALL/libkomp-master)
 KSTAR_PATH=$(readlink -f $INSTALL/kstar-starpu-master)
 
-
 PATH+=:$STARPU_PATH/bin
 PATH+=:$KSTAR_PATH/bin
 export PATH=$PATH
@@ -690,9 +689,9 @@ while read -r id runtime matrix num_blocks; do
     # execute given runtime and log results
 
    LD_LIBRARY_PATH_NOW=
-   LD_LIBRARY_PATH_NOW+=:$LAPACK_PATH/lib
+   LD_LIBRARY_PATH_NOW+=$LAPACK_PATH/lib
 
-   if [[ $runtime = starpu ]] || [[ $runtime = kstar-starpu ]]; then
+   if [[ $runtime = starpu ]] || [[ $runtime = kstar_starpu ]]; then
        LD_LIBRARY_PATH_NOW+=:$HDF5_PATH/lib
        LD_LIBRARY_PATH_NOW+=:$OPENBLAS_PATH/lib
        LD_LIBRARY_PATH_NOW+=:$STARPU_PATH/lib
