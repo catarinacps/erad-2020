@@ -1,0 +1,3046 @@
+#+TITLE: LabBook - QR (Marcelo)
+#+AUTHOR: Vinicius Garcia Pinto
+#+LATEX_HEADER: \usepackage[margin=2cm,a4paper]{geometry}
+#+STARTUP: overview indent
+#+TAGS: noexport(n) deprecated(d) Marcelo(m) Lucas(l) Vinicius(v)
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+SEQ_TODO: TODO(t!) STARTED(s!) WAITING(w!) | DONE(d!) CANCELLED(c!) DEFERRED(f!)
+
+* Marcelo/Lucas
+** 2019-05-22 Marcelo's Message and Feedback
+*** Message
+
+Oi Lucas, consegui compilar a aplicação da fatoração qr em blocos para
+obter os rastros com o OMPT.  Os rastros gerados estão em anexo
+nomeados como "events_<matriz>_<tamanho bloco>.out"Destes rastros vale
+destacar que o evento task_dependence só é registrado caso os recursos
+que geram as dependências ainda não estejam disponíveis em um dado
+momento.  No mais atualizarei o repositório com um exemplo melhor de
+como obter/utilizar o OMPT.
+
+Quanto à questão do suporte do GCC para o OpenMP 5.0 encontrei algo no
+mailing list do GCC project.  Parece que o GCC 9 irá cobrir apenas
+algumas modificações da versão 5.0 e as demais modificações como o
+suporte às novas especificações do OMPT estão previstas para a versão
+10 do GCC.
+
+https://gcc.gnu.org/ml/gcc-patches/2018-11/msg00628.html
+
+"... Features I'll still try to implement for GCC 9:
+
+- make sure all expressions in the OpenMP grammar within clauses are
+  assignment-expression, with the exception of array section expressions
+- verify taskloop construct cancellation works
+- stop diagnosing threadprivate directive after first use to allow definitions of
+  variables with constructors followed by threadprivate, rather than the currently
+  required workaround of extern declaration of it, followed by threadprivate directive
+  followed by definition
+
+New OpenMP 5.0 features that won't be available in GCC 9, are planned for GCC 10
+or later versions as time permits: ..."
+
+Abraços,
+Marcelo.
+
+*** "Trace" Files                                                  :ATTACH:
+:PROPERTIES:
+:Attachments: events_mahindas_34.out.bz2 events_test6_2.out.bz2
+:ID:       e4d228d3-0144-4921-80ad-71fbc7356200
+:END:
+
+They have been compressed with bzip2 to save space.
+
+*** Dealing with traces
+
+Let's get rid with the column "INIT-tool".
+
+#+begin_src R :results output :session :exports both
+suppressMessages(library(tidyverse))
+DIR="data/e4/d228d3-0144-4921-80ad-71fbc7356200"
+f <- list.files(DIR, full.names=TRUE)[[1]]
+read_delim(f, delim=" ", col_names=FALSE) %>%
+    select(-X3) %>%
+    rename(Thread = X1,
+           Task = X2,
+           Event = X4,
+           Time = X5) -> df
+#+end_src
+
+#+RESULTS:
+#+begin_example
+
+Parsed with column specification:
+cols(
+  X1 = col_double(),
+  X2 = col_double(),
+  X3 = col_character(),
+  X4 = col_character(),
+  X5 = col_character()
+)
+Warning: 84208 parsing failures.
+row col  expected    actual                                                                    file
+  6  -- 5 columns 6 columns 'data/e4/d228d3-0144-4921-80ad-71fbc7356200/events_mahindas_34.out.bz2'
+  7  -- 5 columns 6 columns 'data/e4/d228d3-0144-4921-80ad-71fbc7356200/events_mahindas_34.out.bz2'
+  9  -- 5 columns 6 columns 'data/e4/d228d3-0144-4921-80ad-71fbc7356200/events_mahindas_34.out.bz2'
+ 10  -- 5 columns 6 columns 'data/e4/d228d3-0144-4921-80ad-71fbc7356200/events_mahindas_34.out.bz2'
+ 12  -- 5 columns 6 columns 'data/e4/d228d3-0144-4921-80ad-71fbc7356200/events_mahindas_34.out.bz2'
+... ......... ......... .......................................................................
+See problems(...) for more details.
+#+end_example
+
+Let's understand the warnings
+
+#+begin_src R :results output :session :exports both
+problems(df) %>%
+    group_by(expected, actual) %>%
+    summarize(N=n()) %>%
+    unique
+#+end_src
+
+#+RESULTS:
+: 
+: # A tibble: 1 x 3
+: # Groups:   expected [1]
+:   expected  actual        N
+:   <chr>     <chr>     <int>
+: 1 5 columns 6 columns 84208
+
+There are 84208 lines that should have 5 columns, but they have 6.
+
+So these warnings are a bad sign.
+
+#+begin_src R :results output :session :exports both
+df %>%
+    filter(Thread == 1) %>%
+    tail
+#+end_src
+
+#+RESULTS:
+#+begin_example
+
+# A tibble: 6 x 4
+  Thread  Task Event       Time    
+   <dbl> <dbl> <chr>       <chr>   
+1      1     0 sync_region END     
+2      1     0 sync_region INIT    
+3      1     0 sync_region END     
+4      1     0 thread_idle INIT    
+5      1     0 thread_idle END     
+6      1     0 thread_end  1.879025
+#+end_example
+
+We have an issue because events ~thread_idle~ and ~sync_region~ are
+different, their last column have END and INIT instead of Time, and
+there is no way tell the difference because these events still have a
+column (ignored by the ~read_delim~ function because the first 1K lines
+of the file didn't have this issue. So, to move on, I'll ignore these
+events, but I recommend Marcelo to fix this.
+
+Read again, trying to deal with this
+
+#+begin_src R :results output :session :exports both
+read_delim(f, delim=" ", col_names=c("Thread", "Task", "Unnecessary", "Event", "Strange", "Time"), progress=FALSE) %>%
+    select(-Unnecessary) -> df.2;
+df.2 %>%
+    mutate(Thread = as.integer(Thread),
+           Task = as.integer(Task)) -> df;
+#+end_src
+
+#+RESULTS:
+#+begin_example
+
+Parsed with column specification:
+cols(
+  Thread = col_double(),
+  Task = col_double(),
+  Unnecessary = col_character(),
+  Event = col_character(),
+  Strange = col_character(),
+  Time = col_double()
+)
+Warning: 52736 parsing failures.
+row col  expected    actual                                                                    file
+  1  -- 6 columns 5 columns 'data/e4/d228d3-0144-4921-80ad-71fbc7356200/events_mahindas_34.out.bz2'
+  2  -- 6 columns 5 columns 'data/e4/d228d3-0144-4921-80ad-71fbc7356200/events_mahindas_34.out.bz2'
+  3  -- 6 columns 5 columns 'data/e4/d228d3-0144-4921-80ad-71fbc7356200/events_mahindas_34.out.bz2'
+  4  -- 6 columns 5 columns 'data/e4/d228d3-0144-4921-80ad-71fbc7356200/events_mahindas_34.out.bz2'
+  5  -- 6 columns 5 columns 'data/e4/d228d3-0144-4921-80ad-71fbc7356200/events_mahindas_34.out.bz2'
+... ......... ......... .......................................................................
+See problems(...) for more details.
+#+end_example
+
+We still have problems, but this time is the contrary. We always
+expect 6 columns but sometimes we have only 5. And sometimes the task
+dependency is also in column 6.
+
+#+begin_src R :results output :session :exports both
+problems(df.2) %>%
+    group_by(expected, actual) %>%
+    summarize(N=n()) %>%
+    unique
+#+end_src
+
+#+RESULTS:
+: 
+: # A tibble: 1 x 3
+: # Groups:   expected [1]
+:   expected  actual        N
+:   <chr>     <chr>     <int>
+: 1 6 columns 5 columns 52736
+
+Let's fix this.
+
+#+begin_src R :results output :session :exports both
+df %>%
+    mutate(Task.Dep = case_when(Event == "task_dependence" ~ .$Strange,
+                                TRUE ~ "<NA>")) %>%
+    mutate(Task.Dep = as.integer(Task.Dep)) %>%
+    filter(!(Strange %in% c("INIT", "END"))) %>%
+    mutate(Time = case_when(Event %in% c("sync_region", "thread_idle") ~ as.numeric(.$Time),
+                            Event %in% c("task_dependence") ~ as.numeric(.$Time),
+                            TRUE ~ as.numeric(.$Strange))) %>%
+    select(-Strange) -> df.clean
+#+end_src
+
+#+RESULTS:
+: 
+: Warning message:
+: NAs introduced by coercion
+
+Let's read a third time, fixing everything.
+
+#+begin_src R :results output :session :exports both
+read_delim(f, delim=" ", col_names=c("Thread", "Task", "Unnecessary", "Event", "Strange", "Time"), progress=FALSE) %>%
+    select(-Unnecessary) %>%
+    mutate(Thread = as.integer(Thread),
+           Task = as.integer(Task)) %>%
+    mutate(Task.Dep = case_when(Event == "task_dependence" ~ .$Strange,
+                                TRUE ~ "<NA>")) %>%
+    mutate(Task.Dep = as.integer(Task.Dep)) %>%
+    filter(!(Strange %in% c("INIT", "END"))) %>%
+    mutate(Time = case_when(Event %in% c("sync_region", "thread_idle") ~ as.numeric(.$Time),
+                            Event %in% c("task_dependence") ~ as.numeric(.$Time),
+                            TRUE ~ as.numeric(.$Strange))) %>%
+    select(-Strange) -> df
+#+end_src
+
+#+RESULTS:
+#+begin_example
+
+Parsed with column specification:
+cols(
+  Thread = col_double(),
+  Task = col_double(),
+  Unnecessary = col_character(),
+  Event = col_character(),
+  Strange = col_character(),
+  Time = col_double()
+)
+Warning: 52736 parsing failures.
+row col  expected    actual                                                                    file
+  1  -- 6 columns 5 columns 'data/e4/d228d3-0144-4921-80ad-71fbc7356200/events_mahindas_34.out.bz2'
+  2  -- 6 columns 5 columns 'data/e4/d228d3-0144-4921-80ad-71fbc7356200/events_mahindas_34.out.bz2'
+  3  -- 6 columns 5 columns 'data/e4/d228d3-0144-4921-80ad-71fbc7356200/events_mahindas_34.out.bz2'
+  4  -- 6 columns 5 columns 'data/e4/d228d3-0144-4921-80ad-71fbc7356200/events_mahindas_34.out.bz2'
+  5  -- 6 columns 5 columns 'data/e4/d228d3-0144-4921-80ad-71fbc7356200/events_mahindas_34.out.bz2'
+... ......... ......... .......................................................................
+See problems(...) for more details.
+
+Warning message:
+NAs introduced by coercion
+#+end_example
+
+Let's focus in one thread, see how many tasks it has:
+
+#+begin_src R :results output :session :exports both
+df %>%
+    filter(Thread == 2) %>%
+    group_by(Thread, Task) %>%
+    summarize(N=n())
+#+end_src
+
+#+RESULTS:
+#+begin_example
+
+# A tibble: 4,386 x 3
+# Groups:   Thread [1]
+   Thread  Task     N
+    <int> <int> <int>
+ 1      2     0     2
+ 2      2    15     2
+ 3      2    16     2
+ 4      2    17     2
+ 5      2    18     2
+ 6      2    19     2
+ 7      2    20     2
+ 8      2    21     2
+ 9      2    22     2
+10      2    23     2
+# … with 4,376 more rows
+#+end_example
+
+Thread 1 has 4.4K tasks.
+
+Let's see the spread of how many events we have about each task.
+
+#+begin_src R :results output :session :exports both
+df %>%
+    group_by(Thread, Task) %>%
+    summarize(N=n()) %>%
+    ungroup %>%
+    select(N) %>%
+    unique  %>%
+    arrange(N) %>%
+    summary
+#+end_src
+
+#+RESULTS:
+: 
+:        N        
+:  Min.   : 1.00  
+:  1st Qu.:14.25  
+:  Median :27.50  
+:  Mean   :30.11  
+:  3rd Qu.:42.25  
+:  Max.   :73.00
+
+Ok, some tasks have 73 events associated to it. Let's see which one.
+
+#+begin_src R :results output :session :exports both
+df %>%
+    group_by(Thread, Task) %>%
+    summarize(N=n()) %>%  
+    filter(N == 73)
+#+end_src
+
+#+RESULTS:
+: 
+: # A tibble: 1 x 3
+: # Groups:   Thread [1]
+:   Thread  Task     N
+:    <int> <int> <int>
+: 1      0  1406    73
+
+It is task 1406. Let's see its behavior.
+
+#+begin_src R :results output :session :exports both
+df %>%
+    filter(Task == 1406) %>%
+    as.data.frame
+#+end_src
+
+#+RESULTS:
+#+begin_example
+
+   Thread Task           Event     Time Task.Dep
+1       0 1406     task_create 0.006752       NA
+2       0 1406 task_dependence 0.006752     1369
+3       0 1406 task_dependence 0.006753     1368
+4       0 1406 task_dependence 0.006754     1367
+5       0 1406 task_dependence 0.006754     1366
+6       0 1406 task_dependence 0.006755     1365
+7       0 1406 task_dependence 0.006755     1364
+8       0 1406 task_dependence 0.006756     1363
+9       0 1406 task_dependence 0.006756     1362
+10      0 1406 task_dependence 0.006758     1361
+11      0 1406 task_dependence 0.006759     1360
+12      0 1406 task_dependence 0.006759     1359
+13      0 1406 task_dependence 0.006760     1358
+14      0 1406 task_dependence 0.006760     1357
+15      0 1406 task_dependence 0.006761     1356
+16      0 1406 task_dependence 0.006762     1355
+17      0 1406 task_dependence 0.006762     1354
+18      0 1406 task_dependence 0.006763     1353
+19      0 1406 task_dependence 0.006765     1352
+20      0 1406 task_dependence 0.006765     1351
+21      0 1406 task_dependence 0.006766     1350
+22      0 1406 task_dependence 0.006766     1349
+23      0 1406 task_dependence 0.006767     1348
+24      0 1406 task_dependence 0.006768     1347
+25      0 1406 task_dependence 0.006768     1346
+26      0 1406 task_dependence 0.006771     1345
+27      0 1406 task_dependence 0.006772     1344
+28      0 1406 task_dependence 0.006773     1343
+29      0 1406 task_dependence 0.006774     1342
+30      0 1406 task_dependence 0.006775     1341
+31      0 1406 task_dependence 0.006775     1340
+32      0 1406 task_dependence 0.006776     1339
+33      0 1406 task_dependence 0.006776     1338
+34      0 1406 task_dependence 0.006777     1337
+35      0 1406 task_dependence 0.006778     1336
+36      0 1406 task_dependence 0.006778     1335
+37      0 1406 task_dependence 0.006780     1334
+38      0 1406 task_dependence 0.006782       76
+39      0 1406 task_dependence 0.006782     1405
+40      0 1406 task_dependence 0.006783     1404
+41      0 1406 task_dependence 0.006784     1403
+42      0 1406 task_dependence 0.006784     1402
+43      0 1406 task_dependence 0.006785     1401
+44      0 1406 task_dependence 0.006785     1400
+45      0 1406 task_dependence 0.006786     1399
+46      0 1406 task_dependence 0.006786     1398
+47      0 1406 task_dependence 0.006787     1397
+48      0 1406 task_dependence 0.006787     1396
+49      0 1406 task_dependence 0.006788     1395
+50      0 1406 task_dependence 0.006788     1394
+51      0 1406 task_dependence 0.006789     1393
+52      0 1406 task_dependence 0.006790     1392
+53      0 1406 task_dependence 0.006790     1391
+54      0 1406 task_dependence 0.006791     1390
+55      0 1406 task_dependence 0.006791     1389
+56      0 1406 task_dependence 0.006792     1388
+57      0 1406 task_dependence 0.006792     1387
+58      0 1406 task_dependence 0.006793     1386
+59      0 1406 task_dependence 0.006793     1385
+60      0 1406 task_dependence 0.006794     1384
+61      0 1406 task_dependence 0.006794     1383
+62      0 1406 task_dependence 0.006795     1382
+63      0 1406 task_dependence 0.006795     1381
+64      0 1406 task_dependence 0.006796     1380
+65      0 1406 task_dependence 0.006797     1379
+66      0 1406 task_dependence 0.006797     1378
+67      0 1406 task_dependence 0.006798     1377
+68      0 1406 task_dependence 0.006798     1376
+69      0 1406 task_dependence 0.006799     1375
+70      0 1406 task_dependence 0.006799     1374
+71      0 1406 task_dependence 0.006800     1373
+72      0 1406 task_dependence 0.006800     1372
+73      0 1406 task_dependence 0.006801     1371
+74      3 1406     task_others 0.156233       NA
+75      3 1406  task_completed 0.156271       NA
+#+end_example
+
+We'll, it looks like this task has a lot of dependencies.
+** 2019-05-29 OMPT /versus/ StarPU facetted plot
+*** Data
+
+C-c C-v s
+
+**** OMPT
+#+begin_src R :results output :session :exports both
+suppressMessages(library(tidyverse))
+FILE <- "data/a4/d39fb1-dd73-4280-9f08-beb40d6faa1a/events.out"
+read_delim(FILE, delim=" ", col_names=FALSE, col_types=cols()) %>%
+    rename(Thread = X1, 
+           Task = X2,
+           Callback = X3,
+           Operation = X4,
+           Time = X5) %>%
+    filter(Callback != "task_dependence") -> df;
+
+df %>%
+    group_by(Thread) %>%
+    arrange(Time) %>%
+    mutate(Callback.After = lead(Callback)) %>%
+    mutate(Time.After = lead(Time)) %>%
+    ungroup() %>%
+    filter(Callback == "task_others") -> df.new
+    
+df %>%
+    filter(Callback == "task_create" & Task != 0) %>%
+    select(Operation, Task) %>%
+    unique %>%
+    inner_join(df.new %>% select(-Operation), by = "Task") -> df.new.enriched
+
+df.new.enriched %>%
+    select(-Task, -Callback, -Callback.After) %>%
+    mutate (time_elapsed = Time.After - Time) %>% 
+    group_by(Thread) %>%
+    summarize(S.Applic = min(Time),
+              E.Applic = max(Time),
+              Duration.Applic = E.Applic - S.Applic,
+              T.of.Tasks = sum(time_elapsed),
+              Idle.Time = Duration.Applic - T.of.Tasks,
+              Por.Idle.Time = round(Idle.Time / Duration.Applic *100, 2)) %>%
+    ungroup() %>%
+    mutate(E.Applic = max(E.Applic),
+           S.Applic = min(S.Applic)) %>%
+    group_by(Thread) %>% 
+    mutate(Duration.Applic = E.Applic - S.Applic,
+           Idle.Time = Duration.Applic - T.of.Tasks,
+           Por.Idle.Time = round(Idle.Time / Duration.Applic *100, 2)) -> df_idle
+
+df.new.enriched %>%
+    select(Thread, Task, Time, Time.After, Operation) -> df.openmp;
+df.openmp
+#+end_src
+
+#+RESULTS:
+#+begin_example
+
+# A tibble: 30 x 5
+   Thread  Task     Time Time.After Operation     
+    <dbl> <dbl>    <dbl>      <dbl> <chr>         
+ 1      1     1 0.000536     0.0148 lapack_dgeqrt 
+ 2      1     2 0.0148       0.0306 lapack_dlarfb 
+ 3      0     3 0.0148       0.0307 lapack_dlarfb 
+ 4      3     4 0.0148       0.0306 lapack_dlarfb 
+ 5      2     5 0.0148       0.0380 lapack_dtpqrt 
+ 6      3     6 0.0380       0.0745 lapack_dtpmqrt
+ 7      1     7 0.038        0.0758 lapack_dtpmqrt
+ 8      0     8 0.038        0.0764 lapack_dtpmqrt
+ 9      1     9 0.0764       0.0990 lapack_dtpqrt 
+10      1    10 0.0990       0.136  lapack_dtpmqrt
+# … with 20 more rows
+#+end_example
+**** StarPU
+***** StarVZ Phase 1
+#+begin_src shell :results output
+STARVZ_DIR=~/dev/starvz/
+PAJENG_DIR=~/install/pajeng/
+source ~/spack/share/spack/setup-env.sh 
+PATH=$PATH:$(spack location -i starpu@develop)/bin/
+PATH=$PATH:${STARVZ_DIR}/src/
+PATH=$PATH:${PAJENG_DIR}/bin/
+DIR=$(pwd)/data/a4/d39fb1-dd73-4280-9f08-beb40d6faa1a/
+phase1-workflow.sh $DIR 2>&1
+ls -lh $DIR
+#+end_src
+
+#+RESULTS:
+#+begin_example
+/home/schnorr/dev/starvz//src
+
+Start of /home/schnorr/svn/marcelo/tf-cmp270/data/a4/d39fb1-dd73-4280-9f08-beb40d6faa1a/
+
+~/svn/marcelo/tf-cmp270/data/a4/d39fb1-dd73-4280-9f08-beb40d6faa1a ~/svn/marcelo/tf-cmp270
+Convert from FXT to paje.sorted.trace
+Tue 04 Jun 2019 12:16:27 PM -03
+/home/schnorr/dev/starvz//src/fxt2paje.sh: line 22: 28709 Segmentation fault      starpu_fxt_tool -memory-states $(echo $FXTS | sed -e "s/ / -i /g" -e "s/^/-i /")
+grep: paje.trace: No such file or directory
+grep: paje.trace: No such file or directory
+Lionel's pmtool or platform_file.rec file are not available, skipping it.
+Convert Rec files
+rec2csv: error: cannot read file data.rec
+rec2csv: error: cannot read file tasks.rec
+Convert from paje.sorted.trace to paje.csv
+Tue 04 Jun 2019 12:16:27 PM -03
+Get states, links and variables in CSV
+Tue 04 Jun 2019 12:16:27 PM -03
+Convert (DAG) DOT to CSV
+Tue 04 Jun 2019 12:16:27 PM -03
+cat: dag.dot: No such file or directory
+Convert (ATREE) DOT to CSV
+Post-processing CSV files
+Loading required package: ggplot2
+Loading required package: gridExtra
+Loading required package: lpSolve
+Loading required package: pipeR
+Loading required package: RColorBrewer
+Loading required package: Rcpp
+Loading required package: tidyr
+Loading required package: tidyverse
+── Attaching packages ─────────────────────────────────────── tidyverse 1.2.1 ──
+✔ tibble  2.0.1       ✔ dplyr   0.8.0.1
+✔ readr   1.3.1       ✔ stringr 1.3.1  
+✔ purrr   0.3.0       ✔ forcats 0.3.0  
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::combine() masks gridExtra::combine()
+✖ dplyr::filter()  masks stats::filter()
+✖ dplyr::lag()     masks stats::lag()
+Loading required package: zoo
+
+Attaching package: ‘zoo’
+
+The following objects are masked from ‘package:base’:
+
+    as.Date, as.Date.numeric
+
+Loading required package: cowplot
+
+Attaching package: ‘cowplot’
+
+The following object is masked from ‘package:ggplot2’:
+
+    ggsave
+
+Loading required package: data.tree
+Loading required package: feather
+Loading required package: logging
+Loading required package: magrittr
+
+Attaching package: ‘magrittr’
+
+The following object is masked from ‘package:purrr’:
+
+    set_names
+
+The following object is masked from ‘package:tidyr’:
+
+    extract
+
+Loading required package: reshape2
+
+Attaching package: ‘reshape2’
+
+The following object is masked from ‘package:tidyr’:
+
+    smiths
+
+INFO::Files ./atree.feather or ./atree.csv do not exist.
+INFO::Reading  ./paje.state.csv
+INFO::Read of ./paje.state.csv completed
+Error in read_state_csv(where = directory, app_states_fun = app_states_fun,  : 
+  After reading states, number of rows is zero.
+Calls: the_reader_function -> %>% -> eval -> eval -> read_state_csv
+Execution halted
+
+End of /home/schnorr/svn/marcelo/tf-cmp270/data/a4/d39fb1-dd73-4280-9f08-beb40d6faa1a/
+Tue 04 Jun 2019 12:16:28 PM -03
+
+~/svn/marcelo/tf-cmp270
+total 316K
+-rw-r--r-- 1 schnorr schnorr   16 Jun  4 12:16 dag.csv
+-rw-r--r-- 1 schnorr schnorr   46 Jun  4 12:16 entities.csv
+-rw-r--r-- 1 schnorr schnorr 3.5K May 29 17:15 events.out
+-rw-r--r-- 1 schnorr schnorr 4.0K May 29 17:15 full_config.yaml
+-rw-r--r-- 1 schnorr schnorr    0 Jun  4 12:16 paje.csv
+-rw-r--r-- 1 schnorr schnorr   68 Jun  4 12:16 paje.events.csv
+-rw-r--r-- 1 schnorr schnorr   71 Jun  4 12:16 paje.link.csv
+-rw-r--r-- 1 schnorr schnorr    0 Jun  4 12:16 paje.sorted.trace
+-rw-r--r-- 1 schnorr schnorr  149 Jun  4 12:16 paje.state.csv
+-rw-r--r-- 1 schnorr schnorr   54 Jun  4 12:16 paje.variable.csv
+-rw-r--r-- 1 schnorr schnorr  30K May 29 18:16 pre.dag.feather
+-rw-r--r-- 1 schnorr schnorr 1.6K May 29 18:16 pre.data_handles.feather
+-rw-r--r-- 1 schnorr schnorr  21K May 29 18:16 pre.events.feather
+-rw-r--r-- 1 schnorr schnorr 3.3K May 29 18:16 pre.link.feather
+-rw-r--r-- 1 schnorr schnorr  83K May 29 18:16 pre.state.feather
+-rw-r--r-- 1 schnorr schnorr 4.3K May 29 18:16 pre.task_handles.feather
+-rw-r--r-- 1 schnorr schnorr 8.5K May 29 18:16 pre.tasks.feather
+-rw-r--r-- 1 schnorr schnorr  16K May 29 18:16 pre.variable.feather
+-rw-r--r-- 1 schnorr schnorr  864 May 29 18:16 pre.y.feather
+-rw-r--r-- 1 schnorr schnorr  89K May 29 17:15 prof_file_marcelo_0
+-rw-r--r-- 1 schnorr schnorr    0 Jun  4 12:16 rec.data_handles.csv
+-rw-r--r-- 1 schnorr schnorr    0 Jun  4 12:16 rec.tasks.csv
+-rw-r--r-- 1 schnorr schnorr   21 Jun  4 12:16 types.csv
+#+end_example
+***** StarVZ Phase 2
+#+begin_src R :results output :session :exports both
+DIR <- "data/a4/d39fb1-dd73-4280-9f08-beb40d6faa1a/"
+library(starvz)
+the_fast_reader_function(DIR)$State %>%
+                                filter(Application) %>%
+                                select(ResourceId, JobId, Start, End, Value) %>%
+                                arrange(Start) -> df.starpu
+df.starpu
+#+end_src
+
+#+RESULTS:
+#+begin_example
+
+Loading required package: gridExtra
+
+Attaching package: ‘gridExtra’
+
+The following object is masked from ‘package:dplyr’:
+
+    combine
+
+Loading required package: lpSolve
+Loading required package: pipeR
+Loading required package: RColorBrewer
+Loading required package: Rcpp
+Loading required package: zoo
+
+Attaching package: ‘zoo’
+
+The following objects are masked from ‘package:base’:
+
+    as.Date, as.Date.numeric
+
+Loading required package: cowplot
+
+Attaching package: ‘cowplot’
+
+The following object is masked from ‘package:ggplot2’:
+
+    ggsave
+
+Loading required package: data.tree
+Loading required package: feather
+Loading required package: logging
+Loading required package: magrittr
+
+Attaching package: ‘magrittr’
+
+The following object is masked from ‘package:purrr’:
+
+    set_names
+
+The following object is masked from ‘package:tidyr’:
+
+    extract
+
+Loading required package: reshape2
+
+Attaching package: ‘reshape2’
+
+The following object is masked from ‘package:tidyr’:
+
+    smiths
+
+2019-06-04 12:16:29 INFO::The file pre.atree.feather does not exist on that directory. Ignore.
+2019-06-04 12:16:29 INFO::The file pre.gaps.feather does not exist on that directory. Ignore.
+2019-06-04 12:16:29 INFO::The file pre.pmtool.feather does not exist on that directory. Ignore.
+2019-06-04 12:16:29 INFO::The file pre.pmtool_states.feather does not exist on that directory. Ignore.
+
+# A tibble: 30 x 5
+   ResourceId JobId Start   End Value         
+   <chr>      <chr> <dbl> <dbl> <fct>         
+ 1 CPU1       1       0    14.0 lapack_dgeqrt 
+ 2 CPU3       3      14.0  30.0 lapack_dlarfb 
+ 3 CPU0       2      14.0  30.0 lapack_dlarfb 
+ 4 CPU2       4      14.0  30.0 lapack_dlarfb 
+ 5 CPU1       5      14.0  37.4 lapack_dtpqrt 
+ 6 CPU2       6      37.4  74.5 lapack_dtpmqrt
+ 7 CPU3       7      37.4  74.5 lapack_dtpmqrt
+ 8 CPU0       8      37.4  74.6 lapack_dtpmqrt
+ 9 CPU1       17     74.6  88.6 lapack_dgeqrt 
+10 CPU2       9      74.6  97.2 lapack_dtpqrt 
+# … with 20 more rows
+#+end_example
+*** Merge both
+
+#+begin_src R :results output :session :exports both
+df.starpu %>%
+    mutate(ResourceId = as.integer(gsub("CPU", "", ResourceId))) %>%
+    mutate(Value = as.character(Value)) %>%
+    mutate(JobId = as.integer(JobId)) %>%
+    rename(Thread = ResourceId,
+           Task = JobId,
+           Operation = Value) %>%
+    mutate(Runtime = "StarPU") %>%
+    bind_rows(df.openmp %>%
+              mutate(Thread = as.integer(Thread)) %>%
+              mutate(Task = as.integer(Task)) %>%
+              mutate(Runtime = "OpenMP") %>%
+              rename(Start = Time,
+                     End = Time.After) %>%
+              mutate(Start = Start*1000,
+                     End = End*1000)) %>%
+    mutate(Operation = as.factor(Operation),
+           Runtime = as.factor(Runtime)) -> df;
+df
+#+end_src
+
+#+RESULTS:
+#+begin_example
+
+# A tibble: 60 x 6
+   Thread  Task Start   End Operation      Runtime
+    <int> <int> <dbl> <dbl> <fct>          <fct>  
+ 1      1     1   0    14.0 lapack_dgeqrt  StarPU 
+ 2      3     3  14.0  30.0 lapack_dlarfb  StarPU 
+ 3      0     2  14.0  30.0 lapack_dlarfb  StarPU 
+ 4      2     4  14.0  30.0 lapack_dlarfb  StarPU 
+ 5      1     5  14.0  37.4 lapack_dtpqrt  StarPU 
+ 6      2     6  37.4  74.5 lapack_dtpmqrt StarPU 
+ 7      3     7  37.4  74.5 lapack_dtpmqrt StarPU 
+ 8      0     8  37.4  74.6 lapack_dtpmqrt StarPU 
+ 9      1    17  74.6  88.6 lapack_dgeqrt  StarPU 
+10      2     9  74.6  97.2 lapack_dtpqrt  StarPU 
+# … with 50 more rows
+#+end_example
+
+*** Plot
+
+#+begin_src R :results output graphics :file img/starpu-openmp-qr-dense-30tasks.png :exports both :width 600 :height 400 :session
+df %>% pull(Thread) %>% min -> minT
+df %>% pull(Thread) %>% max -> maxT
+df %>%
+    ggplot(aes(
+        x=Start,
+        xend=End,
+        y=Thread,
+        yend=Thread,
+        color=Operation)) +
+    theme_bw(base_size=18) +
+    geom_segment(size=10) +
+    scale_fill_brewer(palette = "Set1") +
+    theme(plot.margin = unit(c(0,0,0,0), "cm"),
+          legend.position="top",
+          legend.justification = "left",
+          legend.spacing = unit(0, "mm"),
+          legend.box.spacing = unit(0, "pt"),
+          legend.box.margin = margin(0,0,0,0),
+          legend.margin = unit(c(0,0,0,0), "cm"),
+          legend.title = element_blank()) +
+    geom_text(aes(label=Task, x = Start+(End-Start)/2), color="black") +
+    scale_x_continuous(expand = expand_scale()) +
+    scale_y_continuous(limits = c(minT-0.5,maxT+0.5), expand = expand_scale()) +
+    ylab("Thread [id]") +
+    xlab("Time [seconds]") +
+    facet_wrap(~Runtime, ncol=1)
+#+end_src
+
+#+RESULTS:
+[[file:img/starpu-openmp-qr-dense-30tasks.png]]
+** 2019-06-04 How to compute maximum matrix order
+
+#+begin_src R :results output :session :exports both
+library(tidyverse)
+tribble(~Maquina, ~Gigas,
+        "turing", 128,
+        "tupi1", 64,
+        "tupi2", 64+16,
+        "draco7", 128,
+        "draco", 64,
+        "hype", 128,
+        "orion1", 48) %>%
+    mutate(Memoria = Gigas * 1024*1024*1024) %>%
+    # Leave some 10% space for other stuff
+    mutate(Memoria = Memoria * 0.9) %>%
+    mutate(Tamanho = 8) %>%
+    mutate(Ordem = sqrt(Memoria / Tamanho)) %>%
+    mutate(Ordem = floor(Ordem/1000) * 1000)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+
+# A tibble: 7 x 5
+  Maquina Gigas       Memoria Tamanho  Ordem
+  <chr>   <dbl>         <dbl>   <dbl>  <dbl>
+1 turing    128 123695058125.       8 124000
+2 tupi1      64  61847529062.       8  87000
+3 tupi2      80  77309411328        8  98000
+4 draco7    128 123695058125.       8 124000
+5 draco      64  61847529062.       8  87000
+6 hype      128 123695058125.       8 124000
+7 orion1     48  46385646797.       8  76000
+#+end_example
+** 2019-07-31 Task Submission Time in StarPU in EXP15
+*** 512
+#+begin_src shell :results output
+export PATH=$PATH:$HOME/install/fxt-0.3.7/bin
+export PATH=$PATH:$HOME/install/pajeng-git/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/install/poti-git/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/install/pajeng-git/lib
+
+source ~/spack/share/spack/setup-env.sh 
+export PATH=$(spack location -i starpu@develop/3pdg3az)/bin/:$PATH
+export PATH=$HOME/starvz/R/:$PATH
+DIR=./data/52/1b5b36-b312-453c-887c-6300dfc7019f/block_qr_exp12_hype4/512
+cd ~/starvz/src
+./phase1-workflow.sh $DIR 2>&1
+#+end_src
+
+#+RESULTS:
+
+#+begin_src R :results output :session :exports both
+DIR <- "./data/52/1b5b36-b312-453c-887c-6300dfc7019f/block_qr_exp12_hype4/512"
+library(starvz)
+the_fast_reader_function(DIR)$State -> df.state
+df.state %>%
+                                filter(Application == FALSE) %>%
+                                filter(Type != "Worker State") %>%
+                                select(Start, End, Duration, Value) %>%
+                                filter(Value != "Waiting all tasks") %>%
+                                filter(Value == "Submitting task") %>%
+                                arrange(Start) -> df;
+
+#+end_src
+
+#+RESULTS:
+: 
+: png 
+:   2
+: 
+: 2019-07-31 14:58:58 INFO::The file pre.atree.feather does not exist on that directory. Ignore.
+: 2019-07-31 14:58:58 INFO::The file pre.gaps.feather does not exist on that directory. Ignore.
+: 2019-07-31 14:58:58 INFO::The file pre.pmtool.feather does not exist on that directory. Ignore.
+: 2019-07-31 14:58:58 INFO::The file pre.pmtool_states.feather does not exist on that directory. Ignore.
+
+#+begin_src R :results output :session :exports both
+df
+#+end_src
+
+#+RESULTS:
+#+begin_example
+# A tibble: 14,040 x 4
+     Start    End Duration Value          
+     <dbl>  <dbl>    <dbl> <fct>          
+ 1 0.00934 0.0144  0.00508 Submitting task
+ 2 0.0186  0.0231  0.00447 Submitting task
+ 3 0.0303  0.0365  0.00614 Submitting task
+ 4 0.0409  0.0467  0.00583 Submitting task
+ 5 0.0613  0.0666  0.00538 Submitting task
+ 6 0.0700  0.0747  0.00467 Submitting task
+ 7 0.0790  0.0859  0.00689 Submitting task
+ 8 0.0892  0.0953  0.00609 Submitting task
+ 9 0.0997  0.105   0.00579 Submitting task
+10 0.113   0.118   0.00495 Submitting task
+# … with 14,030 more rows
+#+end_example
+
+
+#+begin_src R :results output graphics :file img/exp15_512_task_submit_time.png :exports both :width 600 :height 400 :session
+df %>%
+    filter(Start < max(End)/2) %>%
+    ggplot(aes(x=Start, y=Duration)) +
+    geom_point()
+#+end_src
+
+#+RESULTS:
+[[file:img/exp15_512_task_submit_time.png]]
+
+#+begin_src R :results output :session :exports both
+df.state %>%
+    filter(Application == TRUE) %>%
+    pull(End) %>% max
+#+end_src
+
+#+RESULTS:
+: 
+: [1] 671821.1
+*** 128
+#+begin_src shell :results output
+export PATH=$PATH:$HOME/install/fxt-0.3.7/bin
+export PATH=$PATH:$HOME/install/pajeng-git/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/install/poti-git/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$HOME/install/pajeng-git/lib
+
+source ~/spack/share/spack/setup-env.sh 
+export PATH=$(spack location -i starpu@develop/3pdg3az)/bin/:$PATH
+export PATH=$HOME/starvz/R/:$PATH
+DIR=/tmp
+#data/52/1b5b36-b312-453c-887c-6300dfc7019f/block_qr_exp12_hype4/128
+cd ~/starvz/src
+./phase1-workflow.sh $DIR 2>&1
+#+end_src
+
+#+RESULTS:
+
+#+begin_src R :results output :session :exports both
+DIR <- "/tmp/"
+#./data/52/1b5b36-b312-453c-887c-6300dfc7019f/block_qr_exp12_hype4/128"
+library(starvz)
+the_fast_reader_function(DIR)$State -> df.state
+df.state %>%
+                                filter(Application == FALSE) %>%
+                                filter(Type != "Worker State") %>%
+                                select(Start, End, Duration, Value) %>%
+                                filter(Value != "Waiting all tasks") %>%
+                                filter(Value == "Submitting task") %>%
+                                arrange(Start) -> df;
+
+#+end_src
+
+#+RESULTS:
+: 
+: 2019-07-31 14:55:30 INFO::The file pre.atree.feather does not exist on that directory. Ignore.
+: 2019-07-31 14:55:30 INFO::The file pre.gaps.feather does not exist on that directory. Ignore.
+: 2019-07-31 14:55:30 INFO::The file pre.pmtool.feather does not exist on that directory. Ignore.
+: 2019-07-31 14:55:30 INFO::The file pre.pmtool_states.feather does not exist on that directory. Ignore.
+
+#+begin_src R :results output :session :exports both
+df
+#+end_src
+
+#+RESULTS:
+#+begin_example
+# A tibble: 748,409 x 4
+     Start    End Duration Value          
+     <dbl>  <dbl>    <dbl> <fct>          
+ 1 0.00527 0.0116  0.00637 Submitting task
+ 2 0.0154  0.0207  0.00525 Submitting task
+ 3 0.0249  0.0295  0.00459 Submitting task
+ 4 0.0408  0.0452  0.00443 Submitting task
+ 5 0.0492  0.0544  0.00522 Submitting task
+ 6 0.0609  0.0683  0.00734 Submitting task
+ 7 0.0723  0.0788  0.00646 Submitting task
+ 8 0.0881  0.0927  0.00460 Submitting task
+ 9 0.0967  0.101   0.00405 Submitting task
+10 0.104   0.110   0.00537 Submitting task
+# … with 748,399 more rows
+#+end_example
+
+#+begin_src R :results output :session :exports both
+df %>%
+    filter(Start < max(End)/2)
+#+end_src
+
+#+RESULTS:
+#+begin_example
+
+# A tibble: 707,260 x 4
+     Start    End Duration Value          
+     <dbl>  <dbl>    <dbl> <fct>          
+ 1 0.00527 0.0116  0.00637 Submitting task
+ 2 0.0154  0.0207  0.00525 Submitting task
+ 3 0.0249  0.0295  0.00459 Submitting task
+ 4 0.0408  0.0452  0.00443 Submitting task
+ 5 0.0492  0.0544  0.00522 Submitting task
+ 6 0.0609  0.0683  0.00734 Submitting task
+ 7 0.0723  0.0788  0.00646 Submitting task
+ 8 0.0881  0.0927  0.00460 Submitting task
+ 9 0.0967  0.101   0.00405 Submitting task
+10 0.104   0.110   0.00537 Submitting task
+# … with 707,250 more rows
+#+end_example
+
+#+begin_src R :results output graphics :file img/exp15_128_task_submit_time.png :exports both :width 600 :height 400 :session
+df %>%
+    filter(Start < max(End)/2) %>%
+    ggplot(aes(x=Start, y=Duration)) +
+    geom_point()
+#+end_src
+
+#+RESULTS:
+[[file:img/exp15_128_task_submit_time.png]]
+
+#+begin_src R :results output :session :exports both
+df.state %>%
+    filter(Application == TRUE) %>%
+    pull(End) %>% max
+#+end_src
+
+#+RESULTS:
+: 
+: [1] 671821.1
+
+* Vinicius
+All the following tests were executed at ~chifflet-8@lille.g5k~
+** 2019-09-02 seg 
+*** First attempt to compile ~block_qr_openmp~
+1. Comment ~include $(HOME)/OMPT-Examples/make.config~ since I am not
+   using OMPT for now...
+2. Missing ~lapacke.h~
+#+BEGIN_EXAMPLE
+gcc -c block_qr_openmp.c -o block_qr_openmp.o  -I/home/vgarciapinto/lapack-3.8.0/LAPACKE/include -fopenmp -lm
+block_qr_openmp.c:1:10: fatal error: lapacke.h: No such file or directory
+ #include <lapacke.h>
+          ^~~~~~~~~~~
+compilation terminated.
+#+END_EXAMPLE
+2.1. Lets install with spack
+#+begin_src shell :results output :exports both
+./src/spack/bin/spack install -v lapack
+#+end_src
+2.2. Well, it seems that Marcelo has used netlib-lapack instead of openblas
+default, so lets install it
+#+begin_src shell :results output :exports both
+./src/spack/bin/spack install -v --keep-stage netlib-lapack+xblas
+#+end_src
+3. Comment lines with hardcoded path to Lapack install
+#+BEGIN_EXAMPLE
+#LAPACK_DIR=$(HOME)/lapack-3.8.0
+#LAPACKE_INCLUDE=-I$(LAPACK_DIR)/LAPACKE/include
+#+END_EXAMPLE
+Marcelo is using ~librefblas.a~ which is not available, replacing it by
+libblas.a
+#+BEGIN_EXAMPLE
+LIBS=$(LAPACK_DIR)/liblapacke.a $(LAPACK_DIR)/liblapack.a $(LAPACK_DIR)/libblas.a  
+#+END_EXAMPLE
+4. Make
+#+BEGIN_EXAMPLE
+ LAPACKE_INCLUDE=-I`../src/spack/bin/spack location -i netlib-lapack`/include LAPACK_DIR=`../src/spack/bin/spack location -i netlib-lapack`/lib  make block_qr_openmp
+gfortran block_qr_openmp.o -o block_qr_openmp mutils.o 
+/home/vgarciapinto/customSpack/src/spack/opt/spack/linux-debian10-x86_64/gcc-8.3.0/netlib-lapack-3.8.0-vk4ve33pjj3sowqfymkzqe5z5vcbbcfl/lib/liblapacke.a 
+/home/vgarciapinto/customSpack/src/spack/opt/spack/linux-debian10-x86_64/gcc-8.3.0/netlib-lapack-3.8.0-vk4ve33pjj3sowqfymkzqe5z5vcbbcfl/lib/liblapack.a 
+/home/vgarciapinto/customSpack/src/spack/opt/spack/linux-debian10-x86_64/gcc-8.3.0/netlib-lapack-3.8.0-vk4ve33pjj3sowqfymkzqe5z5vcbbcfl/lib/libblas.a -fopenmp
+#+END_EXAMPLE
+*** Executing ~block_qr_openmp~
+#+begin_src shell :results output :exports both
+OMP_NUM_THREADS=8 ./block_qr_openmp 4096 128 0 100
+#+end_src
+
+#+RESULTS:
+#+begin_example
+Application time in seconds 15.078179
+Application compute time in seconds 14.74565
+#+end_example
+
+*** Executing ~block_qr_openmp~ using ~libkomp~
+#+begin_src shell :results output :exports both
+OMP_TOOL=enabled KAAPI_RECORD_TRACE=1 KAAPI_RECORD_MASK=compute,omp,perfctr  KAAPI_PERF_EVENTS=TASK,TASKSPAWN KAAPI_TASKPERF_EVENTS=work,time KAAPI_DISPLAY_PERF=full  LD_PRELOAD=`../src/spack/bin/spack location -i libkomp+vardep+tracing+papi+numa+dynhash+cw+aggregation+affinity`/lib/trace-libomp.so LD_LIBRARY_PATH=`../src/spack/bin/spack location -i libkomp+vardep+tracing+papi+numa+dynhash+cw+aggregation+affinity`/lib/ OMP_NUM_THREADS=8 ./block_qr_openmp 4096 128 0 100
+#+end_src
+
+#+RESULTS:
+#+begin_example
+[OMP-TRACE] ompt-trace ompt_tool initialized
+[OMP-TRACE] kaapi tracing version: Git last commit:32781b6dab10b1b5
+Application time in seconds 15.467395
+Application compute time in seconds 15.137891
+File: 'stat.30266' generated
+[OMP-TRACE] kaapi tracing tool closed.
+#+end_example
+
+**** Traces are recorded in ~/tmp~ ?
+#+BEGIN_EXAMPLE
+vgarciapinto@chifflet-8:~/customSpack/marcelo-code$ ls /tmp/*30266*
+/tmp/events.vgarciapinto.30266.0.evt  /tmp/events.vgarciapinto.30266.2.evt  /tmp/events.vgarciapinto.30266.4.evt  /tmp/events.vgarciapinto.30266.6.evt
+/tmp/events.vgarciapinto.30266.1.evt  /tmp/events.vgarciapinto.30266.3.evt  /tmp/events.vgarciapinto.30266.5.evt  /tmp/events.vgarciapinto.30266.7.evt
+#+END_EXAMPLE
+ 
+#+begin_src shell :results output :exports both
+tar cvf 30266.tar ./stat.30266 /tmp/events.vgarciapinto.30266.*
+#+end_src
+
+#+begin_src shell :results output :exports both
+ls -lh 
+#+end_src
+
+#+RESULTS:
+#+begin_example
+-rw-r--r-- 1 vgarciapinto users 7.4M Sep  2 16:02 30266.tar
+#+end_example
+*** Compiling and executing ~block_qr_openmp~ with ~ompss~
+#+begin_src shell :results output :exports both
+`../src/spack/bin/spack location -i mcxx`/bin/mcc -v -c block_qr_openmp.c -o block_qr_openmp.o -I`../src/spack/bin/spack location -i netlib-lapack`/include  --openmp -lm  --ompss
+`../src/spack/bin/spack location -i mcxx`/bin/mcc -v -c mutils.c -o mutils.o --openmp -lm  --ompss
+`../src/spack/bin/spack location -i mcxx`/bin/mfc block_qr_openmp.o -o block_qr_openmp_ompss mutils.o `../src/spack/bin/spack location -i netlib-lapack`/lib/liblapacke.a `../src/spack/bin/spack location -i netlib-lapack`/lib/liblapack.a `../src/spack/bin/spack location -i netlib-lapack`/lib/libblas.a  --openmp --ompss
+#+end_src
+
+#+begin_src shell :results output :exports both
+./block_qr_openmp_ompss  4096 128 0 100
+#+end_src
+
+#+RESULTS: 
+#+begin_example
++--------------------------------------
+| /home/vgarciapinto/customSpack/src/spack/opt/spack/linux-debian10-x86_64/gcc-8.3.0/nanox-master-hk3nzez7twc5cw5kchz5pxfauw32damz/lib/performance/libnanox.so.1(_ZN5nanos7printBtERSo+0x22) [0x7f3da7b69382]
+| /home/vgarciapinto/customSpack/src/spack/opt/spack/linux-debian10-x86_64/gcc-8.3.0/nanox-master-hk3nzez7twc5cw5kchz5pxfauw32damz/lib/performance/libnanox.so.1(_ZN5nanos15RegionDirectory7_getKeyEmmPKNS_14WorkDescriptorE+0x12b) [0x7f3da7b3d41b]
+| /home/vgarciapinto/customSpack/src/spack/opt/spack/linux-debian10-x86_64/gcc-8.3.0/nanox-master-hk3nzez7twc5cw5kchz5pxfauw32damz/lib/performance/libnanox.so.1(_ZN5nanos15RegionDirectory35getRegionDictionaryRegisterIfNeededERKNS_8CopyDataEPKNS_14WorkDescriptorE+0x152) [0x7f3da7b3f8c2]
+| /home/vgarciapinto/customSpack/src/spack/opt/spack/linux-debian10-x86_64/gcc-8.3.0/nanox-master-hk3nzez7twc5cw5kchz5pxfauw32damz/lib/performance/libnanox.so.1(_ZN5nanos13MemController7preInitEv+0x118) [0x7f3da7b56d78]
+| /home/vgarciapinto/customSpack/src/spack/opt/spack/linux-debian10-x86_64/gcc-8.3.0/nanox-master-hk3nzez7twc5cw5kchz5pxfauw32damz/lib/performance/libnanox.so.1(_ZN5nanos14WorkDescriptor6submitEb+0x17) [0x7f3da7b30fd7]
+| /home/vgarciapinto/customSpack/src/spack/opt/spack/linux-debian10-x86_64/gcc-8.3.0/nanox-master-hk3nzez7twc5cw5kchz5pxfauw32damz/lib/performance/libnanox-ompss.so.1(_ZN5nanos16DependableObject20decreasePredecessorsEPKNSt7__cxx114listImSaImEEEPS0_bb+0x17f) [0x7f3da7bf052f]
+| /home/vgarciapinto/customSpack/src/spack/opt/spack/linux-debian10-x86_64/gcc-8.3.0/nanox-master-hk3nzez7twc5cw5kchz5pxfauw32damz/lib/performance/libnanox-deps-plain.so(_ZN5nanos3ext23PlainDependenciesDomain22submitDependableObjectERNS_16DependableObjectEmPNS_10DataAccessEPNS_30SchedulePolicySuccessorFunctorE+0x167) [0x7f3da6fab787]
+| /home/vgarciapinto/customSpack/src/spack/opt/spack/linux-debian10-x86_64/gcc-8.3.0/nanox-master-hk3nzez7twc5cw5kchz5pxfauw32damz/lib/performance/libnanox.so.1(_ZN5nanos6System22submitWithDependenciesERNS_14WorkDescriptorEmPNS_10DataAccessE+0x191) [0x7f3da7b27fc1]
+| /home/vgarciapinto/customSpack/src/spack/opt/spack/linux-debian10-x86_64/gcc-8.3.0/nanox-master-hk3nzez7twc5cw5kchz5pxfauw32damz/lib/performance/libnanox-c.so.1(nanos_submit_+0x1c6) [0x7f3da7bc5f26]
+| ./block_qr_openmp_ompss(+0x2f2a) [0x55dd3f2b9f2a]
+| /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xeb) [0x7f3da749509b]
+| ./block_qr_openmp_ompss(+0x22aa) [0x55dd3f2b92aa]
++--------------------------------------
+terminate called after throwing an instance of 'nanos::FatalError'
+  what():  FATAL ERROR: [0] invalid key, can not continue. Address 0x7f3c5bfff010 w/len 8 [wd desc. not available] conflicts with address: 0x7f3c5bfff010, size: 0
+Aborted
+#+end_example
+*** Compiling and executing ~block_qr_openmp~ with ~kstar~
+First, we should replace ~#include<time.h>~ by ~#include<sys/time.h>~
+#+begin_src shell :results output :exports both
+`../src/spack/bin/spack location -i kstar`/bin/kstar --runtime starpu -v -c block_qr_openmp.c -o block_qr_openmp.o -I`../src/spack/bin/spack location -i netlib-lapack`/include  -fopenmp -lm  
+`../src/spack/bin/spack location -i kstar`/bin/kstar --runtime starpu -v -c mutils.c -o mutils.o -fopenmp -lm 
+`../src/spack/bin/spack location -i kstar`/bin/kstar --runtime starpu block_qr_openmp.o -o block_qr_openmp_ompss mutils.o `../src/spack/bin/spack location -i netlib-lapack`/lib/liblapacke.a `../src/spack/bin/spack location -i netlib-lapack`/lib/liblapack.a `../src/spack/bin/spack location -i netlib-lapack`/lib/libblas.a  -fopenmp
+#+end_src
+** 2019-09-04 qua
+*** TODO
+- ~ompss:~ compile ompss with symbols (-g)
+- ~libkomp:~ usar katracereader pra converter pra csv ou paje, ver
+  diretiva pra por nome na tarefa
+- ~kstar:~ ver se nao da pra compilar sem o fortran... mesmo que precise
+  mudar um pouco o código
+  - gera os rastros, basta incluir ~STARPU_GENERATE_TRACE=1~
+  - ~#pragma omp task shared(y) firstprivate(n) untied taskname("fib2")~
+- criar um fork e commitar tudo no fork (dar acesso a eles)
+** 2019-09-06 sex
+*** using pkg-config
+I will use dynamic libs since imho there is no reason to use static
+ones.
+**** OpenMP with GCC
+#+begin_src shell :results output :exports both
+export PKG_CONFIG_PATH=`spack location -i netlib-lapack+shared`/lib/pkgconfig
+gcc `pkg-config --cflags lapacke` -g -c block_qr_openmp.c  -fopenmp -lm
+gcc `pkg-config --cflags lapacke` -g -c mutils.c -lm
+gcc -g block_qr_openmp.o mutils.o -fopenmp `pkg-config --cflags --libs lapacke` -o block_qr_openmp_gcc.exec
+LD_LIBRARY_PATH=`spack location -i netlib-lapack+shared`/lib/:$LD_LIBRARY_PATH ./block_qr_openmp_gcc.exec 4096 128 0 100
+#+end_src
+
+**** OpenMP with Clang
+#+begin_src shell :results output :exports both
+export PKG_CONFIG_PATH=`spack location -i netlib-lapack+shared`/lib/pkgconfig
+clang `pkg-config --cflags lapacke` -g -c block_qr_openmp.c  -fopenmp -lm
+clang `pkg-config --cflags lapacke` -g -c mutils.c -lm
+clang -g block_qr_openmp.o mutils.o -fopenmp `pkg-config --cflags --libs lapacke` -o block_qr_openmp_clang.exec -lm
+LD_LIBRARY_PATH=`spack location -i netlib-lapack+shared`/lib/:$LD_LIBRARY_PATH ./block_qr_openmp_clang.exec 4096 128 0 100
+#+end_src
+
+**** Kstar+StarPU 
+#+begin_src shell :results output :exports both
+export PKG_CONFIG_PATH=`../src/spack/bin/spack location -i netlib-lapack+shared`/lib/pkgconfig
+`../src/spack/bin/spack location -i kstar`/bin/kstar --runtime starpu -c block_qr_openmp.c -fopenmp -lm `pkg-config --cflags lapacke`
+`../src/spack/bin/spack location -i kstar`/bin/kstar --runtime starpu -c mutils.c -lm
+`../src/spack/bin/spack location -i kstar`/bin/kstar --runtime starpu block_qr_openmp.o mutils.o -fopenmp `pkg-config --cflags --libs lapacke` -o block_qr_kstar_starpu.exec
+LD_LIBRARY_PATH=`../src/spack/bin/spack location -i netlib-lapack+shared`/lib/:$LD_LIBRARY_PATH ./block_qr_kstar_starpu.exec 4096 128 0 100
+#+end_src
+
+**** OmpSs
+#+begin_src shell :results output :exports both
+# nao esta funcionando...
+export PKG_CONFIG_PATH=`../src/spack/bin/spack location -i netlib-lapack+shared`/lib/pkgconfig
+`../src/spack/bin/spack location -i mcxx`/bin/mcc -v -c block_qr_openmp.c --openmp -lm --ompss `pkg-config --cflags lapacke`
+`../src/spack/bin/spack location -i mcxx`/bin/mcc -v -c mutils.c -o mutils.o -lm
+`../src/spack/bin/spack location -i mcxx`/bin/mcc block_qr_openmp.o mutils.o --openmp --ompss  `pkg-config --cflags --libs lapacke` -o block_qr_ompss.exec
+LD_LIBRARY_PATH=`../src/spack/bin/spack location -i netlib-lapack+shared`/lib/:$LD_LIBRARY_PATH ./block_qr_ompss.exec 4096 128 0 100
+#+end_src
+** 2019-09-09 seg
+*** libkomp/kaapi traces
+**** Execution (clang)
+#+begin_src shell :results output :exports both
+OMP_TOOL=enabled KAAPI_RECORD_TRACE=1 KAAPI_RECORD_MASK=compute,omp,perfctr  KAAPI_PERF_EVENTS=TASK,TASKSPAWN KAAPI_TASKPERF_EVENTS=work,time KAAPI_DISPLAY_PERF=full  LD_PRELOAD=`spack location -i libkomp+vardep+tracing+papi+numa+dynhash+cw+aggregation+affinity`/lib/trace-libomp.so:`spack location -i libkomp+vardep+tracing+papi+numa+dynhash+cw+aggregation+affinity`/lib/libomp.so LD_LIBRARY_PATH=`spack location -i libkomp+vardep+tracing+papi+numa+dynhash+cw+aggregation+affinity`/lib/:`spack location -i netlib-lapack`/lib/ OMP_NUM_THREADS=4 ./block_qr_openmp_clang.exec 4096 128 0 100
+#+end_src
+
+**** Raw traces
+#+begin_src shell :results output :exports both
+ls examples/libkomp/
+#+end_src
+
+#+RESULTS:
+: events.vgpinto.15237.0.evt  events.vgpinto.15237.5.evt
+: events.vgpinto.15237.1.evt  events.vgpinto.15237.6.evt
+: events.vgpinto.15237.2.evt  events.vgpinto.15237.7.evt
+: events.vgpinto.15237.3.evt  stat.15237
+: events.vgpinto.15237.4.evt
+
+**** Converting Raw traces to Paje
+#+begin_src shell :results output :exports both
+`spack location -i libkomp`/bin/katracereader --csv events.vgpinto.*
+#+end_src
+
+#+RESULTS:
+#+begin_example
+ *** file 'events.vgpinto.6548.0.evt'
+ *** file 'events.vgpinto.6548.1.evt'
+ *** file 'events.vgpinto.6548.2.evt'
+ *** file 'events.vgpinto.6548.3.evt'
+ *** File 'parallels.csv' generated
+ *** File 'threads.csv' generated
+ *** File 'tasks.csv' generated
+ *** File 'complexity.csv' generated
+ *** File 'loops.csv' generated
+ *** File 'memory.csv' generated
+ *** File 'counters.csv' generated
+ *** File 'uncoreperfctr.csv' generated
+#+end_example
+
+**** Reading in R
+#+begin_src R :results output :exports both :session *R*
+library(dplyr);
+
+readtrace <- function (filename)
+{
+   df <- read.csv(filename, header=TRUE, sep=",", strip.white=TRUE);
+   df <- df %>% filter((Explicit==1)) %>% as.data.frame();
+   df$Start <- df$Start*1e-9; # Convert ns to second
+   df$End <- df$End*1e-9;
+   df$Duration <- df$Duration*1e-9;
+   df;
+}
+
+df <- readtrace("examples/libkomp/tasks.csv");
+head(df);
+#+end_src
+
+#+RESULTS:
+#+begin_example
+  Resource Numa      Start        End    Duration Explicit Aff Strict Tag Key0
+1        0    0 1568216021 1568216021 0.090076086        1   0      0   0    0
+2        0    0 1568216021 1568216021 0.005449835        1   0      0   0    0
+3        1    0 1568216021 1568216021 0.003199295        1   0      0   0    0
+4        2    0 1568216021 1568216021 0.003211776        1   0      0   0    0
+5        3    0 1568216021 1568216021 0.004900862        1   0      0   0    0
+6        1    0 1568216021 1568216021 0.002578246        1   0      0   0    0
+  Key1                            Name TaskId      Work      Time
+1    0 ;block_qr_openmp.c;main;54;17;;   4096 0.0900720 0.0900720
+2    0 ;block_qr_openmp.c;main;85;19;;  12288 0.0054472 0.0054472
+3    0 ;block_qr_openmp.c;main;69;19;;  11520 0.0031985 0.0031985
+4    0 ;block_qr_openmp.c;main;69;19;;  12032 0.0032111 0.0032111
+5    0 ;block_qr_openmp.c;main;69;19;;  11776 0.0049001 0.0049001
+6    0 ;block_qr_openmp.c;main;69;19;;  11264 0.0025781 0.0025781
+#+end_example
+
+For some reason, taskname is missing...
+#+begin_src R :results output :exports both :session *R*
+df$Name = recode(df$Name, 
+                 ";block_qr_openmp.c;main;54;17;;" = "dgeqrt",
+                 ";block_qr_openmp.c;main;85;19;;" = "dtpqrt",
+                 ";block_qr_openmp.c;main;69;19;;" = "dlarfb",
+                 ";block_qr_openmp.c;main;101;21;;" = "dtpmqrt")
+#+end_src
+
+
+**** Gantt
+#+begin_src R :results output :exports both :session *R*
+library(ggplot2)
+library(dplyr)
+
+# helper: convert s to the date
+date<-function(d) { as.POSIXct(d, origin="1970-01-01"); }
+ 
+ggplot(data=df, aes(fill=Name,
+                           xmin=date(Start),
+                           xmax=date(End),
+                           ymin=Resource-.4,
+                           ymax=Resource+.4)) +
+    geom_rect() +
+    xlab("Time") +
+    ylab("Thread") +
+    theme (legend.position = "bottom") +
+    theme_bw() 
+#+end_src
+
+#+RESULTS:
+
+** 2019-09-16 seg 
+*** TODO 
+- Henrique: identificação dos parametros testados pelo Marcelo
+- Vinicius: libkomp, sors, *ompss*
+** 2019-10-25 sex
+"draft" mode on dahu
+#+begin_src shell :results output :exports both
+# how to install 
+spack install -v --keep-stage libkomp+vardep+tracing+papi+numa+dynhash+cw+aggregation+affinity;
+spack install -v --keep-stage kstar+starpu^starpu@develop+fxt+poti ;
+spack install -v --keep-stage netlib-lapack+shared ; 
+#+end_src
+
+#+begin_src shell :results output :exports both
+spack install -v --keep-stage netlib-lapack+shared ; 
+spack install -v --keep-stage  libkomp+vardep+tracing+papi+numa+dynhash+cw+aggregation+affinity;
+spack install -v --keep-stage kstar+starpu^starpu@develop+fxt+poti ;
+spack install -v --keep-stage poti ;
+spack install -v --keep-stage metis ;
+spack install -v --keep-stage llvm ;
+
+export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:`spack location -i netlib-lapack+shared`/lib/pkgconfig:`spack location -i starpu`/lib/pkgconfig:`spack location -i fxt`/lib/pkgconfig:`spack location -i poti`/lib/pkgconfig
+
+export C_INCLUDE_PATH=$C_INCLUDE_PATH:`spack location -i llvm`/lib/clang/9.0.0/include
+
+
+# henrique
+spack view soft install/starpu starpu
+spack view soft install/metis metis
+spack view soft install/scotch scotch
+spack view soft install/llvm llvm
+
+STARPU_PATH=$(readlink -f install/starpu)
+METIS_PATH=$(readlink -f install/metis)
+SCOTCH_PATH=$(readlink -f install/scotch)
+LLVM_PATH=$(readlink -f install/llvm)
+
+# set up path and ld path
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$STARPU_PATH/lib:$METIS_PATH/lib:$SCOTCH_PATH/lib:$LLVM_PATH/lib
+export PATH=$PATH:$STARPU_PATH/bin:$METIS_PATH/bin:$SCOTCH_PATH/bin:$LLVM_PATH/bin
+export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:$STARPU_PATH/lib/pkgconfig:$METIS_PATH/lib/pkgconfig:$SCOTCH_PATH/lib/pkgconfig:$LLVM_PATH/lib/pkgconfig
+
+#+end_src
+
+Going back to a code that works without a burden of crazy dependencies
+#+begin_src shell :results output :exports both
+git checkout e5de103c4d429ddb22be4ffcccccd65cb1bfdae3 -- code
+
+cd code 
+
+# omp gcc
+export PKG_CONFIG_PATH=`spack location -i netlib-lapack+shared`/lib/pkgconfig
+gcc `pkg-config --cflags lapacke` -g -c block_qr_openmp.c  -fopenmp -lm
+gcc `pkg-config --cflags lapacke` -g -c mutils.c -lm
+gcc -g block_qr_openmp.o mutils.o -fopenmp `pkg-config --cflags --libs lapacke` -o block_qr_openmp_gcc.exec
+LD_LIBRARY_PATH=`spack location -i netlib-lapack+shared`/lib/:$LD_LIBRARY_PATH ./block_qr_openmp_gcc.exec 4096 128 0 100
+
+export PKG_CONFIG_PATH=`spack location -i netlib-lapack+shared`/lib/pkgconfig
+`spack location -i kstar`/bin/kstar --runtime starpu -c block_qr_openmp.c -fopenmp -lm `pkg-config --cflags lapacke`
+`spack location -i kstar`/bin/kstar --runtime starpu -c mutils.c -lm
+`spack location -i kstar`/bin/kstar --runtime starpu block_qr_openmp.o mutils.o -fopenmp `pkg-config --cflags --libs lapacke` -o block_qr_kstar_starpu.exec
+LD_LIBRARY_PATH=`spack location -i netlib-lapack+shared`/lib/:$LD_LIBRARY_PATH ./block_qr_kstar_starpu.exec 4096 128 0 100
+#+end_src
+
+*** design
+#+begin_src R :results output :session R
+library(DoE.base)
+set.seed(0)
+
+qr_runtimes <- fac.design(factor.names = list(
+                              matrix = c(1024, 2048, 4096, 8192, 16384, 32768),
+#                              matrix = c(1024, 2048),
+                              nb = c(32, 64, 128, 256, 512),
+#                              nb = c(256, 512),
+                              cpus = c(64, 32, 16, 8),
+#                              cpus = c(64, 32),
+                              method = c("openmpGcc", "openmpClang", "kstarStarpu", "libkomp")
+                          ),
+#               replications=30, 
+               replications=3, 
+               randomize=TRUE)
+print(qr_runtimes)
+export.design(qr_runtimes,
+              filename = "projeto-experimental",
+              type = "csv",
+              replace = TRUE
+              )
+#+end_src
+
+#+RESULTS:
+#+begin_example
+creating full factorial with 480 runs ...
+     run.no run.no.std.rp matrix  nb cpus      method Blocks
+1         1         398.1   2048  64   32     libkomp     .1
+2         2         324.1  32768 256   16 kstarStarpu     .1
+3         3         167.1  16384 128   32 openmpClang     .1
+4         4         129.1   4096  64   64 openmpClang     .1
+5         5         418.1   8192 512   32     libkomp     .1
+6         6         471.1   4096 256    8     libkomp     .1
+7         7         299.1  16384 512   32 kstarStarpu     .1
+8         8         270.1  32768 512   64 kstarStarpu     .1
+9         9         466.1   8192 128    8     libkomp     .1
+10       10         187.1   1024  64   16 openmpClang     .1
+11       11         307.1   1024  64   16 kstarStarpu     .1
+12       12          85.1   1024 512   16   openmpGcc     .1
+13       13         277.1   1024  64   32 kstarStarpu     .1
+14       14         362.1   2048  32   64     libkomp     .1
+15       15         438.1  32768 128   16     libkomp     .1
+16       16         330.1  32768 512   16 kstarStarpu     .1
+17       17         263.1  16384 256   64 kstarStarpu     .1
+18       18         329.1  16384 512   16 kstarStarpu     .1
+19       19          79.1   1024 256   16   openmpGcc     .1
+20       20         213.1   4096  32    8 openmpClang     .1
+21       21          37.1   1024  64   32   openmpGcc     .1
+22       22         105.1   4096 128    8   openmpGcc     .1
+23       23         217.1   1024  64    8 openmpClang     .1
+24       24         366.1  32768  32   64     libkomp     .1
+25       25         165.1   4096 128   32 openmpClang     .1
+26       26         290.1   2048 256   32 kstarStarpu     .1
+27       27         467.1  16384 128    8     libkomp     .1
+28       28         382.1   8192 256   64     libkomp     .1
+29       29          89.1  16384 512   16   openmpGcc     .1
+30       30         428.1   2048  64   16     libkomp     .1
+31       31         289.1   1024 256   32 kstarStarpu     .1
+32       32         340.1   8192  64    8 kstarStarpu     .1
+33       33         419.1  16384 512   32     libkomp     .1
+34       34         326.1   2048 512   16 kstarStarpu     .1
+35       35         465.1   4096 128    8     libkomp     .1
+36       36          42.1  32768  64   32   openmpGcc     .1
+37       37         422.1   2048  32   16     libkomp     .1
+38       38         111.1   4096 256    8   openmpGcc     .1
+39       39         404.1   2048 128   32     libkomp     .1
+40       40         412.1   8192 256   32     libkomp     .1
+41       41          20.1   2048 256   64   openmpGcc     .1
+42       42          44.1   2048 128   32   openmpGcc     .1
+43       43         377.1  16384 128   64     libkomp     .1
+44       44         343.1   1024 128    8 kstarStarpu     .1
+45       45          70.1   8192  64   16   openmpGcc     .1
+46       46         121.1   1024  32   64 openmpClang     .1
+47       47          40.1   8192  64   32   openmpGcc     .1
+48       48         172.1   8192 256   32 openmpClang     .1
+49       49          25.1   1024 512   64   openmpGcc     .1
+50       50         375.1   4096 128   64     libkomp     .1
+51       51         248.1   2048  64   64 kstarStarpu     .1
+52       52         198.1  32768 128   16 openmpClang     .1
+53       53         378.1  32768 128   64     libkomp     .1
+54       54          39.1   4096  64   32   openmpGcc     .1
+55       55         298.1   8192 512   32 kstarStarpu     .1
+56       56         390.1  32768 512   64     libkomp     .1
+57       57         280.1   8192  64   32 kstarStarpu     .1
+58       58         160.1   8192  64   32 openmpClang     .1
+59       59          14.1   2048 128   64   openmpGcc     .1
+60       60         130.1   8192  64   64 openmpClang     .1
+61       61          45.1   4096 128   32   openmpGcc     .1
+62       62         402.1  32768  64   32     libkomp     .1
+63       63          22.1   8192 256   64   openmpGcc     .1
+64       64         206.1   2048 512   16 openmpClang     .1
+65       65         230.1   2048 256    8 openmpClang     .1
+66       66         193.1   1024 128   16 openmpClang     .1
+67       67         371.1  16384  64   64     libkomp     .1
+68       68         104.1   2048 128    8   openmpGcc     .1
+69       69         447.1   4096 512   16     libkomp     .1
+70       70         255.1   4096 128   64 kstarStarpu     .1
+71       71         441.1   4096 256   16     libkomp     .1
+72       72         413.1  16384 256   32     libkomp     .1
+73       73         103.1   1024 128    8   openmpGcc     .1
+74       74         331.1   1024  32    8 kstarStarpu     .1
+75       75          13.1   1024 128   64   openmpGcc     .1
+76       76         296.1   2048 512   32 kstarStarpu     .1
+77       77         458.1   2048  64    8     libkomp     .1
+78       78         176.1   2048 512   32 openmpClang     .1
+79       79         345.1   4096 128    8 kstarStarpu     .1
+80       80         279.1   4096  64   32 kstarStarpu     .1
+81       81         110.1   2048 256    8   openmpGcc     .1
+82       82          84.1  32768 256   16   openmpGcc     .1
+83       83         359.1  16384 512    8 kstarStarpu     .1
+84       84          29.1  16384 512   64   openmpGcc     .1
+85       85         141.1   4096 256   64 openmpClang     .1
+86       86         252.1  32768  64   64 kstarStarpu     .1
+87       87         221.1  16384  64    8 openmpClang     .1
+88       88         108.1  32768 128    8   openmpGcc     .1
+89       89         304.1   8192  32   16 kstarStarpu     .1
+90       90          33.1   4096  32   32   openmpGcc     .1
+91       91         420.1  32768 512   32     libkomp     .1
+92       92         149.1  16384 512   64 openmpClang     .1
+93       93         287.1  16384 128   32 kstarStarpu     .1
+94       94         102.1  32768  64    8   openmpGcc     .1
+95       95         145.1   1024 512   64 openmpClang     .1
+96       96         463.1   1024 128    8     libkomp     .1
+97       97         437.1  16384 128   16     libkomp     .1
+98       98         339.1   4096  64    8 kstarStarpu     .1
+99       99         118.1   8192 512    8   openmpGcc     .1
+100     100         346.1   8192 128    8 kstarStarpu     .1
+101     101         392.1   2048  32   32     libkomp     .1
+102     102         107.1  16384 128    8   openmpGcc     .1
+103     103          64.1   8192  32   16   openmpGcc     .1
+104     104         224.1   2048 128    8 openmpClang     .1
+105     105         408.1  32768 128   32     libkomp     .1
+106     106         316.1   8192 128   16 kstarStarpu     .1
+107     107          51.1   4096 256   32   openmpGcc     .1
+108     108         394.1   8192  32   32     libkomp     .1
+109     109         455.1  16384  32    8     libkomp     .1
+110     110         138.1  32768 128   64 openmpClang     .1
+111     111         477.1   4096 512    8     libkomp     .1
+112     112         474.1  32768 256    8     libkomp     .1
+113     113         282.1  32768  64   32 kstarStarpu     .1
+114     114         143.1  16384 256   64 openmpClang     .1
+115     115         285.1   4096 128   32 kstarStarpu     .1
+116     116         170.1   2048 256   32 openmpClang     .1
+117     117          48.1  32768 128   32   openmpGcc     .1
+118     118         204.1  32768 256   16 openmpClang     .1
+119     119         295.1   1024 512   32 kstarStarpu     .1
+120     120          24.1  32768 256   64   openmpGcc     .1
+121     121         181.1   1024  32   16 openmpClang     .1
+122     122         214.1   8192  32    8 openmpClang     .1
+123     123         405.1   4096 128   32     libkomp     .1
+124     124         225.1   4096 128    8 openmpClang     .1
+125     125         383.1  16384 256   64     libkomp     .1
+126     126         381.1   4096 256   64     libkomp     .1
+127     127         163.1   1024 128   32 openmpClang     .1
+128     128          43.1   1024 128   32   openmpGcc     .1
+129     129           1.1   1024  32   64   openmpGcc     .1
+130     130         397.1   1024  64   32     libkomp     .1
+131     131          78.1  32768 128   16   openmpGcc     .1
+132     132         410.1   2048 256   32     libkomp     .1
+133     133         284.1   2048 128   32 kstarStarpu     .1
+134     134         116.1   2048 512    8   openmpGcc     .1
+135     135         233.1  16384 256    8 openmpClang     .1
+136     136         293.1  16384 256   32 kstarStarpu     .1
+137     137          61.1   1024  32   16   openmpGcc     .1
+138     138          86.1   2048 512   16   openmpGcc     .1
+139     139         327.1   4096 512   16 kstarStarpu     .1
+140     140         400.1   8192  64   32     libkomp     .1
+141     141         470.1   2048 256    8     libkomp     .1
+142     142         300.1  32768 512   32 kstarStarpu     .1
+143     143          49.1   1024 256   32   openmpGcc     .1
+144     144         431.1  16384  64   16     libkomp     .1
+145     145         242.1   2048  32   64 kstarStarpu     .1
+146     146         246.1  32768  32   64 kstarStarpu     .1
+147     147         305.1  16384  32   16 kstarStarpu     .1
+148     148         306.1  32768  32   16 kstarStarpu     .1
+149     149         247.1   1024  64   64 kstarStarpu     .1
+150     150         239.1  16384 512    8 openmpClang     .1
+151     151         219.1   4096  64    8 openmpClang     .1
+152     152         135.1   4096 128   64 openmpClang     .1
+153     153         443.1  16384 256   16     libkomp     .1
+154     154         440.1   2048 256   16     libkomp     .1
+155     155         374.1   2048 128   64     libkomp     .1
+156     156          53.1  16384 256   32   openmpGcc     .1
+157     157         421.1   1024  32   16     libkomp     .1
+158     158         380.1   2048 256   64     libkomp     .1
+159     159          65.1  16384  32   16   openmpGcc     .1
+160     160         356.1   2048 512    8 kstarStarpu     .1
+161     161         459.1   4096  64    8     libkomp     .1
+162     162         124.1   8192  32   64 openmpClang     .1
+163     163          77.1  16384 128   16   openmpGcc     .1
+164     164         218.1   2048  64    8 openmpClang     .1
+165     165          98.1   2048  64    8   openmpGcc     .1
+166     166         194.1   2048 128   16 openmpClang     .1
+167     167          19.1   1024 256   64   openmpGcc     .1
+168     168         273.1   4096  32   32 kstarStarpu     .1
+169     169          31.1   1024  32   32   openmpGcc     .1
+170     170         174.1  32768 256   32 openmpClang     .1
+171     171         237.1   4096 512    8 openmpClang     .1
+172     172          75.1   4096 128   16   openmpGcc     .1
+173     173          16.1   8192 128   64   openmpGcc     .1
+174     174         434.1   2048 128   16     libkomp     .1
+175     175         265.1   1024 512   64 kstarStarpu     .1
+176     176          92.1   2048  32    8   openmpGcc     .1
+177     177         122.1   2048  32   64 openmpClang     .1
+178     178         152.1   2048  32   32 openmpClang     .1
+179     179         414.1  32768 256   32     libkomp     .1
+180     180         207.1   4096 512   16 openmpClang     .1
+181     181          67.1   1024  64   16   openmpGcc     .1
+182     182         249.1   4096  64   64 kstarStarpu     .1
+183     183         423.1   4096  32   16     libkomp     .1
+184     184         229.1   1024 256    8 openmpClang     .1
+185     185         140.1   2048 256   64 openmpClang     .1
+186     186         126.1  32768  32   64 openmpClang     .1
+187     187         444.1  32768 256   16     libkomp     .1
+188     188         347.1  16384 128    8 kstarStarpu     .1
+189     189         308.1   2048  64   16 kstarStarpu     .1
+190     190         271.1   1024  32   32 kstarStarpu     .1
+191     191         479.1  16384 512    8     libkomp     .1
+192     192         322.1   8192 256   16 kstarStarpu     .1
+193     193         313.1   1024 128   16 kstarStarpu     .1
+194     194         212.1   2048  32    8 openmpClang     .1
+195     195         127.1   1024  64   64 openmpClang     .1
+196     196         133.1   1024 128   64 openmpClang     .1
+197     197          41.1  16384  64   32   openmpGcc     .1
+198     198          36.1  32768  32   32   openmpGcc     .1
+199     199         451.1   1024  32    8     libkomp     .1
+200     200         370.1   8192  64   64     libkomp     .1
+201     201         388.1   8192 512   64     libkomp     .1
+202     202         117.1   4096 512    8   openmpGcc     .1
+203     203         387.1   4096 512   64     libkomp     .1
+204     204          50.1   2048 256   32   openmpGcc     .1
+205     205         254.1   2048 128   64 kstarStarpu     .1
+206     206          72.1  32768  64   16   openmpGcc     .1
+207     207         350.1   2048 256    8 kstarStarpu     .1
+208     208         168.1  32768 128   32 openmpClang     .1
+209     209         448.1   8192 512   16     libkomp     .1
+210     210         113.1  16384 256    8   openmpGcc     .1
+211     211         234.1  32768 256    8 openmpClang     .1
+212     212         435.1   4096 128   16     libkomp     .1
+213     213          73.1   1024 128   16   openmpGcc     .1
+214     214          27.1   4096 512   64   openmpGcc     .1
+215     215         348.1  32768 128    8 kstarStarpu     .1
+216     216          15.1   4096 128   64   openmpGcc     .1
+217     217          62.1   2048  32   16   openmpGcc     .1
+218     218         132.1  32768  64   64 openmpClang     .1
+219     219          35.1  16384  32   32   openmpGcc     .1
+220     220         318.1  32768 128   16 kstarStarpu     .1
+221     221         320.1   2048 256   16 kstarStarpu     .1
+222     222         185.1  16384  32   16 openmpClang     .1
+223     223         153.1   4096  32   32 openmpClang     .1
+224     224         312.1  32768  64   16 kstarStarpu     .1
+225     225         238.1   8192 512    8 openmpClang     .1
+226     226         460.1   8192  64    8     libkomp     .1
+227     227         220.1   8192  64    8 openmpClang     .1
+228     228         231.1   4096 256    8 openmpClang     .1
+229     229          28.1   8192 512   64   openmpGcc     .1
+230     230         244.1   8192  32   64 kstarStarpu     .1
+231     231         264.1  32768 256   64 kstarStarpu     .1
+232     232         148.1   8192 512   64 openmpClang     .1
+233     233         351.1   4096 256    8 kstarStarpu     .1
+234     234         286.1   8192 128   32 kstarStarpu     .1
+235     235         445.1   1024 512   16     libkomp     .1
+236     236          60.1  32768 512   32   openmpGcc     .1
+237     237         232.1   8192 256    8 openmpClang     .1
+238     238         415.1   1024 512   32     libkomp     .1
+239     239         395.1  16384  32   32     libkomp     .1
+240     240         274.1   8192  32   32 kstarStarpu     .1
+241     241         257.1  16384 128   64 kstarStarpu     .1
+242     242          12.1  32768  64   64   openmpGcc     .1
+243     243          93.1   4096  32    8   openmpGcc     .1
+244     244          80.1   2048 256   16   openmpGcc     .1
+245     245         439.1   1024 256   16     libkomp     .1
+246     246         202.1   8192 256   16 openmpClang     .1
+247     247         337.1   1024  64    8 kstarStarpu     .1
+248     248          26.1   2048 512   64   openmpGcc     .1
+249     249         391.1   1024  32   32     libkomp     .1
+250     250         464.1   2048 128    8     libkomp     .1
+251     251         360.1  32768 512    8 kstarStarpu     .1
+252     252         401.1  16384  64   32     libkomp     .1
+253     253         384.1  32768 256   64     libkomp     .1
+254     254         442.1   8192 256   16     libkomp     .1
+255     255         361.1   1024  32   64     libkomp     .1
+256     256         411.1   4096 256   32     libkomp     .1
+257     257         393.1   4096  32   32     libkomp     .1
+258     258         333.1   4096  32    8 kstarStarpu     .1
+259     259         294.1  32768 256   32 kstarStarpu     .1
+260     260         209.1  16384 512   16 openmpClang     .1
+261     261          82.1   8192 256   16   openmpGcc     .1
+262     262          97.1   1024  64    8   openmpGcc     .1
+263     263         275.1  16384  32   32 kstarStarpu     .1
+264     264         325.1   1024 512   16 kstarStarpu     .1
+265     265          56.1   2048 512   32   openmpGcc     .1
+266     266         199.1   1024 256   16 openmpClang     .1
+267     267         178.1   8192 512   32 openmpClang     .1
+268     268         201.1   4096 256   16 openmpClang     .1
+269     269         369.1   4096  64   64     libkomp     .1
+270     270         473.1  16384 256    8     libkomp     .1
+271     271         101.1  16384  64    8   openmpGcc     .1
+272     272         256.1   8192 128   64 kstarStarpu     .1
+273     273         309.1   4096  64   16 kstarStarpu     .1
+274     274           2.1   2048  32   64   openmpGcc     .1
+275     275         272.1   2048  32   32 kstarStarpu     .1
+276     276         131.1  16384  64   64 openmpClang     .1
+277     277         328.1   8192 512   16 kstarStarpu     .1
+278     278         166.1   8192 128   32 openmpClang     .1
+279     279         223.1   1024 128    8 openmpClang     .1
+280     280         156.1  32768  32   32 openmpClang     .1
+281     281         183.1   4096  32   16 openmpClang     .1
+282     282         197.1  16384 128   16 openmpClang     .1
+283     283         456.1  32768  32    8     libkomp     .1
+284     284         353.1  16384 256    8 kstarStarpu     .1
+285     285         352.1   8192 256    8 kstarStarpu     .1
+286     286         173.1  16384 256   32 openmpClang     .1
+287     287         446.1   2048 512   16     libkomp     .1
+288     288          83.1  16384 256   16   openmpGcc     .1
+289     289         151.1   1024  32   32 openmpClang     .1
+290     290          68.1   2048  64   16   openmpGcc     .1
+291     291         259.1   1024 256   64 kstarStarpu     .1
+292     292         376.1   8192 128   64     libkomp     .1
+293     293         332.1   2048  32    8 kstarStarpu     .1
+294     294         278.1   2048  64   32 kstarStarpu     .1
+295     295         180.1  32768 512   32 openmpClang     .1
+296     296         162.1  32768  64   32 openmpClang     .1
+297     297         354.1  32768 256    8 kstarStarpu     .1
+298     298          74.1   2048 128   16   openmpGcc     .1
+299     299         478.1   8192 512    8     libkomp     .1
+300     300         338.1   2048  64    8 kstarStarpu     .1
+301     301         161.1  16384  64   32 openmpClang     .1
+302     302         262.1   8192 256   64 kstarStarpu     .1
+303     303         139.1   1024 256   64 openmpClang     .1
+304     304         396.1  32768  32   32     libkomp     .1
+305     305         245.1  16384  32   64 kstarStarpu     .1
+306     306          90.1  32768 512   16   openmpGcc     .1
+307     307         175.1   1024 512   32 openmpClang     .1
+308     308         112.1   8192 256    8   openmpGcc     .1
+309     309         288.1  32768 128   32 kstarStarpu     .1
+310     310         190.1   8192  64   16 openmpClang     .1
+311     311         191.1  16384  64   16 openmpClang     .1
+312     312         216.1  32768  32    8 openmpClang     .1
+313     313         432.1  32768  64   16     libkomp     .1
+314     314         203.1  16384 256   16 openmpClang     .1
+315     315          81.1   4096 256   16   openmpGcc     .1
+316     316         268.1   8192 512   64 kstarStarpu     .1
+317     317         429.1   4096  64   16     libkomp     .1
+318     318         357.1   4096 512    8 kstarStarpu     .1
+319     319         409.1   1024 256   32     libkomp     .1
+320     320           3.1   4096  32   64   openmpGcc     .1
+321     321         147.1   4096 512   64 openmpClang     .1
+322     322         128.1   2048  64   64 openmpClang     .1
+323     323         188.1   2048  64   16 openmpClang     .1
+324     324           4.1   8192  32   64   openmpGcc     .1
+325     325         403.1   1024 128   32     libkomp     .1
+326     326         450.1  32768 512   16     libkomp     .1
+327     327         457.1   1024  64    8     libkomp     .1
+328     328         106.1   8192 128    8   openmpGcc     .1
+329     329         179.1  16384 512   32 openmpClang     .1
+330     330         269.1  16384 512   64 kstarStarpu     .1
+331     331          23.1  16384 256   64   openmpGcc     .1
+332     332         297.1   4096 512   32 kstarStarpu     .1
+333     333         303.1   4096  32   16 kstarStarpu     .1
+334     334         119.1  16384 512    8   openmpGcc     .1
+335     335          99.1   4096  64    8   openmpGcc     .1
+336     336         192.1  32768  64   16 openmpClang     .1
+337     337         228.1  32768 128    8 openmpClang     .1
+338     338         472.1   8192 256    8     libkomp     .1
+339     339          18.1  32768 128   64   openmpGcc     .1
+340     340         236.1   2048 512    8 openmpClang     .1
+341     341         430.1   8192  64   16     libkomp     .1
+342     342          91.1   1024  32    8   openmpGcc     .1
+343     343          32.1   2048  32   32   openmpGcc     .1
+344     344         349.1   1024 256    8 kstarStarpu     .1
+345     345         426.1  32768  32   16     libkomp     .1
+346     346         137.1  16384 128   64 openmpClang     .1
+347     347         125.1  16384  32   64 openmpClang     .1
+348     348         452.1   2048  32    8     libkomp     .1
+349     349          21.1   4096 256   64   openmpGcc     .1
+350     350         462.1  32768  64    8     libkomp     .1
+351     351         115.1   1024 512    8   openmpGcc     .1
+352     352         210.1  32768 512   16 openmpClang     .1
+353     353         368.1   2048  64   64     libkomp     .1
+354     354          88.1   8192 512   16   openmpGcc     .1
+355     355         241.1   1024  32   64 kstarStarpu     .1
+356     356          71.1  16384  64   16   openmpGcc     .1
+357     357          59.1  16384 512   32   openmpGcc     .1
+358     358         480.1  32768 512    8     libkomp     .1
+359     359         311.1  16384  64   16 kstarStarpu     .1
+360     360          30.1  32768 512   64   openmpGcc     .1
+361     361         109.1   1024 256    8   openmpGcc     .1
+362     362          58.1   8192 512   32   openmpGcc     .1
+363     363         235.1   1024 512    8 openmpClang     .1
+364     364         114.1  32768 256    8   openmpGcc     .1
+365     365         159.1   4096  64   32 openmpClang     .1
+366     366           6.1  32768  32   64   openmpGcc     .1
+367     367          34.1   8192  32   32   openmpGcc     .1
+368     368         253.1   1024 128   64 kstarStarpu     .1
+369     369         196.1   8192 128   16 openmpClang     .1
+370     370          17.1  16384 128   64   openmpGcc     .1
+371     371         261.1   4096 256   64 kstarStarpu     .1
+372     372         250.1   8192  64   64 kstarStarpu     .1
+373     373         425.1  16384  32   16     libkomp     .1
+374     374         323.1  16384 256   16 kstarStarpu     .1
+375     375         449.1  16384 512   16     libkomp     .1
+376     376          66.1  32768  32   16   openmpGcc     .1
+377     377         266.1   2048 512   64 kstarStarpu     .1
+378     378           8.1   2048  64   64   openmpGcc     .1
+379     379         433.1   1024 128   16     libkomp     .1
+380     380          95.1  16384  32    8   openmpGcc     .1
+381     381         342.1  32768  64    8 kstarStarpu     .1
+382     382         399.1   4096  64   32     libkomp     .1
+383     383           5.1  16384  32   64   openmpGcc     .1
+384     384         200.1   2048 256   16 openmpClang     .1
+385     385         100.1   8192  64    8   openmpGcc     .1
+386     386          55.1   1024 512   32   openmpGcc     .1
+387     387         169.1   1024 256   32 openmpClang     .1
+388     388         205.1   1024 512   16 openmpClang     .1
+389     389         358.1   8192 512    8 kstarStarpu     .1
+390     390         301.1   1024  32   16 kstarStarpu     .1
+391     391         195.1   4096 128   16 openmpClang     .1
+392     392         461.1  16384  64    8     libkomp     .1
+393     393          69.1   4096  64   16   openmpGcc     .1
+394     394         136.1   8192 128   64 openmpClang     .1
+395     395         258.1  32768 128   64 kstarStarpu     .1
+396     396         406.1   8192 128   32     libkomp     .1
+397     397         475.1   1024 512    8     libkomp     .1
+398     398         157.1   1024  64   32 openmpClang     .1
+399     399         335.1  16384  32    8 kstarStarpu     .1
+400     400         211.1   1024  32    8 openmpClang     .1
+401     401          52.1   8192 256   32   openmpGcc     .1
+402     402         155.1  16384  32   32 openmpClang     .1
+403     403          38.1   2048  64   32   openmpGcc     .1
+404     404         469.1   1024 256    8     libkomp     .1
+405     405         189.1   4096  64   16 openmpClang     .1
+406     406         416.1   2048 512   32     libkomp     .1
+407     407         364.1   8192  32   64     libkomp     .1
+408     408          47.1  16384 128   32   openmpGcc     .1
+409     409         208.1   8192 512   16 openmpClang     .1
+410     410         385.1   1024 512   64     libkomp     .1
+411     411          46.1   8192 128   32   openmpGcc     .1
+412     412          11.1  16384  64   64   openmpGcc     .1
+413     413          76.1   8192 128   16   openmpGcc     .1
+414     414         344.1   2048 128    8 kstarStarpu     .1
+415     415         417.1   4096 512   32     libkomp     .1
+416     416         407.1  16384 128   32     libkomp     .1
+417     417         186.1  32768  32   16 openmpClang     .1
+418     418         355.1   1024 512    8 kstarStarpu     .1
+419     419         468.1  32768 128    8     libkomp     .1
+420     420         222.1  32768  64    8 openmpClang     .1
+421     421         341.1  16384  64    8 kstarStarpu     .1
+422     422         240.1  32768 512    8 openmpClang     .1
+423     423         281.1  16384  64   32 kstarStarpu     .1
+424     424         164.1   2048 128   32 openmpClang     .1
+425     425          94.1   8192  32    8   openmpGcc     .1
+426     426         389.1  16384 512   64     libkomp     .1
+427     427         386.1   2048 512   64     libkomp     .1
+428     428          63.1   4096  32   16   openmpGcc     .1
+429     429         367.1   1024  64   64     libkomp     .1
+430     430         315.1   4096 128   16 kstarStarpu     .1
+431     431           7.1   1024  64   64   openmpGcc     .1
+432     432         134.1   2048 128   64 openmpClang     .1
+433     433         177.1   4096 512   32 openmpClang     .1
+434     434         215.1  16384  32    8 openmpClang     .1
+435     435           9.1   4096  64   64   openmpGcc     .1
+436     436         365.1  16384  32   64     libkomp     .1
+437     437         476.1   2048 512    8     libkomp     .1
+438     438         372.1  32768  64   64     libkomp     .1
+439     439         267.1   4096 512   64 kstarStarpu     .1
+440     440          54.1  32768 256   32   openmpGcc     .1
+441     441          10.1   8192  64   64   openmpGcc     .1
+442     442         171.1   4096 256   32 openmpClang     .1
+443     443         379.1   1024 256   64     libkomp     .1
+444     444          57.1   4096 512   32   openmpGcc     .1
+445     445         363.1   4096  32   64     libkomp     .1
+446     446         154.1   8192  32   32 openmpClang     .1
+447     447         227.1  16384 128    8 openmpClang     .1
+448     448         123.1   4096  32   64 openmpClang     .1
+449     449         302.1   2048  32   16 kstarStarpu     .1
+450     450         453.1   4096  32    8     libkomp     .1
+451     451         243.1   4096  32   64 kstarStarpu     .1
+452     452         373.1   1024 128   64     libkomp     .1
+453     453         182.1   2048  32   16 openmpClang     .1
+454     454         150.1  32768 512   64 openmpClang     .1
+455     455         184.1   8192  32   16 openmpClang     .1
+456     456         314.1   2048 128   16 kstarStarpu     .1
+457     457          96.1  32768  32    8   openmpGcc     .1
+458     458         334.1   8192  32    8 kstarStarpu     .1
+459     459         260.1   2048 256   64 kstarStarpu     .1
+460     460         427.1   1024  64   16     libkomp     .1
+461     461         319.1   1024 256   16 kstarStarpu     .1
+462     462         321.1   4096 256   16 kstarStarpu     .1
+463     463         424.1   8192  32   16     libkomp     .1
+464     464         317.1  16384 128   16 kstarStarpu     .1
+465     465         146.1   2048 512   64 openmpClang     .1
+466     466         226.1   8192 128    8 openmpClang     .1
+467     467         142.1   8192 256   64 openmpClang     .1
+468     468         251.1  16384  64   64 kstarStarpu     .1
+469     469          87.1   4096 512   16   openmpGcc     .1
+470     470         283.1   1024 128   32 kstarStarpu     .1
+471     471         291.1   4096 256   32 kstarStarpu     .1
+472     472         144.1  32768 256   64 openmpClang     .1
+473     473         310.1   8192  64   16 kstarStarpu     .1
+474     474         292.1   8192 256   32 kstarStarpu     .1
+475     475         336.1  32768  32    8 kstarStarpu     .1
+476     476         276.1  32768  32   32 kstarStarpu     .1
+477     477         454.1   8192  32    8     libkomp     .1
+478     478         158.1   2048  64   32 openmpClang     .1
+479     479         120.1  32768 512    8   openmpGcc     .1
+480     480         436.1   8192 128   16     libkomp     .1
+481     481         229.2   1024 256    8 openmpClang     .2
+482     482         383.2  16384 256   64     libkomp     .2
+483     483         216.2  32768  32    8 openmpClang     .2
+484     484         277.2   1024  64   32 kstarStarpu     .2
+485     485         259.2   1024 256   64 kstarStarpu     .2
+486     486         346.2   8192 128    8 kstarStarpu     .2
+487     487          87.2   4096 512   16   openmpGcc     .2
+488     488         305.2  16384  32   16 kstarStarpu     .2
+489     489         150.2  32768 512   64 openmpClang     .2
+490     490         303.2   4096  32   16 kstarStarpu     .2
+491     491           3.2   4096  32   64   openmpGcc     .2
+492     492         240.2  32768 512    8 openmpClang     .2
+493     493         112.2   8192 256    8   openmpGcc     .2
+494     494         312.2  32768  64   16 kstarStarpu     .2
+495     495           4.2   8192  32   64   openmpGcc     .2
+496     496         164.2   2048 128   32 openmpClang     .2
+497     497          58.2   8192 512   32   openmpGcc     .2
+498     498         308.2   2048  64   16 kstarStarpu     .2
+499     499         193.2   1024 128   16 openmpClang     .2
+500     500         111.2   4096 256    8   openmpGcc     .2
+501     501         342.2  32768  64    8 kstarStarpu     .2
+502     502          85.2   1024 512   16   openmpGcc     .2
+503     503         377.2  16384 128   64     libkomp     .2
+504     504          91.2   1024  32    8   openmpGcc     .2
+505     505         203.2  16384 256   16 openmpClang     .2
+506     506         122.2   2048  32   64 openmpClang     .2
+507     507          44.2   2048 128   32   openmpGcc     .2
+508     508         116.2   2048 512    8   openmpGcc     .2
+509     509         267.2   4096 512   64 kstarStarpu     .2
+510     510         390.2  32768 512   64     libkomp     .2
+511     511          48.2  32768 128   32   openmpGcc     .2
+512     512         100.2   8192  64    8   openmpGcc     .2
+513     513         313.2   1024 128   16 kstarStarpu     .2
+514     514         134.2   2048 128   64 openmpClang     .2
+515     515         232.2   8192 256    8 openmpClang     .2
+516     516         310.2   8192  64   16 kstarStarpu     .2
+517     517         360.2  32768 512    8 kstarStarpu     .2
+518     518          11.2  16384  64   64   openmpGcc     .2
+519     519         456.2  32768  32    8     libkomp     .2
+520     520         445.2   1024 512   16     libkomp     .2
+521     521         213.2   4096  32    8 openmpClang     .2
+522     522         459.2   4096  64    8     libkomp     .2
+523     523          81.2   4096 256   16   openmpGcc     .2
+524     524         256.2   8192 128   64 kstarStarpu     .2
+525     525         265.2   1024 512   64 kstarStarpu     .2
+526     526          54.2  32768 256   32   openmpGcc     .2
+527     527         146.2   2048 512   64 openmpClang     .2
+528     528         115.2   1024 512    8   openmpGcc     .2
+529     529          31.2   1024  32   32   openmpGcc     .2
+530     530         236.2   2048 512    8 openmpClang     .2
+531     531         328.2   8192 512   16 kstarStarpu     .2
+532     532         215.2  16384  32    8 openmpClang     .2
+533     533           6.2  32768  32   64   openmpGcc     .2
+534     534         458.2   2048  64    8     libkomp     .2
+535     535         139.2   1024 256   64 openmpClang     .2
+536     536         250.2   8192  64   64 kstarStarpu     .2
+537     537         281.2  16384  64   32 kstarStarpu     .2
+538     538         258.2  32768 128   64 kstarStarpu     .2
+539     539         295.2   1024 512   32 kstarStarpu     .2
+540     540         425.2  16384  32   16     libkomp     .2
+541     541         288.2  32768 128   32 kstarStarpu     .2
+542     542         234.2  32768 256    8 openmpClang     .2
+543     543         296.2   2048 512   32 kstarStarpu     .2
+544     544         315.2   4096 128   16 kstarStarpu     .2
+545     545         460.2   8192  64    8     libkomp     .2
+546     546         443.2  16384 256   16     libkomp     .2
+547     547         205.2   1024 512   16 openmpClang     .2
+548     548         243.2   4096  32   64 kstarStarpu     .2
+549     549         130.2   8192  64   64 openmpClang     .2
+550     550         198.2  32768 128   16 openmpClang     .2
+551     551         399.2   4096  64   32     libkomp     .2
+552     552          55.2   1024 512   32   openmpGcc     .2
+553     553         182.2   2048  32   16 openmpClang     .2
+554     554          41.2  16384  64   32   openmpGcc     .2
+555     555          61.2   1024  32   16   openmpGcc     .2
+556     556         348.2  32768 128    8 kstarStarpu     .2
+557     557          60.2  32768 512   32   openmpGcc     .2
+558     558          65.2  16384  32   16   openmpGcc     .2
+559     559         423.2   4096  32   16     libkomp     .2
+560     560         137.2  16384 128   64 openmpClang     .2
+561     561         325.2   1024 512   16 kstarStarpu     .2
+562     562         219.2   4096  64    8 openmpClang     .2
+563     563         362.2   2048  32   64     libkomp     .2
+564     564          66.2  32768  32   16   openmpGcc     .2
+565     565         101.2  16384  64    8   openmpGcc     .2
+566     566         287.2  16384 128   32 kstarStarpu     .2
+567     567         245.2  16384  32   64 kstarStarpu     .2
+568     568         206.2   2048 512   16 openmpClang     .2
+569     569          89.2  16384 512   16   openmpGcc     .2
+570     570         440.2   2048 256   16     libkomp     .2
+571     571         429.2   4096  64   16     libkomp     .2
+572     572         411.2   4096 256   32     libkomp     .2
+573     573         380.2   2048 256   64     libkomp     .2
+574     574         391.2   1024  32   32     libkomp     .2
+575     575         153.2   4096  32   32 openmpClang     .2
+576     576          17.2  16384 128   64   openmpGcc     .2
+577     577         190.2   8192  64   16 openmpClang     .2
+578     578          33.2   4096  32   32   openmpGcc     .2
+579     579         455.2  16384  32    8     libkomp     .2
+580     580         418.2   8192 512   32     libkomp     .2
+581     581         209.2  16384 512   16 openmpClang     .2
+582     582         148.2   8192 512   64 openmpClang     .2
+583     583         192.2  32768  64   16 openmpClang     .2
+584     584         343.2   1024 128    8 kstarStarpu     .2
+585     585         276.2  32768  32   32 kstarStarpu     .2
+586     586         468.2  32768 128    8     libkomp     .2
+587     587         177.2   4096 512   32 openmpClang     .2
+588     588         432.2  32768  64   16     libkomp     .2
+589     589         133.2   1024 128   64 openmpClang     .2
+590     590         283.2   1024 128   32 kstarStarpu     .2
+591     591         353.2  16384 256    8 kstarStarpu     .2
+592     592         406.2   8192 128   32     libkomp     .2
+593     593         226.2   8192 128    8 openmpClang     .2
+594     594         184.2   8192  32   16 openmpClang     .2
+595     595          36.2  32768  32   32   openmpGcc     .2
+596     596         341.2  16384  64    8 kstarStarpu     .2
+597     597          52.2   8192 256   32   openmpGcc     .2
+598     598         162.2  32768  64   32 openmpClang     .2
+599     599         471.2   4096 256    8     libkomp     .2
+600     600          84.2  32768 256   16   openmpGcc     .2
+601     601          67.2   1024  64   16   openmpGcc     .2
+602     602         361.2   1024  32   64     libkomp     .2
+603     603         290.2   2048 256   32 kstarStarpu     .2
+604     604         421.2   1024  32   16     libkomp     .2
+605     605         382.2   8192 256   64     libkomp     .2
+606     606         335.2  16384  32    8 kstarStarpu     .2
+607     607         158.2   2048  64   32 openmpClang     .2
+608     608         208.2   8192 512   16 openmpClang     .2
+609     609         465.2   4096 128    8     libkomp     .2
+610     610         375.2   4096 128   64     libkomp     .2
+611     611         286.2   8192 128   32 kstarStarpu     .2
+612     612         349.2   1024 256    8 kstarStarpu     .2
+613     613         405.2   4096 128   32     libkomp     .2
+614     614          13.2   1024 128   64   openmpGcc     .2
+615     615         413.2  16384 256   32     libkomp     .2
+616     616         304.2   8192  32   16 kstarStarpu     .2
+617     617           7.2   1024  64   64   openmpGcc     .2
+618     618          82.2   8192 256   16   openmpGcc     .2
+619     619         369.2   4096  64   64     libkomp     .2
+620     620         257.2  16384 128   64 kstarStarpu     .2
+621     621         357.2   4096 512    8 kstarStarpu     .2
+622     622         400.2   8192  64   32     libkomp     .2
+623     623         384.2  32768 256   64     libkomp     .2
+624     624         110.2   2048 256    8   openmpGcc     .2
+625     625         366.2  32768  32   64     libkomp     .2
+626     626         282.2  32768  64   32 kstarStarpu     .2
+627     627         225.2   4096 128    8 openmpClang     .2
+628     628          19.2   1024 256   64   openmpGcc     .2
+629     629         306.2  32768  32   16 kstarStarpu     .2
+630     630         327.2   4096 512   16 kstarStarpu     .2
+631     631          86.2   2048 512   16   openmpGcc     .2
+632     632         329.2  16384 512   16 kstarStarpu     .2
+633     633         446.2   2048 512   16     libkomp     .2
+634     634         364.2   8192  32   64     libkomp     .2
+635     635          97.2   1024  64    8   openmpGcc     .2
+636     636         268.2   8192 512   64 kstarStarpu     .2
+637     637         416.2   2048 512   32     libkomp     .2
+638     638          56.2   2048 512   32   openmpGcc     .2
+639     639          35.2  16384  32   32   openmpGcc     .2
+640     640         242.2   2048  32   64 kstarStarpu     .2
+641     641         207.2   4096 512   16 openmpClang     .2
+642     642         167.2  16384 128   32 openmpClang     .2
+643     643         474.2  32768 256    8     libkomp     .2
+644     644         217.2   1024  64    8 openmpClang     .2
+645     645           1.2   1024  32   64   openmpGcc     .2
+646     646         401.2  16384  64   32     libkomp     .2
+647     647         453.2   4096  32    8     libkomp     .2
+648     648         248.2   2048  64   64 kstarStarpu     .2
+649     649          80.2   2048 256   16   openmpGcc     .2
+650     650         454.2   8192  32    8     libkomp     .2
+651     651          93.2   4096  32    8   openmpGcc     .2
+652     652         176.2   2048 512   32 openmpClang     .2
+653     653         251.2  16384  64   64 kstarStarpu     .2
+654     654          12.2  32768  64   64   openmpGcc     .2
+655     655         339.2   4096  64    8 kstarStarpu     .2
+656     656         386.2   2048 512   64     libkomp     .2
+657     657         392.2   2048  32   32     libkomp     .2
+658     658           8.2   2048  64   64   openmpGcc     .2
+659     659         435.2   4096 128   16     libkomp     .2
+660     660         159.2   4096  64   32 openmpClang     .2
+661     661         140.2   2048 256   64 openmpClang     .2
+662     662          30.2  32768 512   64   openmpGcc     .2
+663     663           9.2   4096  64   64   openmpGcc     .2
+664     664         194.2   2048 128   16 openmpClang     .2
+665     665         417.2   4096 512   32     libkomp     .2
+666     666         128.2   2048  64   64 openmpClang     .2
+667     667          43.2   1024 128   32   openmpGcc     .2
+668     668         278.2   2048  64   32 kstarStarpu     .2
+669     669          42.2  32768  64   32   openmpGcc     .2
+670     670         102.2  32768  64    8   openmpGcc     .2
+671     671         404.2   2048 128   32     libkomp     .2
+672     672         118.2   8192 512    8   openmpGcc     .2
+673     673         318.2  32768 128   16 kstarStarpu     .2
+674     674         211.2   1024  32    8 openmpClang     .2
+675     675         289.2   1024 256   32 kstarStarpu     .2
+676     676         105.2   4096 128    8   openmpGcc     .2
+677     677          62.2   2048  32   16   openmpGcc     .2
+678     678         347.2  16384 128    8 kstarStarpu     .2
+679     679         132.2  32768  64   64 openmpClang     .2
+680     680          70.2   8192  64   16   openmpGcc     .2
+681     681         450.2  32768 512   16     libkomp     .2
+682     682         472.2   8192 256    8     libkomp     .2
+683     683          40.2   8192  64   32   openmpGcc     .2
+684     684         280.2   8192  64   32 kstarStarpu     .2
+685     685         270.2  32768 512   64 kstarStarpu     .2
+686     686         394.2   8192  32   32     libkomp     .2
+687     687         262.2   8192 256   64 kstarStarpu     .2
+688     688         302.2   2048  32   16 kstarStarpu     .2
+689     689         200.2   2048 256   16 openmpClang     .2
+690     690         439.2   1024 256   16     libkomp     .2
+691     691         430.2   8192  64   16     libkomp     .2
+692     692          14.2   2048 128   64   openmpGcc     .2
+693     693          27.2   4096 512   64   openmpGcc     .2
+694     694          77.2  16384 128   16   openmpGcc     .2
+695     695         470.2   2048 256    8     libkomp     .2
+696     696         324.2  32768 256   16 kstarStarpu     .2
+697     697          69.2   4096  64   16   openmpGcc     .2
+698     698         237.2   4096 512    8 openmpClang     .2
+699     699         345.2   4096 128    8 kstarStarpu     .2
+700     700         223.2   1024 128    8 openmpClang     .2
+701     701         393.2   4096  32   32     libkomp     .2
+702     702          59.2  16384 512   32   openmpGcc     .2
+703     703         247.2   1024  64   64 kstarStarpu     .2
+704     704         373.2   1024 128   64     libkomp     .2
+705     705         123.2   4096  32   64 openmpClang     .2
+706     706         452.2   2048  32    8     libkomp     .2
+707     707         266.2   2048 512   64 kstarStarpu     .2
+708     708         293.2  16384 256   32 kstarStarpu     .2
+709     709          24.2  32768 256   64   openmpGcc     .2
+710     710         221.2  16384  64    8 openmpClang     .2
+711     711         138.2  32768 128   64 openmpClang     .2
+712     712         414.2  32768 256   32     libkomp     .2
+713     713         338.2   2048  64    8 kstarStarpu     .2
+714     714         170.2   2048 256   32 openmpClang     .2
+715     715         389.2  16384 512   64     libkomp     .2
+716     716          74.2   2048 128   16   openmpGcc     .2
+717     717         356.2   2048 512    8 kstarStarpu     .2
+718     718         231.2   4096 256    8 openmpClang     .2
+719     719         321.2   4096 256   16 kstarStarpu     .2
+720     720         333.2   4096  32    8 kstarStarpu     .2
+721     721         120.2  32768 512    8   openmpGcc     .2
+722     722         210.2  32768 512   16 openmpClang     .2
+723     723         183.2   4096  32   16 openmpClang     .2
+724     724         387.2   4096 512   64     libkomp     .2
+725     725         174.2  32768 256   32 openmpClang     .2
+726     726         151.2   1024  32   32 openmpClang     .2
+727     727         218.2   2048  64    8 openmpClang     .2
+728     728         320.2   2048 256   16 kstarStarpu     .2
+729     729         463.2   1024 128    8     libkomp     .2
+730     730         422.2   2048  32   16     libkomp     .2
+731     731         461.2  16384  64    8     libkomp     .2
+732     732         292.2   8192 256   32 kstarStarpu     .2
+733     733          29.2  16384 512   64   openmpGcc     .2
+734     734         197.2  16384 128   16 openmpClang     .2
+735     735         330.2  32768 512   16 kstarStarpu     .2
+736     736         403.2   1024 128   32     libkomp     .2
+737     737         113.2  16384 256    8   openmpGcc     .2
+738     738         368.2   2048  64   64     libkomp     .2
+739     739         371.2  16384  64   64     libkomp     .2
+740     740          22.2   8192 256   64   openmpGcc     .2
+741     741         186.2  32768  32   16 openmpClang     .2
+742     742         424.2   8192  32   16     libkomp     .2
+743     743         108.2  32768 128    8   openmpGcc     .2
+744     744         407.2  16384 128   32     libkomp     .2
+745     745         326.2   2048 512   16 kstarStarpu     .2
+746     746         252.2  32768  64   64 kstarStarpu     .2
+747     747         376.2   8192 128   64     libkomp     .2
+748     748         479.2  16384 512    8     libkomp     .2
+749     749         125.2  16384  32   64 openmpClang     .2
+750     750         202.2   8192 256   16 openmpClang     .2
+751     751          83.2  16384 256   16   openmpGcc     .2
+752     752         398.2   2048  64   32     libkomp     .2
+753     753         300.2  32768 512   32 kstarStarpu     .2
+754     754         442.2   8192 256   16     libkomp     .2
+755     755         144.2  32768 256   64 openmpClang     .2
+756     756         294.2  32768 256   32 kstarStarpu     .2
+757     757         149.2  16384 512   64 openmpClang     .2
+758     758         447.2   4096 512   16     libkomp     .2
+759     759         272.2   2048  32   32 kstarStarpu     .2
+760     760          21.2   4096 256   64   openmpGcc     .2
+761     761         344.2   2048 128    8 kstarStarpu     .2
+762     762          99.2   4096  64    8   openmpGcc     .2
+763     763         480.2  32768 512    8     libkomp     .2
+764     764         263.2  16384 256   64 kstarStarpu     .2
+765     765          94.2   8192  32    8   openmpGcc     .2
+766     766         372.2  32768  64   64     libkomp     .2
+767     767         195.2   4096 128   16 openmpClang     .2
+768     768         355.2   1024 512    8 kstarStarpu     .2
+769     769         415.2   1024 512   32     libkomp     .2
+770     770         285.2   4096 128   32 kstarStarpu     .2
+771     771         412.2   8192 256   32     libkomp     .2
+772     772          75.2   4096 128   16   openmpGcc     .2
+773     773          10.2   8192  64   64   openmpGcc     .2
+774     774          34.2   8192  32   32   openmpGcc     .2
+775     775           2.2   2048  32   64   openmpGcc     .2
+776     776         124.2   8192  32   64 openmpClang     .2
+777     777          76.2   8192 128   16   openmpGcc     .2
+778     778         233.2  16384 256    8 openmpClang     .2
+779     779         337.2   1024  64    8 kstarStarpu     .2
+780     780         464.2   2048 128    8     libkomp     .2
+781     781           5.2  16384  32   64   openmpGcc     .2
+782     782          73.2   1024 128   16   openmpGcc     .2
+783     783         274.2   8192  32   32 kstarStarpu     .2
+784     784         141.2   4096 256   64 openmpClang     .2
+785     785         370.2   8192  64   64     libkomp     .2
+786     786         322.2   8192 256   16 kstarStarpu     .2
+787     787         388.2   8192 512   64     libkomp     .2
+788     788         448.2   8192 512   16     libkomp     .2
+789     789         181.2   1024  32   16 openmpClang     .2
+790     790         350.2   2048 256    8 kstarStarpu     .2
+791     791         172.2   8192 256   32 openmpClang     .2
+792     792         126.2  32768  32   64 openmpClang     .2
+793     793          71.2  16384  64   16   openmpGcc     .2
+794     794         297.2   4096 512   32 kstarStarpu     .2
+795     795         135.2   4096 128   64 openmpClang     .2
+796     796         220.2   8192  64    8 openmpClang     .2
+797     797         359.2  16384 512    8 kstarStarpu     .2
+798     798          57.2   4096 512   32   openmpGcc     .2
+799     799         476.2   2048 512    8     libkomp     .2
+800     800         317.2  16384 128   16 kstarStarpu     .2
+801     801          72.2  32768  64   16   openmpGcc     .2
+802     802          25.2   1024 512   64   openmpGcc     .2
+803     803         171.2   4096 256   32 openmpClang     .2
+804     804         201.2   4096 256   16 openmpClang     .2
+805     805          32.2   2048  32   32   openmpGcc     .2
+806     806         222.2  32768  64    8 openmpClang     .2
+807     807         467.2  16384 128    8     libkomp     .2
+808     808         395.2  16384  32   32     libkomp     .2
+809     809         178.2   8192 512   32 openmpClang     .2
+810     810         155.2  16384  32   32 openmpClang     .2
+811     811         477.2   4096 512    8     libkomp     .2
+812     812          51.2   4096 256   32   openmpGcc     .2
+813     813         433.2   1024 128   16     libkomp     .2
+814     814         275.2  16384  32   32 kstarStarpu     .2
+815     815         260.2   2048 256   64 kstarStarpu     .2
+816     816         189.2   4096  64   16 openmpClang     .2
+817     817          88.2   8192 512   16   openmpGcc     .2
+818     818         131.2  16384  64   64 openmpClang     .2
+819     819         196.2   8192 128   16 openmpClang     .2
+820     820         214.2   8192  32    8 openmpClang     .2
+821     821         284.2   2048 128   32 kstarStarpu     .2
+822     822         434.2   2048 128   16     libkomp     .2
+823     823         307.2   1024  64   16 kstarStarpu     .2
+824     824          28.2   8192 512   64   openmpGcc     .2
+825     825         136.2   8192 128   64 openmpClang     .2
+826     826         235.2   1024 512    8 openmpClang     .2
+827     827          18.2  32768 128   64   openmpGcc     .2
+828     828         106.2   8192 128    8   openmpGcc     .2
+829     829         363.2   4096  32   64     libkomp     .2
+830     830         397.2   1024  64   32     libkomp     .2
+831     831         204.2  32768 256   16 openmpClang     .2
+832     832         340.2   8192  64    8 kstarStarpu     .2
+833     833         188.2   2048  64   16 openmpClang     .2
+834     834         323.2  16384 256   16 kstarStarpu     .2
+835     835         311.2  16384  64   16 kstarStarpu     .2
+836     836         185.2  16384  32   16 openmpClang     .2
+837     837         121.2   1024  32   64 openmpClang     .2
+838     838          23.2  16384 256   64   openmpGcc     .2
+839     839         410.2   2048 256   32     libkomp     .2
+840     840         431.2  16384  64   16     libkomp     .2
+841     841         437.2  16384 128   16     libkomp     .2
+842     842         166.2   8192 128   32 openmpClang     .2
+843     843         142.2   8192 256   64 openmpClang     .2
+844     844         107.2  16384 128    8   openmpGcc     .2
+845     845         109.2   1024 256    8   openmpGcc     .2
+846     846          98.2   2048  64    8   openmpGcc     .2
+847     847         212.2   2048  32    8 openmpClang     .2
+848     848         129.2   4096  64   64 openmpClang     .2
+849     849         173.2  16384 256   32 openmpClang     .2
+850     850         261.2   4096 256   64 kstarStarpu     .2
+851     851         469.2   1024 256    8     libkomp     .2
+852     852         331.2   1024  32    8 kstarStarpu     .2
+853     853         254.2   2048 128   64 kstarStarpu     .2
+854     854         466.2   8192 128    8     libkomp     .2
+855     855          53.2  16384 256   32   openmpGcc     .2
+856     856         271.2   1024  32   32 kstarStarpu     .2
+857     857         367.2   1024  64   64     libkomp     .2
+858     858         426.2  32768  32   16     libkomp     .2
+859     859         119.2  16384 512    8   openmpGcc     .2
+860     860         168.2  32768 128   32 openmpClang     .2
+861     861         457.2   1024  64    8     libkomp     .2
+862     862         374.2   2048 128   64     libkomp     .2
+863     863         127.2   1024  64   64 openmpClang     .2
+864     864         402.2  32768  64   32     libkomp     .2
+865     865         409.2   1024 256   32     libkomp     .2
+866     866         180.2  32768 512   32 openmpClang     .2
+867     867         314.2   2048 128   16 kstarStarpu     .2
+868     868          47.2  16384 128   32   openmpGcc     .2
+869     869          96.2  32768  32    8   openmpGcc     .2
+870     870          38.2   2048  64   32   openmpGcc     .2
+871     871         475.2   1024 512    8     libkomp     .2
+872     872         228.2  32768 128    8 openmpClang     .2
+873     873         255.2   4096 128   64 kstarStarpu     .2
+874     874         163.2   1024 128   32 openmpClang     .2
+875     875          92.2   2048  32    8   openmpGcc     .2
+876     876         224.2   2048 128    8 openmpClang     .2
+877     877          64.2   8192  32   16   openmpGcc     .2
+878     878         246.2  32768  32   64 kstarStarpu     .2
+879     879         436.2   8192 128   16     libkomp     .2
+880     880         279.2   4096  64   32 kstarStarpu     .2
+881     881         316.2   8192 128   16 kstarStarpu     .2
+882     882         179.2  16384 512   32 openmpClang     .2
+883     883         378.2  32768 128   64     libkomp     .2
+884     884         478.2   8192 512    8     libkomp     .2
+885     885          49.2   1024 256   32   openmpGcc     .2
+886     886          37.2   1024  64   32   openmpGcc     .2
+887     887         230.2   2048 256    8 openmpClang     .2
+888     888         157.2   1024  64   32 openmpClang     .2
+889     889         427.2   1024  64   16     libkomp     .2
+890     890         408.2  32768 128   32     libkomp     .2
+891     891         156.2  32768  32   32 openmpClang     .2
+892     892         301.2   1024  32   16 kstarStarpu     .2
+893     893         451.2   1024  32    8     libkomp     .2
+894     894         103.2   1024 128    8   openmpGcc     .2
+895     895          95.2  16384  32    8   openmpGcc     .2
+896     896         365.2  16384  32   64     libkomp     .2
+897     897         385.2   1024 512   64     libkomp     .2
+898     898         428.2   2048  64   16     libkomp     .2
+899     899          46.2   8192 128   32   openmpGcc     .2
+900     900         152.2   2048  32   32 openmpClang     .2
+901     901         241.2   1024  32   64 kstarStarpu     .2
+902     902          26.2   2048 512   64   openmpGcc     .2
+903     903         332.2   2048  32    8 kstarStarpu     .2
+904     904         154.2   8192  32   32 openmpClang     .2
+905     905         420.2  32768 512   32     libkomp     .2
+906     906         298.2   8192 512   32 kstarStarpu     .2
+907     907          63.2   4096  32   16   openmpGcc     .2
+908     908         169.2   1024 256   32 openmpClang     .2
+909     909         239.2  16384 512    8 openmpClang     .2
+910     910         336.2  32768  32    8 kstarStarpu     .2
+911     911          50.2   2048 256   32   openmpGcc     .2
+912     912         264.2  32768 256   64 kstarStarpu     .2
+913     913         117.2   4096 512    8   openmpGcc     .2
+914     914         147.2   4096 512   64 openmpClang     .2
+915     915         441.2   4096 256   16     libkomp     .2
+916     916         249.2   4096  64   64 kstarStarpu     .2
+917     917          39.2   4096  64   32   openmpGcc     .2
+918     918         351.2   4096 256    8 kstarStarpu     .2
+919     919         358.2   8192 512    8 kstarStarpu     .2
+920     920         438.2  32768 128   16     libkomp     .2
+921     921         175.2   1024 512   32 openmpClang     .2
+922     922         160.2   8192  64   32 openmpClang     .2
+923     923          16.2   8192 128   64   openmpGcc     .2
+924     924         419.2  16384 512   32     libkomp     .2
+925     925          45.2   4096 128   32   openmpGcc     .2
+926     926          20.2   2048 256   64   openmpGcc     .2
+927     927         269.2  16384 512   64 kstarStarpu     .2
+928     928         187.2   1024  64   16 openmpClang     .2
+929     929         227.2  16384 128    8 openmpClang     .2
+930     930         379.2   1024 256   64     libkomp     .2
+931     931         191.2  16384  64   16 openmpClang     .2
+932     932         334.2   8192  32    8 kstarStarpu     .2
+933     933         299.2  16384 512   32 kstarStarpu     .2
+934     934         145.2   1024 512   64 openmpClang     .2
+935     935         354.2  32768 256    8 kstarStarpu     .2
+936     936          68.2   2048  64   16   openmpGcc     .2
+937     937          78.2  32768 128   16   openmpGcc     .2
+938     938         238.2   8192 512    8 openmpClang     .2
+939     939         396.2  32768  32   32     libkomp     .2
+940     940         165.2   4096 128   32 openmpClang     .2
+941     941         473.2  16384 256    8     libkomp     .2
+942     942         244.2   8192  32   64 kstarStarpu     .2
+943     943         449.2  16384 512   16     libkomp     .2
+944     944          90.2  32768 512   16   openmpGcc     .2
+945     945         143.2  16384 256   64 openmpClang     .2
+946     946         319.2   1024 256   16 kstarStarpu     .2
+947     947         253.2   1024 128   64 kstarStarpu     .2
+948     948         161.2  16384  64   32 openmpClang     .2
+949     949         381.2   4096 256   64     libkomp     .2
+950     950         462.2  32768  64    8     libkomp     .2
+951     951         291.2   4096 256   32 kstarStarpu     .2
+952     952         309.2   4096  64   16 kstarStarpu     .2
+953     953         273.2   4096  32   32 kstarStarpu     .2
+954     954         114.2  32768 256    8   openmpGcc     .2
+955     955         199.2   1024 256   16 openmpClang     .2
+956     956          79.2   1024 256   16   openmpGcc     .2
+957     957          15.2   4096 128   64   openmpGcc     .2
+958     958         444.2  32768 256   16     libkomp     .2
+959     959         352.2   8192 256    8 kstarStarpu     .2
+960     960         104.2   2048 128    8   openmpGcc     .2
+961     961         289.3   1024 256   32 kstarStarpu     .3
+962     962         365.3  16384  32   64     libkomp     .3
+963     963          55.3   1024 512   32   openmpGcc     .3
+964     964         331.3   1024  32    8 kstarStarpu     .3
+965     965          84.3  32768 256   16   openmpGcc     .3
+966     966         340.3   8192  64    8 kstarStarpu     .3
+967     967         439.3   1024 256   16     libkomp     .3
+968     968         354.3  32768 256    8 kstarStarpu     .3
+969     969         329.3  16384 512   16 kstarStarpu     .3
+970     970         175.3   1024 512   32 openmpClang     .3
+971     971          13.3   1024 128   64   openmpGcc     .3
+972     972           5.3  16384  32   64   openmpGcc     .3
+973     973         400.3   8192  64   32     libkomp     .3
+974     974         387.3   4096 512   64     libkomp     .3
+975     975         282.3  32768  64   32 kstarStarpu     .3
+976     976         110.3   2048 256    8   openmpGcc     .3
+977     977         145.3   1024 512   64 openmpClang     .3
+978     978         193.3   1024 128   16 openmpClang     .3
+979     979         174.3  32768 256   32 openmpClang     .3
+980     980         304.3   8192  32   16 kstarStarpu     .3
+981     981         392.3   2048  32   32     libkomp     .3
+982     982         211.3   1024  32    8 openmpClang     .3
+983     983         384.3  32768 256   64     libkomp     .3
+984     984         120.3  32768 512    8   openmpGcc     .3
+985     985         210.3  32768 512   16 openmpClang     .3
+986     986         130.3   8192  64   64 openmpClang     .3
+987     987         462.3  32768  64    8     libkomp     .3
+988     988         214.3   8192  32    8 openmpClang     .3
+989     989          36.3  32768  32   32   openmpGcc     .3
+990     990         311.3  16384  64   16 kstarStarpu     .3
+991     991         240.3  32768 512    8 openmpClang     .3
+992     992          78.3  32768 128   16   openmpGcc     .3
+993     993          61.3   1024  32   16   openmpGcc     .3
+994     994          75.3   4096 128   16   openmpGcc     .3
+995     995          45.3   4096 128   32   openmpGcc     .3
+996     996         468.3  32768 128    8     libkomp     .3
+997     997         153.3   4096  32   32 openmpClang     .3
+998     998         379.3   1024 256   64     libkomp     .3
+999     999         164.3   2048 128   32 openmpClang     .3
+1000   1000         197.3  16384 128   16 openmpClang     .3
+1001   1001         347.3  16384 128    8 kstarStarpu     .3
+1002   1002         236.3   2048 512    8 openmpClang     .3
+1003   1003          27.3   4096 512   64   openmpGcc     .3
+1004   1004         386.3   2048 512   64     libkomp     .3
+1005   1005         105.3   4096 128    8   openmpGcc     .3
+1006   1006         234.3  32768 256    8 openmpClang     .3
+1007   1007         352.3   8192 256    8 kstarStarpu     .3
+1008   1008          46.3   8192 128   32   openmpGcc     .3
+1009   1009         343.3   1024 128    8 kstarStarpu     .3
+1010   1010         441.3   4096 256   16     libkomp     .3
+1011   1011         459.3   4096  64    8     libkomp     .3
+1012   1012         146.3   2048 512   64 openmpClang     .3
+1013   1013         226.3   8192 128    8 openmpClang     .3
+1014   1014         369.3   4096  64   64     libkomp     .3
+1015   1015         341.3  16384  64    8 kstarStarpu     .3
+1016   1016         231.3   4096 256    8 openmpClang     .3
+1017   1017         475.3   1024 512    8     libkomp     .3
+1018   1018          90.3  32768 512   16   openmpGcc     .3
+1019   1019          39.3   4096  64   32   openmpGcc     .3
+1020   1020         104.3   2048 128    8   openmpGcc     .3
+1021   1021         267.3   4096 512   64 kstarStarpu     .3
+1022   1022         123.3   4096  32   64 openmpClang     .3
+1023   1023         269.3  16384 512   64 kstarStarpu     .3
+1024   1024          63.3   4096  32   16   openmpGcc     .3
+1025   1025         276.3  32768  32   32 kstarStarpu     .3
+1026   1026         249.3   4096  64   64 kstarStarpu     .3
+1027   1027          71.3  16384  64   16   openmpGcc     .3
+1028   1028         101.3  16384  64    8   openmpGcc     .3
+1029   1029         285.3   4096 128   32 kstarStarpu     .3
+1030   1030          81.3   4096 256   16   openmpGcc     .3
+1031   1031           8.3   2048  64   64   openmpGcc     .3
+1032   1032          38.3   2048  64   32   openmpGcc     .3
+1033   1033         121.3   1024  32   64 openmpClang     .3
+1034   1034         160.3   8192  64   32 openmpClang     .3
+1035   1035         432.3  32768  64   16     libkomp     .3
+1036   1036         330.3  32768 512   16 kstarStarpu     .3
+1037   1037         420.3  32768 512   32     libkomp     .3
+1038   1038         138.3  32768 128   64 openmpClang     .3
+1039   1039          14.3   2048 128   64   openmpGcc     .3
+1040   1040         171.3   4096 256   32 openmpClang     .3
+1041   1041         436.3   8192 128   16     libkomp     .3
+1042   1042           1.3   1024  32   64   openmpGcc     .3
+1043   1043          68.3   2048  64   16   openmpGcc     .3
+1044   1044         422.3   2048  32   16     libkomp     .3
+1045   1045         415.3   1024 512   32     libkomp     .3
+1046   1046         310.3   8192  64   16 kstarStarpu     .3
+1047   1047          23.3  16384 256   64   openmpGcc     .3
+1048   1048         127.3   1024  64   64 openmpClang     .3
+1049   1049         255.3   4096 128   64 kstarStarpu     .3
+1050   1050          96.3  32768  32    8   openmpGcc     .3
+1051   1051         296.3   2048 512   32 kstarStarpu     .3
+1052   1052         132.3  32768  64   64 openmpClang     .3
+1053   1053         375.3   4096 128   64     libkomp     .3
+1054   1054           9.3   4096  64   64   openmpGcc     .3
+1055   1055         408.3  32768 128   32     libkomp     .3
+1056   1056         336.3  32768  32    8 kstarStarpu     .3
+1057   1057         241.3   1024  32   64 kstarStarpu     .3
+1058   1058         223.3   1024 128    8 openmpClang     .3
+1059   1059         266.3   2048 512   64 kstarStarpu     .3
+1060   1060         232.3   8192 256    8 openmpClang     .3
+1061   1061          17.3  16384 128   64   openmpGcc     .3
+1062   1062         479.3  16384 512    8     libkomp     .3
+1063   1063         217.3   1024  64    8 openmpClang     .3
+1064   1064          64.3   8192  32   16   openmpGcc     .3
+1065   1065          74.3   2048 128   16   openmpGcc     .3
+1066   1066          62.3   2048  32   16   openmpGcc     .3
+1067   1067         157.3   1024  64   32 openmpClang     .3
+1068   1068         300.3  32768 512   32 kstarStarpu     .3
+1069   1069         324.3  32768 256   16 kstarStarpu     .3
+1070   1070          26.3   2048 512   64   openmpGcc     .3
+1071   1071         117.3   4096 512    8   openmpGcc     .3
+1072   1072         338.3   2048  64    8 kstarStarpu     .3
+1073   1073          35.3  16384  32   32   openmpGcc     .3
+1074   1074         177.3   4096 512   32 openmpClang     .3
+1075   1075         129.3   4096  64   64 openmpClang     .3
+1076   1076         213.3   4096  32    8 openmpClang     .3
+1077   1077         206.3   2048 512   16 openmpClang     .3
+1078   1078         350.3   2048 256    8 kstarStarpu     .3
+1079   1079          65.3  16384  32   16   openmpGcc     .3
+1080   1080         215.3  16384  32    8 openmpClang     .3
+1081   1081         478.3   8192 512    8     libkomp     .3
+1082   1082         247.3   1024  64   64 kstarStarpu     .3
+1083   1083         169.3   1024 256   32 openmpClang     .3
+1084   1084         435.3   4096 128   16     libkomp     .3
+1085   1085         219.3   4096  64    8 openmpClang     .3
+1086   1086         263.3  16384 256   64 kstarStarpu     .3
+1087   1087         449.3  16384 512   16     libkomp     .3
+1088   1088          32.3   2048  32   32   openmpGcc     .3
+1089   1089         305.3  16384  32   16 kstarStarpu     .3
+1090   1090         142.3   8192 256   64 openmpClang     .3
+1091   1091         348.3  32768 128    8 kstarStarpu     .3
+1092   1092         476.3   2048 512    8     libkomp     .3
+1093   1093         119.3  16384 512    8   openmpGcc     .3
+1094   1094         434.3   2048 128   16     libkomp     .3
+1095   1095         355.3   1024 512    8 kstarStarpu     .3
+1096   1096         220.3   8192  64    8 openmpClang     .3
+1097   1097         344.3   2048 128    8 kstarStarpu     .3
+1098   1098         218.3   2048  64    8 openmpClang     .3
+1099   1099         293.3  16384 256   32 kstarStarpu     .3
+1100   1100          40.3   8192  64   32   openmpGcc     .3
+1101   1101         345.3   4096 128    8 kstarStarpu     .3
+1102   1102         166.3   8192 128   32 openmpClang     .3
+1103   1103          29.3  16384 512   64   openmpGcc     .3
+1104   1104         111.3   4096 256    8   openmpGcc     .3
+1105   1105         426.3  32768  32   16     libkomp     .3
+1106   1106          79.3   1024 256   16   openmpGcc     .3
+1107   1107          10.3   8192  64   64   openmpGcc     .3
+1108   1108          99.3   4096  64    8   openmpGcc     .3
+1109   1109         378.3  32768 128   64     libkomp     .3
+1110   1110          73.3   1024 128   16   openmpGcc     .3
+1111   1111         430.3   8192  64   16     libkomp     .3
+1112   1112          56.3   2048 512   32   openmpGcc     .3
+1113   1113         421.3   1024  32   16     libkomp     .3
+1114   1114          95.3  16384  32    8   openmpGcc     .3
+1115   1115         141.3   4096 256   64 openmpClang     .3
+1116   1116          47.3  16384 128   32   openmpGcc     .3
+1117   1117         429.3   4096  64   16     libkomp     .3
+1118   1118         271.3   1024  32   32 kstarStarpu     .3
+1119   1119         275.3  16384  32   32 kstarStarpu     .3
+1120   1120         451.3   1024  32    8     libkomp     .3
+1121   1121         292.3   8192 256   32 kstarStarpu     .3
+1122   1122         143.3  16384 256   64 openmpClang     .3
+1123   1123         251.3  16384  64   64 kstarStarpu     .3
+1124   1124         326.3   2048 512   16 kstarStarpu     .3
+1125   1125         447.3   4096 512   16     libkomp     .3
+1126   1126         136.3   8192 128   64 openmpClang     .3
+1127   1127         412.3   8192 256   32     libkomp     .3
+1128   1128         125.3  16384  32   64 openmpClang     .3
+1129   1129         161.3  16384  64   32 openmpClang     .3
+1130   1130         438.3  32768 128   16     libkomp     .3
+1131   1131          49.3   1024 256   32   openmpGcc     .3
+1132   1132         278.3   2048  64   32 kstarStarpu     .3
+1133   1133         461.3  16384  64    8     libkomp     .3
+1134   1134         480.3  32768 512    8     libkomp     .3
+1135   1135         112.3   8192 256    8   openmpGcc     .3
+1136   1136         442.3   8192 256   16     libkomp     .3
+1137   1137         307.3   1024  64   16 kstarStarpu     .3
+1138   1138         144.3  32768 256   64 openmpClang     .3
+1139   1139         325.3   1024 512   16 kstarStarpu     .3
+1140   1140         196.3   8192 128   16 openmpClang     .3
+1141   1141         405.3   4096 128   32     libkomp     .3
+1142   1142         182.3   2048  32   16 openmpClang     .3
+1143   1143         227.3  16384 128    8 openmpClang     .3
+1144   1144          60.3  32768 512   32   openmpGcc     .3
+1145   1145          93.3   4096  32    8   openmpGcc     .3
+1146   1146         265.3   1024 512   64 kstarStarpu     .3
+1147   1147         318.3  32768 128   16 kstarStarpu     .3
+1148   1148          43.3   1024 128   32   openmpGcc     .3
+1149   1149         471.3   4096 256    8     libkomp     .3
+1150   1150         133.3   1024 128   64 openmpClang     .3
+1151   1151         280.3   8192  64   32 kstarStarpu     .3
+1152   1152         202.3   8192 256   16 openmpClang     .3
+1153   1153         149.3  16384 512   64 openmpClang     .3
+1154   1154         388.3   8192 512   64     libkomp     .3
+1155   1155         443.3  16384 256   16     libkomp     .3
+1156   1156          42.3  32768  64   32   openmpGcc     .3
+1157   1157         377.3  16384 128   64     libkomp     .3
+1158   1158         113.3  16384 256    8   openmpGcc     .3
+1159   1159         201.3   4096 256   16 openmpClang     .3
+1160   1160         137.3  16384 128   64 openmpClang     .3
+1161   1161         302.3   2048  32   16 kstarStarpu     .3
+1162   1162         204.3  32768 256   16 openmpClang     .3
+1163   1163          15.3   4096 128   64   openmpGcc     .3
+1164   1164         290.3   2048 256   32 kstarStarpu     .3
+1165   1165         225.3   4096 128    8 openmpClang     .3
+1166   1166          80.3   2048 256   16   openmpGcc     .3
+1167   1167         453.3   4096  32    8     libkomp     .3
+1168   1168         360.3  32768 512    8 kstarStarpu     .3
+1169   1169         474.3  32768 256    8     libkomp     .3
+1170   1170         411.3   4096 256   32     libkomp     .3
+1171   1171          98.3   2048  64    8   openmpGcc     .3
+1172   1172         458.3   2048  64    8     libkomp     .3
+1173   1173          82.3   8192 256   16   openmpGcc     .3
+1174   1174         398.3   2048  64   32     libkomp     .3
+1175   1175         303.3   4096  32   16 kstarStarpu     .3
+1176   1176         167.3  16384 128   32 openmpClang     .3
+1177   1177         425.3  16384  32   16     libkomp     .3
+1178   1178         118.3   8192 512    8   openmpGcc     .3
+1179   1179          37.3   1024  64   32   openmpGcc     .3
+1180   1180         309.3   4096  64   16 kstarStarpu     .3
+1181   1181         416.3   2048 512   32     libkomp     .3
+1182   1182         472.3   8192 256    8     libkomp     .3
+1183   1183          69.3   4096  64   16   openmpGcc     .3
+1184   1184         228.3  32768 128    8 openmpClang     .3
+1185   1185         334.3   8192  32    8 kstarStarpu     .3
+1186   1186         172.3   8192 256   32 openmpClang     .3
+1187   1187         364.3   8192  32   64     libkomp     .3
+1188   1188         116.3   2048 512    8   openmpGcc     .3
+1189   1189         394.3   8192  32   32     libkomp     .3
+1190   1190         277.3   1024  64   32 kstarStarpu     .3
+1191   1191          87.3   4096 512   16   openmpGcc     .3
+1192   1192         346.3   8192 128    8 kstarStarpu     .3
+1193   1193         274.3   8192  32   32 kstarStarpu     .3
+1194   1194         374.3   2048 128   64     libkomp     .3
+1195   1195         203.3  16384 256   16 openmpClang     .3
+1196   1196         383.3  16384 256   64     libkomp     .3
+1197   1197         194.3   2048 128   16 openmpClang     .3
+1198   1198           4.3   8192  32   64   openmpGcc     .3
+1199   1199         445.3   1024 512   16     libkomp     .3
+1200   1200         106.3   8192 128    8   openmpGcc     .3
+1201   1201         256.3   8192 128   64 kstarStarpu     .3
+1202   1202         470.3   2048 256    8     libkomp     .3
+1203   1203         165.3   4096 128   32 openmpClang     .3
+1204   1204          51.3   4096 256   32   openmpGcc     .3
+1205   1205          66.3  32768  32   16   openmpGcc     .3
+1206   1206         139.3   1024 256   64 openmpClang     .3
+1207   1207         258.3  32768 128   64 kstarStarpu     .3
+1208   1208         183.3   4096  32   16 openmpClang     .3
+1209   1209         297.3   4096 512   32 kstarStarpu     .3
+1210   1210         156.3  32768  32   32 openmpClang     .3
+1211   1211         454.3   8192  32    8     libkomp     .3
+1212   1212         262.3   8192 256   64 kstarStarpu     .3
+1213   1213           7.3   1024  64   64   openmpGcc     .3
+1214   1214         335.3  16384  32    8 kstarStarpu     .3
+1215   1215          31.3   1024  32   32   openmpGcc     .3
+1216   1216         254.3   2048 128   64 kstarStarpu     .3
+1217   1217         363.3   4096  32   64     libkomp     .3
+1218   1218         126.3  32768  32   64 openmpClang     .3
+1219   1219         396.3  32768  32   32     libkomp     .3
+1220   1220         401.3  16384  64   32     libkomp     .3
+1221   1221         327.3   4096 512   16 kstarStarpu     .3
+1222   1222         209.3  16384 512   16 openmpClang     .3
+1223   1223         393.3   4096  32   32     libkomp     .3
+1224   1224         450.3  32768 512   16     libkomp     .3
+1225   1225         200.3   2048 256   16 openmpClang     .3
+1226   1226         195.3   4096 128   16 openmpClang     .3
+1227   1227         180.3  32768 512   32 openmpClang     .3
+1228   1228         109.3   1024 256    8   openmpGcc     .3
+1229   1229          70.3   8192  64   16   openmpGcc     .3
+1230   1230         284.3   2048 128   32 kstarStarpu     .3
+1231   1231         286.3   8192 128   32 kstarStarpu     .3
+1232   1232          25.3   1024 512   64   openmpGcc     .3
+1233   1233         314.3   2048 128   16 kstarStarpu     .3
+1234   1234         397.3   1024  64   32     libkomp     .3
+1235   1235         205.3   1024 512   16 openmpClang     .3
+1236   1236         140.3   2048 256   64 openmpClang     .3
+1237   1237         103.3   1024 128    8   openmpGcc     .3
+1238   1238         308.3   2048  64   16 kstarStarpu     .3
+1239   1239         185.3  16384  32   16 openmpClang     .3
+1240   1240         356.3   2048 512    8 kstarStarpu     .3
+1241   1241         122.3   2048  32   64 openmpClang     .3
+1242   1242         399.3   4096  64   32     libkomp     .3
+1243   1243         403.3   1024 128   32     libkomp     .3
+1244   1244         264.3  32768 256   64 kstarStarpu     .3
+1245   1245         238.3   8192 512    8 openmpClang     .3
+1246   1246         395.3  16384  32   32     libkomp     .3
+1247   1247          33.3   4096  32   32   openmpGcc     .3
+1248   1248         424.3   8192  32   16     libkomp     .3
+1249   1249          72.3  32768  64   16   openmpGcc     .3
+1250   1250           2.3   2048  32   64   openmpGcc     .3
+1251   1251         414.3  32768 256   32     libkomp     .3
+1252   1252         279.3   4096  64   32 kstarStarpu     .3
+1253   1253         306.3  32768  32   16 kstarStarpu     .3
+1254   1254         457.3   1024  64    8     libkomp     .3
+1255   1255         444.3  32768 256   16     libkomp     .3
+1256   1256         134.3   2048 128   64 openmpClang     .3
+1257   1257         381.3   4096 256   64     libkomp     .3
+1258   1258         102.3  32768  64    8   openmpGcc     .3
+1259   1259         272.3   2048  32   32 kstarStarpu     .3
+1260   1260         312.3  32768  64   16 kstarStarpu     .3
+1261   1261         291.3   4096 256   32 kstarStarpu     .3
+1262   1262         131.3  16384  64   64 openmpClang     .3
+1263   1263           6.3  32768  32   64   openmpGcc     .3
+1264   1264         333.3   4096  32    8 kstarStarpu     .3
+1265   1265         207.3   4096 512   16 openmpClang     .3
+1266   1266         391.3   1024  32   32     libkomp     .3
+1267   1267          16.3   8192 128   64   openmpGcc     .3
+1268   1268         328.3   8192 512   16 kstarStarpu     .3
+1269   1269          67.3   1024  64   16   openmpGcc     .3
+1270   1270         407.3  16384 128   32     libkomp     .3
+1271   1271         366.3  32768  32   64     libkomp     .3
+1272   1272         372.3  32768  64   64     libkomp     .3
+1273   1273         437.3  16384 128   16     libkomp     .3
+1274   1274         152.3   2048  32   32 openmpClang     .3
+1275   1275         455.3  16384  32    8     libkomp     .3
+1276   1276         235.3   1024 512    8 openmpClang     .3
+1277   1277         316.3   8192 128   16 kstarStarpu     .3
+1278   1278         433.3   1024 128   16     libkomp     .3
+1279   1279          97.3   1024  64    8   openmpGcc     .3
+1280   1280         108.3  32768 128    8   openmpGcc     .3
+1281   1281         353.3  16384 256    8 kstarStarpu     .3
+1282   1282         299.3  16384 512   32 kstarStarpu     .3
+1283   1283         135.3   4096 128   64 openmpClang     .3
+1284   1284         154.3   8192  32   32 openmpClang     .3
+1285   1285          20.3   2048 256   64   openmpGcc     .3
+1286   1286         380.3   2048 256   64     libkomp     .3
+1287   1287         321.3   4096 256   16 kstarStarpu     .3
+1288   1288         190.3   8192  64   16 openmpClang     .3
+1289   1289         428.3   2048  64   16     libkomp     .3
+1290   1290         191.3  16384  64   16 openmpClang     .3
+1291   1291          94.3   8192  32    8   openmpGcc     .3
+1292   1292         357.3   4096 512    8 kstarStarpu     .3
+1293   1293         406.3   8192 128   32     libkomp     .3
+1294   1294         370.3   8192  64   64     libkomp     .3
+1295   1295          18.3  32768 128   64   openmpGcc     .3
+1296   1296         466.3   8192 128    8     libkomp     .3
+1297   1297         230.3   2048 256    8 openmpClang     .3
+1298   1298         301.3   1024  32   16 kstarStarpu     .3
+1299   1299         212.3   2048  32    8 openmpClang     .3
+1300   1300         260.3   2048 256   64 kstarStarpu     .3
+1301   1301         128.3   2048  64   64 openmpClang     .3
+1302   1302         216.3  32768  32    8 openmpClang     .3
+1303   1303         463.3   1024 128    8     libkomp     .3
+1304   1304         431.3  16384  64   16     libkomp     .3
+1305   1305          41.3  16384  64   32   openmpGcc     .3
+1306   1306          22.3   8192 256   64   openmpGcc     .3
+1307   1307         409.3   1024 256   32     libkomp     .3
+1308   1308         460.3   8192  64    8     libkomp     .3
+1309   1309         158.3   2048  64   32 openmpClang     .3
+1310   1310          44.3   2048 128   32   openmpGcc     .3
+1311   1311          50.3   2048 256   32   openmpGcc     .3
+1312   1312         423.3   4096  32   16     libkomp     .3
+1313   1313         170.3   2048 256   32 openmpClang     .3
+1314   1314         148.3   8192 512   64 openmpClang     .3
+1315   1315         320.3   2048 256   16 kstarStarpu     .3
+1316   1316         173.3  16384 256   32 openmpClang     .3
+1317   1317         281.3  16384  64   32 kstarStarpu     .3
+1318   1318         456.3  32768  32    8     libkomp     .3
+1319   1319         287.3  16384 128   32 kstarStarpu     .3
+1320   1320         245.3  16384  32   64 kstarStarpu     .3
+1321   1321         385.3   1024 512   64     libkomp     .3
+1322   1322         440.3   2048 256   16     libkomp     .3
+1323   1323         389.3  16384 512   64     libkomp     .3
+1324   1324         294.3  32768 256   32 kstarStarpu     .3
+1325   1325         404.3   2048 128   32     libkomp     .3
+1326   1326          91.3   1024  32    8   openmpGcc     .3
+1327   1327         187.3   1024  64   16 openmpClang     .3
+1328   1328         124.3   8192  32   64 openmpClang     .3
+1329   1329         410.3   2048 256   32     libkomp     .3
+1330   1330          77.3  16384 128   16   openmpGcc     .3
+1331   1331         373.3   1024 128   64     libkomp     .3
+1332   1332         181.3   1024  32   16 openmpClang     .3
+1333   1333         467.3  16384 128    8     libkomp     .3
+1334   1334         419.3  16384 512   32     libkomp     .3
+1335   1335         222.3  32768  64    8 openmpClang     .3
+1336   1336         473.3  16384 256    8     libkomp     .3
+1337   1337         465.3   4096 128    8     libkomp     .3
+1338   1338         176.3   2048 512   32 openmpClang     .3
+1339   1339         163.3   1024 128   32 openmpClang     .3
+1340   1340          85.3   1024 512   16   openmpGcc     .3
+1341   1341         155.3  16384  32   32 openmpClang     .3
+1342   1342         224.3   2048 128    8 openmpClang     .3
+1343   1343         248.3   2048  64   64 kstarStarpu     .3
+1344   1344         298.3   8192 512   32 kstarStarpu     .3
+1345   1345         179.3  16384 512   32 openmpClang     .3
+1346   1346         313.3   1024 128   16 kstarStarpu     .3
+1347   1347          89.3  16384 512   16   openmpGcc     .3
+1348   1348          34.3   8192  32   32   openmpGcc     .3
+1349   1349         382.3   8192 256   64     libkomp     .3
+1350   1350         337.3   1024  64    8 kstarStarpu     .3
+1351   1351          88.3   8192 512   16   openmpGcc     .3
+1352   1352         417.3   4096 512   32     libkomp     .3
+1353   1353         351.3   4096 256    8 kstarStarpu     .3
+1354   1354         339.3   4096  64    8 kstarStarpu     .3
+1355   1355          92.3   2048  32    8   openmpGcc     .3
+1356   1356         418.3   8192 512   32     libkomp     .3
+1357   1357         342.3  32768  64    8 kstarStarpu     .3
+1358   1358         268.3   8192 512   64 kstarStarpu     .3
+1359   1359          59.3  16384 512   32   openmpGcc     .3
+1360   1360         151.3   1024  32   32 openmpClang     .3
+1361   1361         452.3   2048  32    8     libkomp     .3
+1362   1362         319.3   1024 256   16 kstarStarpu     .3
+1363   1363         184.3   8192  32   16 openmpClang     .3
+1364   1364         244.3   8192  32   64 kstarStarpu     .3
+1365   1365         208.3   8192 512   16 openmpClang     .3
+1366   1366          30.3  32768 512   64   openmpGcc     .3
+1367   1367         253.3   1024 128   64 kstarStarpu     .3
+1368   1368         332.3   2048  32    8 kstarStarpu     .3
+1369   1369         242.3   2048  32   64 kstarStarpu     .3
+1370   1370         273.3   4096  32   32 kstarStarpu     .3
+1371   1371         198.3  32768 128   16 openmpClang     .3
+1372   1372         359.3  16384 512    8 kstarStarpu     .3
+1373   1373         147.3   4096 512   64 openmpClang     .3
+1374   1374         446.3   2048 512   16     libkomp     .3
+1375   1375         257.3  16384 128   64 kstarStarpu     .3
+1376   1376         233.3  16384 256    8 openmpClang     .3
+1377   1377         477.3   4096 512    8     libkomp     .3
+1378   1378          57.3   4096 512   32   openmpGcc     .3
+1379   1379          83.3  16384 256   16   openmpGcc     .3
+1380   1380         261.3   4096 256   64 kstarStarpu     .3
+1381   1381          53.3  16384 256   32   openmpGcc     .3
+1382   1382         361.3   1024  32   64     libkomp     .3
+1383   1383          52.3   8192 256   32   openmpGcc     .3
+1384   1384         115.3   1024 512    8   openmpGcc     .3
+1385   1385         189.3   4096  64   16 openmpClang     .3
+1386   1386         246.3  32768  32   64 kstarStarpu     .3
+1387   1387         322.3   8192 256   16 kstarStarpu     .3
+1388   1388         239.3  16384 512    8 openmpClang     .3
+1389   1389          21.3   4096 256   64   openmpGcc     .3
+1390   1390         221.3  16384  64    8 openmpClang     .3
+1391   1391         229.3   1024 256    8 openmpClang     .3
+1392   1392         114.3  32768 256    8   openmpGcc     .3
+1393   1393         178.3   8192 512   32 openmpClang     .3
+1394   1394         371.3  16384  64   64     libkomp     .3
+1395   1395         283.3   1024 128   32 kstarStarpu     .3
+1396   1396         252.3  32768  64   64 kstarStarpu     .3
+1397   1397          76.3   8192 128   16   openmpGcc     .3
+1398   1398         448.3   8192 512   16     libkomp     .3
+1399   1399         162.3  32768  64   32 openmpClang     .3
+1400   1400          11.3  16384  64   64   openmpGcc     .3
+1401   1401           3.3   4096  32   64   openmpGcc     .3
+1402   1402         464.3   2048 128    8     libkomp     .3
+1403   1403          58.3   8192 512   32   openmpGcc     .3
+1404   1404         390.3  32768 512   64     libkomp     .3
+1405   1405         469.3   1024 256    8     libkomp     .3
+1406   1406         243.3   4096  32   64 kstarStarpu     .3
+1407   1407         323.3  16384 256   16 kstarStarpu     .3
+1408   1408         259.3   1024 256   64 kstarStarpu     .3
+1409   1409         295.3   1024 512   32 kstarStarpu     .3
+1410   1410         159.3   4096  64   32 openmpClang     .3
+1411   1411         188.3   2048  64   16 openmpClang     .3
+1412   1412         199.3   1024 256   16 openmpClang     .3
+1413   1413         367.3   1024  64   64     libkomp     .3
+1414   1414         107.3  16384 128    8   openmpGcc     .3
+1415   1415         315.3   4096 128   16 kstarStarpu     .3
+1416   1416         349.3   1024 256    8 kstarStarpu     .3
+1417   1417          28.3   8192 512   64   openmpGcc     .3
+1418   1418         100.3   8192  64    8   openmpGcc     .3
+1419   1419         358.3   8192 512    8 kstarStarpu     .3
+1420   1420          86.3   2048 512   16   openmpGcc     .3
+1421   1421         150.3  32768 512   64 openmpClang     .3
+1422   1422          54.3  32768 256   32   openmpGcc     .3
+1423   1423         250.3   8192  64   64 kstarStarpu     .3
+1424   1424         237.3   4096 512    8 openmpClang     .3
+1425   1425         288.3  32768 128   32 kstarStarpu     .3
+1426   1426         362.3   2048  32   64     libkomp     .3
+1427   1427         186.3  32768  32   16 openmpClang     .3
+1428   1428         317.3  16384 128   16 kstarStarpu     .3
+1429   1429         376.3   8192 128   64     libkomp     .3
+1430   1430         168.3  32768 128   32 openmpClang     .3
+1431   1431         413.3  16384 256   32     libkomp     .3
+1432   1432         368.3   2048  64   64     libkomp     .3
+1433   1433          19.3   1024 256   64   openmpGcc     .3
+1434   1434         270.3  32768 512   64 kstarStarpu     .3
+1435   1435         402.3  32768  64   32     libkomp     .3
+1436   1436         427.3   1024  64   16     libkomp     .3
+1437   1437          48.3  32768 128   32   openmpGcc     .3
+1438   1438         192.3  32768  64   16 openmpClang     .3
+1439   1439          24.3  32768 256   64   openmpGcc     .3
+1440   1440          12.3  32768  64   64   openmpGcc     .3
+class=design, type= full factorial 
+NOTE: columns run.no and run.no.std.rp  are annotation, 
+ not part of the data frame
+#+end_example
+
+*** exec
+#+begin_src shell :results output :exports both
+
+myseed=74487
+MAXVAL=100
+
+tail -n +2 projeto-experimental.csv |
+while IFS=, read -r name runnoinstdorder runno runnostdrp matrix nb cpus method Blocks
+do
+    echo "will run $matrix -- $nb -- $cpus -- $method -- $Blocks"
+    method=$(echo $method | sed "s/\"//g")
+    matrix=$(echo $matrix | sed "s/\"//g")
+    nb=$(echo $nb | sed "s/\"//g")
+    cpus=$(echo $cpus | sed "s/\"//g")
+
+
+    if [[ $method == "kstarStarpu" ]]; then
+	    echo "kstar...";
+	    STARPU_NCPUS=$cpus LD_LIBRARY_PATH=`spack location -i netlib-lapack+shared`/lib/:$LD_LIBRARY_PATH ./block_qr_kstar_starpu.exec $matrix $nb $myseed $MAXVAL 2>> $method-$cpus-$matrix-$nb.log >> $method-$cpus-$matrix-$nb.log
+    elif  [[ $method == "libkomp" ]]; then
+	echo "libkomp..."
+	OMP_TOOL=enabled KAAPI_RECORD_TRACE=1 KAAPI_RECORD_MASK=compute,omp,perfctr  KAAPI_PERF_EVENTS=TASK,TASKSPAWN KAAPI_TASKPERF_EVENTS=work,time KAAPI_DISPLAY_PERF=full  LD_PRELOAD=`spack location -i libkomp+vardep+tracing+papi+numa+dynhash+cw+aggregation+affinity`/lib/trace-libomp.so LD_LIBRARY_PATH=`spack location -i netlib-lapack+shared`/lib/:`spack location -i libkomp+vardep+tracing+papi+numa+dynhash+cw+aggregation+affinity`/lib/ OMP_NUM_THREADS=$cpus ./block_qr_openmp_clang.exec $matrix $nb $myseed $MAXVAL 2>> $method-$cpus-$matrix-$nb.log >> $method-$cpus-$matrix-$nb.log
+    elif  [[ $method == "openmpClang" ]]; then
+	echo "clang..."
+	OMP_NUM_THREADS=$cpus LD_LIBRARY_PATH=`spack location -i netlib-lapack+shared`/lib/:$LD_LIBRARY_PATH ./block_qr_openmp_clang.exec $matrix $nb $myseed $MAXVAL 2>> $method-$cpus-$matrix-$nb.log >> $method-$cpus-$matrix-$nb.log
+    elif  [[ $method == "openmpGcc" ]]; then
+	echo "gcc..."
+	OMP_NUM_THREADS=$cpus LD_LIBRARY_PATH=`spack location -i netlib-lapack+shared`/lib/:$LD_LIBRARY_PATH ./block_qr_openmp_gcc.exec $matrix $nb $myseed $MAXVAL 2>> $method-$cpus-$matrix-$nb.log >> $method-$cpus-$matrix-$nb.log
+    fi
+done
+
+
+#+end_src
+
+
+This is too long for g5k (max 12 hours). Trying small cases:
+#+begin_src shell :results output :exports both
+
+myseed=74487
+MAXVAL=100
+
+matrix=16384
+for nb in 1024 512 256;
+do
+for method in "openmpGcc" "openmpClang" "kstarStarpu" "libkomp"; do
+    echo "will run $matrix -- $nb -- $method"
+    #method=$(echo $method | sed "s/\"//g")
+    #matrix=$(echo $matrix | sed "s/\"//g")
+    #nb=$(echo $nb | sed "s/\"//g")
+    #cpus=$(echo $cpus | sed "s/\"//g")
+
+
+    if [[ $method == "kstarStarpu" ]]; then
+	    echo "kstar...";
+	    LD_LIBRARY_PATH=`spack location -i netlib-lapack+shared`/lib/:$LD_LIBRARY_PATH ./block_qr_kstar_starpu.exec $matrix $nb $myseed $MAXVAL 2>> $method-MaxCpus-$matrix-$nb.log >> $method-MaxCpus-$matrix-$nb.log
+    elif  [[ $method == "libkomp" ]]; then
+	echo "libkomp..."
+	OMP_TOOL=enabled KAAPI_RECORD_TRACE=1 KAAPI_RECORD_MASK=compute,omp,perfctr  KAAPI_PERF_EVENTS=TASK,TASKSPAWN KAAPI_TASKPERF_EVENTS=work,time KAAPI_DISPLAY_PERF=full  LD_PRELOAD=`spack location -i libkomp+vardep+tracing+papi+numa+dynhash+cw+aggregation+affinity`/lib/trace-libomp.so LD_LIBRARY_PATH=`spack location -i netlib-lapack+shared`/lib/:`spack location -i libkomp+vardep+tracing+papi+numa+dynhash+cw+aggregation+affinity`/lib/ ./block_qr_openmp_clang.exec $matrix $nb $myseed $MAXVAL 2>> $method-MaxCpus-$matrix-$nb.log >> $method-MaxCpus-$matrix-$nb.log
+    elif  [[ $method == "openmpClang" ]]; then
+	echo "clang..."
+	LD_LIBRARY_PATH=`spack location -i netlib-lapack+shared`/lib/:$LD_LIBRARY_PATH ./block_qr_openmp_clang.exec $matrix $nb $myseed $MAXVAL 2>> $method-MaxCpus-$matrix-$nb.log >> $method-MaxCpus-$matrix-$nb.log
+    elif  [[ $method == "openmpGcc" ]]; then
+	echo "gcc..."
+	LD_LIBRARY_PATH=`spack location -i netlib-lapack+shared`/lib/:$LD_LIBRARY_PATH ./block_qr_openmp_gcc.exec $matrix $nb $myseed $MAXVAL 2>> $method-MaxCpus-$matrix-$nb.log >> $method-MaxCpus-$matrix-$nb.log
+    fi
+done
+done
+
+
+#+end_src
+
+#+RESULTS:
+#+begin_example
+will run 16384 -- 1024 -- openmpGcc
+gcc...
+will run 16384 -- 1024 -- openmpClang
+clang...
+will run 16384 -- 1024 -- kstarStarpu
+kstar...
+will run 16384 -- 1024 -- libkomp
+libkomp...
+will run 16384 -- 512 -- openmpGcc
+gcc...
+will run 16384 -- 512 -- openmpClang
+clang...
+will run 16384 -- 512 -- kstarStarpu
+kstar...
+will run 16384 -- 512 -- libkomp
+libkomp...
+will run 16384 -- 256 -- openmpGcc
+gcc...
+will run 16384 -- 256 -- openmpClang
+clang...
+will run 16384 -- 256 -- kstarStarpu
+kstar...
+will run 16384 -- 256 -- libkomp
+libkomp...
+#+end_example
+*** Processing Raw Data
+ #+name: rawNcpus
+ #+header: :var rawPath="logDraft/"
+ #+begin_src sh :results output :exports both :cache yes :eval no-export
+tmpFile=$(mktemp )
+echo -n "$tmpFile"
+echo "runtime, cpu, matrix, blk, time" > $tmpFile
+
+for file in `find $rawPath -maxdepth 1 -name "*log"`;  do 
+    #echo "this file: <$file>"
+    filen=`basename $file`
+    runtime=`echo $filen | cut -d"-" -f1`;  
+    cpu=`echo $filen | cut -d"-" -f2`;  
+    matrix=`echo $filen | cut -d"-" -f3`; 
+    blk=`echo $filen | cut -d"-" -f4| cut -d'.' -f1`; 
+
+    #echo "$runtime -- $cpu -- $matrix -- $blk"
+    
+    time=`grep compute $file | rev | cut -d' ' -f1|rev`
+    echo "$runtime, $cpu, $matrix, $blk, $time" >> $tmpFile
+    
+done
+
+#+end_src
+
+
+ #+name: rawMaxcpus
+ #+header: :var rawPath="logDraft/MaxCpus/"
+ #+begin_src sh :results output :exports both :cache yes :eval no-export
+tmpFile=$(mktemp )
+echo -n "$tmpFile"
+echo "runtime, cpu, matrix, blk, time" > $tmpFile
+
+for file in `find $rawPath -maxdepth 1 -name "*log"`;  do 
+    #echo "this file: <$file>"
+    filen=`basename $file`
+    runtime=`echo $filen | cut -d"-" -f1`;  
+    cpu=`echo $filen | cut -d"-" -f2`;  
+    matrix=`echo $filen | cut -d"-" -f3`; 
+    blk=`echo $filen | cut -d"-" -f4| cut -d'.' -f1`; 
+
+    #echo "$runtime -- $cpu -- $matrix -- $blk"
+    
+    time=`grep compute $file | rev | cut -d' ' -f1|rev`
+    echo "$runtime, $cpu, $matrix, $blk, $time" >> $tmpFile
+     
+done
+
+#+end_src
+
+*** Loading in R
+#+header: :var fileNcpus=rawNcpus
+#+header: :var fileMaxcpus=rawMaxcpus
+#+begin_src R :results output :exports both :session *R*
+library(data.table)
+library(dplyr)
+
+ncpus <- fread(file=fileNcpus, header=TRUE, fill=TRUE)
+
+maxcpus <- fread(file=fileMaxcpus, header=TRUE, fill=TRUE)
+
+#+end_src
+
+#+RESULTS:
+
+*** Plots 
+**** ncpus
+#+begin_src R :results output graphics :file figNcpus.png :exports both :width 900 :height 600 :session *R* 
+library(ggplot2)
+
+ggplot(data=ncpus, aes(x=cpu, y=time, color=runtime)) + 
+    geom_point() + 
+    facet_grid("matrix~blk") +
+    theme_bw()
+#+end_src
+
+#+RESULTS:
+[[file:figNcpus.png]]
+
+**** maxcpus
+#+begin_src R :results output graphics :file figMaxcpus.png :exports both :width 900 :height 600 :session *R* 
+library(ggplot2)
+
+ggplot(data=maxcpus, aes(x=cpu, y=time, color=runtime)) + 
+    geom_point(size=2) + 
+    facet_grid("matrix~blk") +
+    theme_bw()
+#+end_src
+
+#+RESULTS:
+[[file:figMaxcpus.png]]
+
+* Meeting Marcelo - Lucas - Vincent - Vinicius
+- StarPU + OpenMP (GCC + CLANG)
+- QR householder method
+  - 4 lapack calls (e.g. dgeqrt)
+- Different tracing tools
+  - scorep for gcc
+  - ompt - clang/llvm
+  - fxt - starpu
+- intrusion
+- size 1024 to 32768
+  - block 32 to 1024
+  - not full factorial
+  - 30 repetitions (10 in some cases??)
+- trace is similar for openmp and starpu    
+- makespan comparison
+  - time vs number of tasks
+    - small number of tasks - lack of parellism
+    - optimal block size for each matrix
+      - too much tasks (overhead)
+  - 16384
+    - best block size 512
+  - high overhead
+    128
+  - cpu idleness
+    - how it was computed?
+    - per CPU?
+    - investigation on task creation time (per task type)
+      - how it was measured?
+        - moment it was created
+- conclusions (slide 25)
+  - same app ?? (not same code starpu and openmp) 
+** Vincent
+ - Thiery has tried something 
+ - http://datamove.imag.fr/frederic.wagner/the-fishy-fish.html

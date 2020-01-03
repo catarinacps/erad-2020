@@ -1,0 +1,134 @@
+# -*- org-export-babel-evaluate: nil -*-
+# -*- coding: utf-8 -*-
+# -*- mode: org -*-
+
+#+title: Paper for ERAD 2020
+#+author: Henrique
+
+#+startup: overview indent
+#+language: pt-br
+#+options: H:3 creator:nil timestamp:nil skip:nil toc:nil num:t ^:nil ~:~
+#+options: author:nil title:nil date:nil
+#+tags: noexport(n) deprecated(d) ignore(i)
+#+export_select_tags: export
+#+export_exclude_tags: noexport
+
+#+latex_class: article
+#+latex_class_options: [12pt]
+#+latex_header: \usepackage{sbc-template}
+#+latex_header: \usepackage[brazil]{babel}
+#+latex_header: \usepackage[utf8]{inputenc}
+#+latex_header: \usepackage[T1]{fontenc}
+#+latex_header: \usepackage{graphicx}
+#+latex_header: \usepackage[caption=false]{subfig}
+#+latex_header: \usepackage{booktabs}
+#+latex_header: \usepackage{hyphenat}
+#+latex_header: \hyphenation{e-la-bo-ra-ção re-pre-sen-tar}
+
+# You need at least Org 9 and Emacs 24 to make this work.
+# If you do, just type make (thanks Luka Stanisic for this).
+
+#+begin_export latex
+\author{
+   Henrique Corrêa Pereira da Silva\and%\inst{1},
+   Marcelo Cogo Milletto\and
+   Vinicius Garcia Pinto\and \\
+   Lucas Mello Schnorr
+}
+
+\address{
+  Instituto de Informática -- Universidade Federal do Rio Grande do Sul (UFRGS)\\
+  Porto Alegre -- RS -- Brasil
+  \email{\{hcpsilva,mcmiletto,vgpinto,schnorr\}@inf.ufrgs.br}
+}
+#+end_export
+
+\maketitle
+
+#+begin_resumo
+
+#+end_resumo
+
+* Introdução, Objetivos e Trabalhos Relacionados
+
+#+begin_comment
+- HPC é tri; contexto (paralelismo de tarefas)
+  - Vários /runtimes/ capazes de prover esse paralelismo
+  - ...
+- Identificação do problema!
+  - Problema: o desempenho depende do /runtime/ e não mais do programador
+    - Qual é melhor /runtime/? Principalmente, porque um é melhor que outro?
+  - Trabalhos relacionados
+    - Marcelo
+    - Outros a partir do trabalho do Marcelo
+- Objetivos
+  - Comparação do escalonamento
+  - Análise de ociosidade
+  - Observação de anomalies dependentes do /runtime/
+    (Diferenças de tempo de /kernel/ em função do /runtime/)
+- Constribuição
+- Estrutura do artigo
+#+end_comment
+
+* Metodologia de Coleta e Análise de Dados
+
+#+begin_comment
+- Visão geral do workflow
+  - Figura mostrando o funcionamento (com o texto a explicando)
+#+end_comment
+
+** Manipulação de dados com ferramentas modernas de /data science/
+
+** Projeto Experimental
+
+* Resultados Experimentais e Observações
+
+** Configuração Experimental
+
+#+begin_comment
+\noindent
+*Configuração Experimental*:
+- Configuração de SW e HW
+  - Detalhamentos precisos (versão, cores, modelo da CPU, Qtdade memória)
+- SW
+  - Starpu/LWS
+#+end_comment
+
+** Comparação do Escalonamento entre os três /runtimes/
+
+#+begin_comment
+Figura que a gente conversou
+- cowplot -> ~plot_grid~, alinhamento do eixo X (tempo), eixo Y são os workers
+- Selecionar alguns dgeqrt (primeira tarefa de cada laço mais externo)
+  - Colocar elas em evidência de maneira sincronizado
+#+end_comment
+
+** Análise de Ociosidade por /Worker/
+
+** Diferenças de tempo de execução dos /kernels/ em função do /runtime/
+
+* Conclusão e Trabalhos Futuros
+
+* Referências                                                        :ignore:
+
+# See next section to understand how refs.bib file is created.
+
+\bibliographystyle{sbc}
+\bibliography{refs}
+
+* Miscs                                                            :noexport:
+** Bib file                                                       :noexport:
+
+Tangle this file with C-c C-v t
+
+#+begin_src bib :tangle refs.bib
+
+#+end_src
+
+** Emacs setup                                                    :noexport:
+# Local Variables:
+# eval: (add-to-list 'load-path ".")
+# eval: (require 'ox-extra)
+# eval: (require 'org-inlinetask)
+# eval: (ox-extras-activate '(ignore-headlines))
+# End:

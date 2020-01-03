@@ -1,0 +1,786 @@
+#+title: =qr-analysis= Lab-book
+#+author: Henrique Silva
+#+email: hcpsilva@inf.ufrgs.br
+#+infojs_opt:
+#+property: session *R*
+#+property: cache yes
+#+property: results graphics
+#+property: exports both
+#+property: tangle yes
+#+seq_todo: TODO(t!) STARTED(s!) WAITING(w!) | DONE(d!) CANCELLED(c!) DEFERRED(f!)
+
+Lab-book intended to document my efforts into extending Marcelo's
+assignment/paper about QR Factorization analysis.
+
+* Table of contents                                                   :TOC_3:
+- [[#journal][Journal]]
+  - [[#to-do][To-do]]
+    - [[#active-items][Active items]]
+    - [[#secondary-items][Secondary items]]
+    - [[#archive][Archive]]
+  - [[#daily][Daily]]
+    - [[#2020-01-03][2020-01-03]]
+  - [[#meetings][Meetings]]
+- [[#experiments][Experiments]]
+  - [[#preamble][Preamble]]
+    - [[#launching-the-experiments][Launching the experiments]]
+    - [[#doing-data-analysis][Doing data analysis]]
+    - [[#installing-dependencies][Installing dependencies]]
+  - [[#1---overview---makespan-only][1 - Overview - makespan only]]
+    - [[#design][Design]]
+    - [[#dependencies][Dependencies]]
+    - [[#makefile][Makefile]]
+    - [[#script][Script]]
+- [[#resources][Resources]]
+
+* Journal
+:PROPERTIES:
+:ATTACH_DIR: attachments/
+:END:
+
+Intended to hold any meaningful advance yet not meaningful enough to deserve its
+own topic in my lab-book.
+
+** To-do
+
+*** Active items
+
+Empty!
+
+*** Secondary items
+
+Empty! :)
+
+*** Archive
+
+**** DONE Talk to Marcelo about the script
+CLOSED: [2019-10-16 qua 17:31]
+- State "DONE"       from "TODO"       [2019-10-16 qua 17:31]
+- State "TODO"       from              [2019-10-05 sáb 20:14]
+
+** Daily
+
+Daily thoughts and developments.
+
+*** 2020-01-03
+
+First day of this repo!
+
+** Meetings
+
+Like daily entries, but for meetings.
+
+* Experiments
+
+Hi! So, as I'll put into further details later, I use a script to run
+experiments.
+
+The so called "experiment IDs" are both sub-directories in the experiments
+directory and tags in subsections of this section.
+
+** Preamble
+
+Important info if you are looking to reproduce my way of doing things.
+
+Firstly though, I'd like you to read about how I run these experiments myself:
+
+#+begin_src bash :exports both
+cd <COMMON_DIRECTORY>/qr_analysis
+
+./experiments/launch.sh --help
+#+end_src
+
+This command will return the following usage guide:
+
+#+begin_example
+COMMAND:
+  $0 [OPTIONS] <EXP_ID> [REPO_DIRECTORY]
+
+  WHERE <EXP_ID> is the identificator of the experiment
+
+  WHERE [OPTIONS] can be any of the following, in no particular order:
+    -h | --help
+      shows this message and exits
+    -d | --dry
+      prints what it would do instead of actually doing
+    -u | --update
+      updates the repo before running any commands
+    -i | --install=path/to/the/installs
+      use another dir instead of the default $HOME/Installs/spack
+    -l | --local
+      install all packages locally in each machine
+      WARNING: probably won't work because of timeouts in spack
+
+  WHERE [REPO_DIRECTORY] is the *full* path to the repository
+    It is presumed that you are in it, if you don't provide this argument
+#+end_example
+
+*** Launching the experiments
+
+Hello! I suppose you've read the info in the previous section, so, here's the
+deal: I use a script to run experiments.
+
+Here's the maximum value of the elements in the matrices we'll deal with:
+
+#+name: values_range
+#+begin_src bash :results output :exports results
+echo 100
+#+end_src
+
+#+RESULTS: values_range
+: 100
+
+It's big, I know, but it ensures that they run in the right nodes and it
+installs all needed dependencies! Take a look at it:
+
+#+begin_src bash :shebang "#!/bin/bash" :results none :tangle experiments/launch.sh
+# more robust script
+set -euo pipefail
+
+function usage()
+{
+    echo "COMMAND:"
+    echo "  $0 [OPTIONS] <EXP_ID> [REPO_DIRECTORY]"
+    echo
+    echo "  WHERE <EXP_ID> is the identificator of the experiment"
+    echo
+    echo "  WHERE [OPTIONS] can be any of the following, in no particular order:"
+    echo "    -h | --help"
+    echo "      shows this message and exits"
+    echo "    -d | --dry"
+    echo "      prints what it would do instead of actually doing it"
+    echo "    -u | --update"
+    echo "      updates the repo before running any commands"
+    echo "    -i | --install[=]path/to/the/installs"
+    echo "      use another dir instead of the default $HOME/Installs/spack"
+    echo "    -p | --partitions[=]list,of,partitions,comma,separated"
+    echo "      define the desired partitions to be used (default: cei)"
+    echo "    -n | --nodes[=]list,of,nodes,comma,separated"
+    echo "      define the desired nodes to be used"
+    echo "      WARNING: this option disables usage of the partition list!"
+    echo "    -l | --local"
+    echo "      install all packages locally in each machine"
+    echo "      WARNING: probably won't work because of timeouts in spack"
+    echo
+    echo "  WHERE [REPO_DIRECTORY] is the *full* path to the repository"
+    echo "    It is presumed that you are in it, if you don't provide this argument"
+}
+
+for i in "$@"; do
+    case $i in
+        -h|--help)
+            echo "USAGE:"
+            echo
+            usage
+            exit
+            ;;
+        -d|--dry)
+            DRY=true
+            shift
+            ;;
+        -u|--update)
+            UPDATE=true
+            shift
+            ;;
+        --install=*)
+            INSTALL_DIR=${i#*=}
+            shift
+            ;;
+        -i|--install)
+            shift
+            INSTALL_DIR=$1
+            shift
+            ;;
+        --partitions=*)
+            PARTITIONLIST=$(tr ',' ' ' <<<${i#*=})
+            shift
+            ;;
+        -p|--partitions)
+            shift
+            PARTITIONLIST=$(tr ',' ' ' <<<$1)
+            shift
+            ;;
+        --nodes=*)
+            NODELIST=$(tr ',' '\n' <<<${i#*=})
+            PARTITIONLIST=$(sed -E 's/([0-9]+)//g' <<<$NODELIST | uniq | xargs)
+            shift
+            ;;
+        -n|--nodes)
+            shift
+            NODELIST=$(tr ',' '\n' <<<$1)
+            PARTITIONLIST=$(sed -E 's/([0-9]+)//g' <<<$NODELIST | uniq | xargs)
+            shift
+            ;;
+        -l|--local)
+            INSTALL_DIR=/scratch/$USER/installs
+            LOCAL=true
+            shift
+            ;;
+    esac
+done
+
+# directory with needed dependencies installed
+INSTALL_DIR=${INSTALL_DIR:-$HOME/Installs/spack}
+
+# the experiment id
+EXPERIMENT_ID=$1
+
+# the work (repo) dir
+REPO_DIR=${2:-$(pwd)}
+
+# dry run boolean
+DRY=${DRY:-false}
+
+# default run partition
+PARTITIONLIST=${PARTITIONLIST:-cei}
+
+# update boolean
+UPDATE=${UPDATE:-false}
+
+# local install boolean
+LOCAL=${LOCAL:-false}
+
+if [[ $REPO_DIR != /* ]]; then
+    echo "Path to repository is not absolute, please use the absolute path..."
+    exit
+fi
+
+if [[ $INSTALL_DIR != /* ]]; then
+    echo "Path to installation dir is not absolute, please use the absolute path..."
+    exit
+fi
+
+EXP_DIR=$(find $REPO_DIR -type d -path "*/experiments/$EXPERIMENT_ID")
+if [ ! -n "$EXP_DIR" ]; then
+    echo "There isn't any experiment with this ID..."
+    exit
+fi
+
+pushd $REPO_DIR
+
+# update the repo?
+[ $UPDATE = true ] && git pull
+
+for partition in $PARTITIONLIST; do
+    # lets install all needed dependencies first
+    echo "Launching dependency installing job for partition $partition!"
+    if [ $DRY = true -a $LOCAL != true ]; then
+        echo "sbatch"
+        echo "-p $partition"
+        echo "-N 1"
+        echo "-J dependencies_${EXPERIMENT_ID}_${partition}"
+        echo "-W"
+        echo "$EXP_DIR/deps.sh $INSTALL_DIR"
+        echo
+    elif [ $LOCAL != true ]; then
+        sbatch \
+            -p ${partition} \
+            -N 1 \
+            -J dependencies_${EXPERIMENT_ID}_${partition} \
+            -W \
+            $EXP_DIR/deps.sh $INSTALL_DIR
+    fi
+    echo "... and done!"
+    echo
+
+    # change the gppd-info to sinfo when porting
+    if [ -z ${NODELIST+x} ]; then
+        nodes=$(gppd-info --long --Node -S NODELIST -p $partition -h | awk '{print $1 "_" $5}' | paste -s -d" " -)
+    else
+        nodes=$(grep $partition <<<$NODELIST)
+    fi
+
+    for execution in $nodes; do
+        # launch the slurm script for this node
+        echo "Launching job for node ${execution%%_*}..."
+        if [ $DRY = true ]; then
+            echo "sbatch"
+            echo "-p ${partition}"
+            echo "-w ${execution%%_*}"
+            echo "-c ${execution#*_}"
+            echo "-J qr_analysis_${EXPERIMENT_ID}"
+            echo "$EXP_DIR/exp.slurm $EXPERIMENT_ID $EXP_DIR $INSTALL_DIR $LOCAL"
+            echo
+        else
+            sbatch \
+                -p ${partition} \
+                -w ${execution%%_*} \
+                -c ${execution#*_} \
+                -J qr_analysis_${EXPERIMENT_ID} \
+                $EXP_DIR/exp.slurm $EXPERIMENT_ID $EXP_DIR $INSTALL_DIR $LOCAL
+        fi
+    done
+done
+
+popd
+#+end_src
+
+*** Doing data analysis
+
+In order to use the R tools I've used, please run the following source block to
+load them up:
+
+#+begin_src R :session :results none
+options(crayon.enabled=FALSE)
+library(DoE.base)
+library(tidyverse)
+#+end_src
+
+*** Installing dependencies
+
+I'll install dependencies in =$HOME/Installs/spack= directory but you can put
+them anywhere really, just pass to the =launch.sh= script the path to the
+directory you'll use.
+
+So, let's first start by cleaning up the directory I'll use to store the
+symbolic links:
+
+#+begin_src bash :exports both :results output
+pushd $HOME
+
+rm -rf Installs/spack
+mkdir Installs/spack
+
+popd
+#+end_src
+
+...and lets also install =spack= at =$HOME/spack=
+
+#+begin_src bash :exports both :results output
+pushd $HOME
+
+# install spack
+git clone https://github.com/spack/spack.git
+# source spack env variables
+. spack/share/spack/setup-env.sh
+# add the solverstack INRIA repo
+git clone https://gitlab.inria.fr/solverstack/spack-repo.git solverstack
+# and add it to spack
+spack repo add solverstack
+
+popd
+#+end_src
+
+** 1 - Overview - makespan only                                      :EXP01:
+
+Something about this experiment!
+
+*** Design
+
+The random seed will be:
+
+#+begin_src R :session :results value :exports results
+floor(runif(1,1,99999))
+#+end_src
+
+#+RESULTS:
+: 86229
+
+Finally, the design itself:
+
+#+begin_src R :session :results output :var expKey="exp01"
+suppressMessages(library(tidyverse))
+suppressMessages(library(DoE.base))
+
+matrix = c(1024, 2048, 4096, 8192, 16384, 32768)
+nb = c(32, 64, 128, 256, 512)
+method = c("starpu", "libomp", "libgomp", "libkomp-gcc", "libkomp_clang", "kstar_starpu")
+
+complete <- fac.design(
+  nfactors=3,
+  replications=3,
+  repeat.only=FALSE,
+  blocks=1,
+  randomize=TRUE,
+  seed=86229,
+  factor.names=list(
+    matrix_size=matrix,
+    block_size=nb,
+    runtime=method)) %>%
+  as_tibble %>%
+  filter(matrix_size == 8192) %>%
+  transmute(id=as.numeric(Blocks), runtime, matrix_size, block_size) %>%
+  write_delim(paste0("experiments/", expKey, "/runs.plan"), delim=" ", col_names=FALSE)
+
+# the space delimited file is to help with the posterior parsing in the shell
+# script
+#+end_src
+
+#+RESULTS:
+:
+: creating full factorial with 180 runs ...
+
+*** Dependencies
+
+In this experiment we'll need the following =spack= packages:
+
+- starpu-1.3
+- llvm
+- netlib-lapack
+- libkomp
+- kstar-starpu
+
+#+begin_src bash :shebang "#!/bin/bash" :tangle experiments/exp01/deps.sh
+#SBATCH --time=3:00:00
+#SBATCH --chdir=.
+#SBATCH --output=/home/users/hcpsilva/slurm_outputs/%x_%j.out
+#SBATCH --error=/home/users/hcpsilva/slurm_outputs/%x_%j.err
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=hcpsilva@inf.ufrgs.br
+
+# more robust script
+set -euo pipefail
+
+INSTALL_DIR=$1/$SLURM_JOB_PARTITION
+SPACK_DIR=${2:-$HOME/spack-erad}
+
+pushd $HOME
+
+if [ ! -d $SPACK_DIR ]; then
+    echo "spack not yet installed!"
+    git clone git@github.com:viniciusvgp/customSpack.git $SPACK_DIR
+    $SPACK_DIR/install_spack.sh -symr
+    . $SPACK_DIR/src/spack/share/spack/setup-env.sh
+else
+    . $SPACK_DIR/src/spack/share/spack/setup-env.sh
+fi
+
+# get current node info
+ARCH=$(spack arch)
+
+# create the install dir if there isn't one
+[ ! -d $INSTALL_DIR ] && mkdir -p $INSTALL_DIR
+
+pushd $INSTALL_DIR
+
+if [ ! -d openblas-0.3.7 ]; then
+    echo "OpenBLAS not yet installed!"
+    mkdir openblas-0.3.7
+    spack install openblas@0.3.7 arch=$ARCH
+    spack view -d true soft openblas-0.3.7 openblas@0.3.7 arch=$ARCH
+fi
+
+if [ ! -d hdf5-1.10.5 ]; then
+    echo "HDF5 not yet installed!"
+    mkdir hdf5-1.10.5
+    spack install hdf5@1.10.5 arch=$ARCH
+    spack view -d true soft hdf5-1.10.5 hdf5@1.10.5 arch=$ARCH
+fi
+
+if [ ! -d starpu-1.3.1 ]; then
+    echo "StarPU not yet installed!"
+    mkdir starpu-1.3.1
+    spack install starpu@1.3.1~fxt~poti~examples~mpi~openmp arch=$ARCH
+    spack view -d true soft starpu-1.3.1 starpu@1.3.1~fxt~poti~examples~mpi~openmp arch=$ARCH
+fi
+
+if [ ! -d netlib-lapack-3.8.0 ]; then
+    echo "lapack not yet installed!"
+    mkdir netlib-lapack-3.8.0
+    spack install netlib-lapack@3.8.0 arch=$ARCH
+    spack view -d true soft netlib-lapack-3.8.0 netlib-lapack@3.8.0 arch=$ARCH
+fi
+
+if [ ! -d libomp-6.0 ]; then
+    echo "libomp not yet installed!"
+    pip install --user lit
+    mkdir libomp-6.0
+    git clone https://github.com/llvm-mirror/openmp.git libomp-6.0/openmp
+    pushd libomp-6.0/openmp
+    git checkout release_60
+    mkdir build
+    pushd build
+    LLVM_PATHS=$(find /usr/lib -name 'llvm-[0-9]*' | sed -e 's/$/\/bin/' | paste -s -d':' -)
+    export PATH+=:$LLVM_PATHS
+    cmake -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR/libomp-6.0 -DLIBOMP_OMPT_SUPPORT=on -DLIBOMP_OMPT_OPTIONAL=on -DLIBOMP_STATS=on ..
+    make -j
+    make -j install
+    popd
+    popd
+fi
+
+if [ ! -d libkomp-master ]; then
+    echo "libkomp not yet installed!"
+    mkdir libkomp-master
+    spack install --keep-stage libkomp@master+the+affinity+numa~tracing~papi+vardep arch=$ARCH
+    spack view -d true soft libkomp-master libkomp@master+the+affinity+numa~tracing~papi+vardep arch=$ARCH
+fi
+
+if [ ! -d kstar-starpu-master ]; then
+    echo "kstar not yet installed!"
+    mkdir kstar-starpu-master
+    spack install --keep-stage kstar@master+starpu^starpu@1.3.1~fxt~poti~examples~mpi~openmp arch=$ARCH
+    spack view -d true soft kstar-starpu-master kstar@master+starpu^starpu@1.3.1~fxt~poti~examples~mpi~openmp arch=$ARCH
+fi
+
+popd
+popd
+#+end_src
+
+*** Makefile
+
+The =makefile= used in this experiment!
+
+#+begin_src makefile :tangle experiments/exp01/code/Makefile
+OBJ_DIR := bin
+OUT_DIR := build
+SRC_DIR := src
+LIB_DIR := lib
+INC_DIR := include
+
+DEBUG :=
+
+LIB_EXTRA :=
+INC_EXTRA :=
+
+#	- Compilation flags:
+#	Compiler and language version
+CC := gcc
+KSTAR := kstar --runtime starpu
+DEBUGF := $(if $(DEBUG),-g -fsanitize=address)
+CFLAGS :=\
+	-Wall \
+	-Wextra \
+	-Wpedantic \
+	-Wshadow \
+	-Wunreachable-code
+OMP := -fopenmp
+OPT := $(if $(DEBUG),-O0,-O2 -march=native)
+LIB := -L$(LIB_DIR) $(LIB_EXTRA)\
+	$(shell pkg-config lapack lapacke blas starpu-1.3 fxt poti hwloc --libs)\
+	-lm
+INC := -I$(INC_DIR) -I$(SRC_DIR) $(INC_EXTRA)\
+	$(shell pkg-config lapack lapacke blas starpu-1.3 --cflags)
+
+#	Should be defined in the command line
+LIBOMP_LIB :=
+LIBOMP_INC :=
+LIBOMP := -L$(LIBOMP_LIB) -Wl,--rpath,$(LIBOMP_LIB) -I$(LIBOMP_INC)
+
+################################################################################
+#	Files:
+
+#	- Path to all final binaries:
+TARGET := $(OUT_DIR)/block_qr_libgomp $(OUT_DIR)/block_qr_starpu $(OUT_DIR)/block_qr_libomp $(OUT_DIR)/matrix_generator $(OUT_DIR)/block_qr_kstar_starpu
+
+################################################################################
+#	Targets:
+
+.DEFAULT_GOAL = all
+
+all: $(TARGET)
+
+#
+# mutils
+#
+$(OBJ_DIR)/mutils.o: $(SRC_DIR)/mutils/mutils.c
+	$(CC) -c -o $@ $^ $(INC) $(CFLAGS)
+
+$(OBJ_DIR)/mutils_kstar.o: $(SRC_DIR)/mutils/mutils.c
+	$(KSTAR) -c -o $@ $^ $(INC) $(CFLAGS)
+
+#
+# OPENMP task based parallel blocked QR factorization
+#
+$(OBJ_DIR)/block_qr_libgomp.o: $(SRC_DIR)/block_qr_openmp.c
+	$(CC) -c -o $@ $^ $(INC) $(OMP) $(CFLAGS)
+
+$(OUT_DIR)/block_qr_libgomp: $(OBJ_DIR)/block_qr_libgomp.o $(OBJ_DIR)/mutils.o
+	$(CC) -o $@ $^ $(OMP) $(LIB)
+
+#
+# STARPU task based parallel blocked QR factorization
+#
+$(OBJ_DIR)/block_qr_starpu.o: $(SRC_DIR)/block_qr_starpu.c
+	$(CC) -c -o $@ $^ $(INC) $(CFLAGS)
+
+$(OUT_DIR)/block_qr_starpu: $(OBJ_DIR)/block_qr_starpu.o $(OBJ_DIR)/mutils.o
+	$(CC) -o $@ $^ $(INC) $(LIB)
+
+
+#
+# OpenMP with llvm runtime (libomp)
+#
+$(OBJ_DIR)/block_qr_libomp.o: $(SRC_DIR)/block_qr_openmp.c
+	$(CC) -c -o $@ $^ $(INC) $(OMP) $(LIBOMP) $(CFLAGS)
+
+$(OUT_DIR)/block_qr_libomp: $(OBJ_DIR)/block_qr_libomp.o $(OBJ_DIR)/mutils.o
+	$(CC) -o $@ $^ $(LIB) $(OMP) $(LIBOMP)
+
+#
+# Kstar with starpu runtime
+#
+$(OBJ_DIR)/block_qr_kstar_starpu.o: $(SRC_DIR)/block_qr_openmp.c
+	$(KSTAR) -c -o $@ $^ $(INC) $(OMP) $(LIBOMP) $(CFLAGS)
+
+$(OUT_DIR)/block_qr_kstar_starpu: $(OBJ_DIR)/block_qr_kstar_starpu.o $(OBJ_DIR)/mutils_kstar.o
+	$(KSTAR) -o $@ $^ $(LIB) $(OMP) $(LIBOMP)
+
+#
+# Matrix Generator
+#
+$(OUT_DIR)/matrix_generator: $(SRC_DIR)/matrix_generator.c
+	$(CC) -o $@ $^ $(CFLAGS)
+
+# misc
+
+print-%:
+	@echo $* = $($*)
+
+clean:
+	rm -f $(OBJ_DIR)/*.o $(INC_DIR)/*~ $(TARGET) $(LIB_DIR)/*.so *~ *.o
+#+end_src
+
+*** Script
+
+I'm using my script as a base because his script is, well, not pretty.
+
+#+begin_src bash :shebang "#!/bin/bash" :tangle experiments/exp01/exp.slurm
+#SBATCH --time=72:00:00
+#SBATCH --chdir=.
+#SBATCH --output=/home/users/hcpsilva/slurm_outputs/%x_%j.out
+#SBATCH --error=/home/users/hcpsilva/slurm_outputs/%x_%j.err
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=hcpsilva@inf.ufrgs.br
+
+# more robust script
+set -euo pipefail
+
+# parameters:
+# the experiment ID, defined in the lab-book
+EXP_ID=$1
+# the experiment directory
+EXP_DIR=$2
+# the path to the directory where we'll find the needed packages
+INSTALL=$3/$SLURM_JOB_PARTITION
+# local run?
+LOCAL=$4
+
+# node name
+HOST=$(hostname)
+
+# maximum element value (defined in experiment design)
+MAXVAL=100
+
+# experiment name (which is the ID and the machine and its core count)
+EXP_NAME=${EXP_ID}_${HOST}_${SLURM_CPUS_ON_NODE}
+
+# seed generated in project design
+RAND_SEED=86229
+
+# go to the scratch dir to execute our operations
+cd $SCRATCH
+
+# clean up my scratch dir
+rm -rf *
+
+# if the LOCAL argument is true, install everything locally
+# (we presume that the path is $INSTALL is local)
+[ $LOCAL = true ] && $EXP_DIR/deps.sh $INSTALL ./spack
+
+STARPU_PATH=$(readlink -f $INSTALL/starpu-1.3.1)
+LIBOMP_PATH=$(readlink -f $INSTALL/libomp-6.0)
+LAPACK_PATH=$(readlink -f $INSTALL/netlib-lapack-3.8.0)
+HDF5_PATH=$(readlink -f $INSTALL/hdf5-1.10.5)
+OPENBLAS_PATH=$(readlink -f $INSTALL/openblas-0.3.7)
+LIBKOMP_PATH=$(readlink -f $INSTALL/libkomp-master)
+KSTAR_PATH=$(readlink -f $INSTALL/kstar-starpu-master)
+
+
+PATH+=:$STARPU_PATH/bin
+PATH+=:$KSTAR_PATH/bin
+export PATH=$PATH
+
+PKG_CONFIG_PATH+=:$STARPU_PATH/lib/pkgconfig
+PKG_CONFIG_PATH+=:$LAPACK_PATH/lib/pkgconfig
+export PKG_CONFIG_PATH=$PKG_CONFIG_PATH
+
+# prepare env variables
+threads_per_core=$(lscpu | grep "per core" | awk '{print $4}')
+real_core_count=$((${SLURM_CPUS_ON_NODE} / ${threads_per_core:-1}))
+export STARPU_NCPU=$real_core_count
+export OMP_NUM_THREADS=$real_core_count
+export STARPU_FXT_TRACE=0
+export KAAPI_RECORD_TRACE=0
+export OMP_PLACES={0:$real_core_count}
+export OMP_PROC_BIND=true
+
+echo "Environment variables set up!"
+
+# prepare our directory
+mkdir $EXP_NAME
+pushd $EXP_NAME
+
+# copy the code folder
+cp -r $EXP_DIR/code code
+mkdir results
+
+pushd code
+make clean
+make all LIBOMP_LIB="$LIBOMP_PATH/lib" LIBOMP_INC="$LIBOMP_PATH/include"
+ln -s build/block_qr_libomp build/block_qr_libkomp_clang
+ln -s build/block_qr_libgomp build/block_qr_libkomp_gcc
+popd
+
+# init the results csv
+results_csv=results/${HOST}_data.csv
+echo "node,rep_id,matrix_size,block_size,runtime,compute_time,total_time" > $results_csv
+
+# execute the experiment
+while read -r id runtime matrix num_blocks; do
+    echo "-> Parameters set to: $runtime $matrix $num_blocks"
+
+    # output log file
+    log_file=results/${runtime}_${matrix}_${num_blocks}_${id}.log
+
+    # execute given runtime and log results
+
+   LD_LIBRARY_PATH_NOW=
+   LD_LIBRARY_PATH_NOW+=:$LAPACK_PATH/lib
+
+   if [[ $runtime = starpu ]] || [[ $runtime = kstar-starpu ]]; then
+       LD_LIBRARY_PATH_NOW+=:$HDF5_PATH/lib
+       LD_LIBRARY_PATH_NOW+=:$OPENBLAS_PATH/lib
+       LD_LIBRARY_PATH_NOW+=:$STARPU_PATH/lib
+   elif [[ $runtime = openmp ]]; then
+       LD_LIBRARY_PATH_NOW+=:$LIBOMP_PATH/lib
+   elif [[ $runtime = libkomp_gcc ]] || [[ $runtime = libkomp_clang ]]; then
+       LD_LIBRARY_PATH_NOW+=:$LIBKOMP_PATH/lib
+   fi
+
+   LD_LIBRARY_PATH=$LD_LIBRARY_PATH_NOW ./code/build/block_qr_$runtime \
+         $matrix \
+         $num_blocks \
+         $RAND_SEED \
+         $MAXVAL > $log_file 2>&1
+
+    # get compute and total times from output
+    ctime=$(grep -w compute_time $log_file | awk '{print $2}')
+    ttime=$(grep -w total_time $log_file | awk '{print $2}')
+
+    # add the execution data to the csv
+    echo ${HOST},${id},${matrix},${num_blocks},${runtime},${ctime},${ttime} >> $results_csv
+
+    echo
+done < $EXP_DIR/runs.plan
+
+# gather node info
+./code/scripts/node_info.sh > env.node
+
+# create the data dir if it isn't already there
+[ ! -d $EXP_DIR/data ] && mkdir $EXP_DIR/data
+
+# zip everything and commit to EXP_DIR
+tar czf $EXP_DIR/data/${EXP_NAME}_data.tar.gz *
+
+popd
+rm -rf $SCRATCH/*
+#+end_src
+
+
+* Resources
+:PROPERTIES:
+:ATTACH_DIR: resources/
+:END:
+
+Home to anything I like or think is relevant to the task at hand.
