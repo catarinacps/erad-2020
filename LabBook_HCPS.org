@@ -427,8 +427,8 @@ fi
 if [ ! -d starpu-1.3.1 ]; then
     echo "StarPU not yet installed!"
     mkdir starpu-1.3.1
-    spack install starpu@1.3.1~fxt~poti~examples~mpi~openmp arch=$ARCH
-    spack view -d true soft starpu-1.3.1 starpu@1.3.1~fxt~poti~examples~mpi~openmp arch=$ARCH
+    spack install starpu@1.3.1~fxt~poti~examples~mpi+openmp arch=$ARCH
+    spack view -d true soft starpu-1.3.1 starpu@1.3.1~fxt~poti~examples~mpi+openmp arch=$ARCH
 fi
 
 if [ ! -d netlib-lapack-3.8.0 ]; then
