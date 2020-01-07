@@ -466,8 +466,8 @@ fi
 if [ ! -d kstar-starpu-master ]; then
     echo "kstar not yet installed!"
     mkdir kstar-starpu-master
-    spack install --keep-stage kstar@master+starpu^starpu@1.3.1~fxt~poti~examples~mpi~openmp arch=$ARCH
-    spack view -d true soft kstar-starpu-master kstar@master+starpu^starpu@1.3.1~fxt~poti~examples~mpi~openmp arch=$ARCH
+    spack install --keep-stage kstar@master+starpu^starpu@1.3.1~fxt~poti~examples~mpi+openmp arch=$ARCH
+    spack view -d true soft kstar-starpu-master kstar@master+starpu^starpu@1.3.1~fxt~poti~examples~mpi+openmp arch=$ARCH
 fi
 
 popd
