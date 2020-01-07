@@ -17,7 +17,9 @@ pushd $HOME
 if [ ! -d $SPACK_DIR ]; then
     echo "spack not yet installed!"
     git clone http://gitlab+deploy-token-127235:BZMob8RJoRPZAdLtsstX@gitlab.com/viniciusvgp/customSpack.git $SPACK_DIR
-    $SPACK_DIR/install_spack.sh -symr
+    pushd $SPACK_DIR
+    ./install_spack.sh -symr
+    popd
 fi
 
 . $SPACK_DIR/src/spack/share/spack/setup-env.sh
@@ -86,8 +88,8 @@ fi
 if [ ! -d kstar-starpu-master ]; then
     echo "kstar not yet installed!"
     mkdir kstar-starpu-master
-    spack install --keep-stage kstar@master+starpu^starpu@1.3.1~fxt~poti~examples~mpi~openmp arch=$ARCH
-    spack view -d true soft kstar-starpu-master kstar@master+starpu^starpu@1.3.1~fxt~poti~examples~mpi~openmp arch=$ARCH
+    spack install --keep-stage kstar@master+starpu^starpu@1.3.1~fxt~poti~examples~mpi+openmp arch=$ARCH
+    spack view -d true soft kstar-starpu-master kstar@master+starpu^starpu@1.3.1~fxt~poti~examples~mpi+openmp arch=$ARCH
 fi
 
 popd
