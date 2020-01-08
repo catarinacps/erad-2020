@@ -24,6 +24,9 @@ fi
 
 . $SPACK_DIR/src/spack/share/spack/setup-env.sh
 
+# find available compilers for this machine
+spack compiler find
+
 # get current node info
 ARCH=$(spack arch)
 
