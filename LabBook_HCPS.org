@@ -289,7 +289,7 @@ for partition in $PARTITIONLIST; do
     if [ -z ${NODELIST+x} ]; then
         nodes=$(paste -s -d" " - <<<$ALLNODES)
     else
-        nodes=$(grep "'$(grep $partition <<<$NODELIST)'" <<<$ALLNODES | paste -s -d" " -)
+        nodes=$(grep "$NODELIST" <<<$ALLNODES | paste -s -d" " -)
     fi
 
     for execution in $nodes; do
