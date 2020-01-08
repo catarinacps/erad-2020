@@ -24,12 +24,15 @@ assignment/paper about QR Factorization analysis.
 - [[#experiments][Experiments]]
   - [[#preamble][Preamble]]
     - [[#launching-the-experiments][Launching the experiments]]
+    - [[#installing-dependencies][Installing dependencies]]
   - [[#1---overview---makespan-only][1 - Overview - makespan only]]
     - [[#design][Design]]
     - [[#dependencies][Dependencies]]
     - [[#makefile][Makefile]]
     - [[#script][Script]]
 - [[#resources][Resources]]
+  - [[#archive-1][Archive]]
+    - [[#deps-script-backup][Deps script backup]]
 
 * Journal
 :PROPERTIES:
@@ -271,7 +274,7 @@ for partition in $PARTITIONLIST; do
         echo "-N 1"
         echo "-J dependencies_${EXPERIMENT_ID}_${partition}"
         echo "-W"
-        echo "$EXP_DIR/deps.sh $INSTALL_DIR"
+        echo "$(dirname $EXP_DIR)/deps.sh $INSTALL_DIR $EXP_DIR"
         echo
     elif [ $LOCAL != true ]; then
         sbatch \
@@ -279,7 +282,7 @@ for partition in $PARTITIONLIST; do
             -N 1 \
             -J dependencies_${EXPERIMENT_ID}_${partition} \
             -W \
-            $EXP_DIR/deps.sh $INSTALL_DIR
+            $(dirname $EXP_DIR)/deps.sh $INSTALL_DIR $EXP_DIR
     fi
     echo "... and done!"
     echo
@@ -314,6 +317,97 @@ for partition in $PARTITIONLIST; do
     done
 done
 
+popd
+#+end_src
+
+*** Installing dependencies
+
+Here shall lie the automatic dependencies installer...
+
+#+begin_src bash :shebang "#!/bin/bash" :results none :tangle experiments/deps.sh
+#SBATCH --time=3:00:00
+#SBATCH --chdir=.
+#SBATCH --output=/home/users/hcpsilva/slurm_outputs/%x_%j.out
+#SBATCH --error=/home/users/hcpsilva/slurm_outputs/%x_%j.err
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=hcpsilva@inf.ufrgs.br
+
+# more robust script
+set -euo pipefail
+
+# to install spack dependencies
+function spack_install_spec {
+    SPEC=$1
+    ARCH=$2
+
+    name_version=${SPEC%%[~|+|^]*}
+    dir_name=$(echo $name_version | tr '@' '-')
+
+    # if we fall here, we have already installed the package
+    [ -d $dir_name ] && return 0
+
+    echo "${simple_name} not yet installed!"
+    mkdir $dir_name
+    spack install --keep-stage $SPEC arch=$ARCH
+    spack view -d true soft -i $dir_name $SPEC arch=$ARCH
+
+    [ ! -f installs.log ] && echo "SPECS HERE INSTALLED" > installs.log
+    echo >> installs.log
+    echo "PACKAGE:\t${name_version}" >> installs.log
+    echo "SPEC:\t${SPEC}" >> installs.log
+}
+
+INSTALL_DIR=$1/$SLURM_JOB_PARTITION
+EXP_DIR=$2
+SPACK_DIR=${3:-$HOME/spack-erad}
+
+pushd $HOME
+
+if [ ! -d $SPACK_DIR ]; then
+    echo "spack not yet installed!"
+    git clone http://gitlab+deploy-token-127235:BZMob8RJoRPZAdLtsstX@gitlab.com/viniciusvgp/customSpack.git $SPACK_DIR
+    pushd $SPACK_DIR
+    ./install_spack.sh -symr
+    popd
+fi
+
+. $SPACK_DIR/src/spack/share/spack/setup-env.sh
+
+# find available compilers for this machine
+spack compiler find
+
+# get current node info
+arch=$(spack arch)
+
+# create the install dir if there isn't one
+[ ! -d $INSTALL_DIR ] && mkdir -p $INSTALL_DIR
+
+pushd $INSTALL_DIR
+
+echo "--> INSTALLING DEPENDENCIES"
+
+while read -r method spec; do
+    echo $method $spec
+
+    case $method in
+        spack)
+            spack_install_spec $spec $arch
+            ;;
+        manual)
+            $EXP_DIR/${spec//@/-}.sh
+            ;;
+        ,*)
+            echo
+            echo "ERROR: method not supported..."
+            exit
+            ;;
+    esac
+done < $EXP_DIR/exp.deps
+
+echo
+echo "--> DONE"
+
+popd
 popd
 #+end_src
 
@@ -376,103 +470,34 @@ In this experiment we'll need the following =spack= packages:
 - libkomp
 - kstar-starpu
 
-#+begin_src bash :shebang "#!/bin/bash" :tangle experiments/exp01/deps.sh
-#SBATCH --time=3:00:00
-#SBATCH --chdir=.
-#SBATCH --output=/home/users/hcpsilva/slurm_outputs/%x_%j.out
-#SBATCH --error=/home/users/hcpsilva/slurm_outputs/%x_%j.err
-#SBATCH --mail-type=END,FAIL
-#SBATCH --mail-user=hcpsilva@inf.ufrgs.br
+#+begin_src text :exports both :tangle experiments/exp01/exp.deps
+spack openblas@0.3.7
+spack hdf5@1.10.5
+spack starpu@1.3.1~fxt~poti~examples~mpi+openmp
+spack netlib-lapack@3.8.0
+manual libomp@6.0
+spack libkomp@master+the+affinity+numa~tracing~papi+vardep
+spack kstar@master+starpu^starpu@1.3.1~fxt~poti~examples~mpi+openmp
+#+end_src
 
-# more robust script
-set -euo pipefail
+**** libomp-6.0
 
-INSTALL_DIR=$1/$SLURM_JOB_PARTITION
-SPACK_DIR=${2:-$HOME/spack-erad}
+From the [[https://github.com/llvm-mirror/openmp][LLVM stdlib]]:
 
-pushd $HOME
-
-if [ ! -d $SPACK_DIR ]; then
-    echo "spack not yet installed!"
-    git clone http://gitlab+deploy-token-127235:BZMob8RJoRPZAdLtsstX@gitlab.com/viniciusvgp/customSpack.git $SPACK_DIR
-    pushd $SPACK_DIR
-    ./install_spack.sh -symr
-    popd
-fi
-
-. $SPACK_DIR/src/spack/share/spack/setup-env.sh
-
-# find available compilers for this machine
-spack compiler find
-
-# get current node info
-ARCH=$(spack arch)
-
-# create the install dir if there isn't one
-[ ! -d $INSTALL_DIR ] && mkdir -p $INSTALL_DIR
-
-pushd $INSTALL_DIR
-
-if [ ! -d openblas-0.3.7 ]; then
-    echo "OpenBLAS not yet installed!"
-    mkdir openblas-0.3.7
-    spack install openblas@0.3.7 arch=$ARCH
-    spack view -d true soft openblas-0.3.7 openblas@0.3.7 arch=$ARCH
-fi
-
-if [ ! -d hdf5-1.10.5 ]; then
-    echo "HDF5 not yet installed!"
-    mkdir hdf5-1.10.5
-    spack install hdf5@1.10.5 arch=$ARCH
-    spack view -d true soft hdf5-1.10.5 hdf5@1.10.5 arch=$ARCH
-fi
-
-if [ ! -d starpu-1.3.1 ]; then
-    echo "StarPU not yet installed!"
-    mkdir starpu-1.3.1
-    spack install starpu@1.3.1~fxt~poti~examples~mpi+openmp arch=$ARCH
-    spack view -d true soft starpu-1.3.1 starpu@1.3.1~fxt~poti~examples~mpi+openmp arch=$ARCH
-fi
-
-if [ ! -d netlib-lapack-3.8.0 ]; then
-    echo "lapack not yet installed!"
-    mkdir netlib-lapack-3.8.0
-    spack install netlib-lapack@3.8.0 arch=$ARCH
-    spack view -d true soft netlib-lapack-3.8.0 netlib-lapack@3.8.0 arch=$ARCH
-fi
-
-if [ ! -d libomp-6.0 ]; then
-    echo "libomp not yet installed!"
-    pip install --user lit
-    mkdir libomp-6.0
-    git clone https://github.com/llvm-mirror/openmp.git libomp-6.0/openmp
-    pushd libomp-6.0/openmp
-    git checkout release_60
-    mkdir build
-    pushd build
-    LLVM_PATHS=$(find /usr/lib -name 'llvm-[0-9]*' | sed -e 's/$/\/bin/' | paste -s -d':' -)
-    export PATH+=:$LLVM_PATHS
-    cmake -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR/libomp-6.0 -DLIBOMP_OMPT_SUPPORT=on -DLIBOMP_OMPT_OPTIONAL=on -DLIBOMP_STATS=on ..
-    make -j
-    make -j install
-    popd
-    popd
-fi
-
-if [ ! -d libkomp-master ]; then
-    echo "libkomp not yet installed!"
-    mkdir libkomp-master
-    spack install --keep-stage libkomp@master+the+affinity+numa~tracing~papi+vardep arch=$ARCH
-    spack view -d true soft libkomp-master libkomp@master+the+affinity+numa~tracing~papi+vardep arch=$ARCH
-fi
-
-if [ ! -d kstar-starpu-master ]; then
-    echo "kstar not yet installed!"
-    mkdir kstar-starpu-master
-    spack install --keep-stage kstar@master+starpu^starpu@1.3.1~fxt~poti~examples~mpi+openmp arch=$ARCH
-    spack view -d true soft kstar-starpu-master kstar@master+starpu^starpu@1.3.1~fxt~poti~examples~mpi+openmp arch=$ARCH
-fi
-
+#+begin_src bash :shebang "#!/bin/bash" :exports both :results none :tangle experiments/exp01/libomp-6.0.sh
+echo "libomp not yet installed!"
+pip install --user lit
+mkdir libomp-6.0
+git clone https://github.com/llvm-mirror/openmp.git libomp-6.0/openmp
+pushd libomp-6.0/openmp
+git checkout release_60
+mkdir build
+pushd build
+LLVM_PATHS=$(find /usr/lib -name 'llvm-[0-9]*' | sed -e 's/$/\/bin/' | paste -s -d':' -)
+export PATH+=:$LLVM_PATHS
+cmake -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR/libomp-6.0 -DLIBOMP_OMPT_SUPPORT=on -DLIBOMP_OMPT_OPTIONAL=on -DLIBOMP_STATS=on ..
+make -j
+make -j install
 popd
 popd
 #+end_src
@@ -742,3 +767,110 @@ rm -rf $SCRATCH/*
 :END:
 
 Home to anything I like or think is relevant to the task at hand.
+
+** Archive
+
+Home to old stuff
+
+*** Deps script backup
+
+#+begin_src bash :shebang "#!/bin/bash" :tangle experiments/exp01/deps.sh
+#SBATCH --time=3:00:00
+#SBATCH --chdir=.
+#SBATCH --output=/home/users/hcpsilva/slurm_outputs/%x_%j.out
+#SBATCH --error=/home/users/hcpsilva/slurm_outputs/%x_%j.err
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=hcpsilva@inf.ufrgs.br
+
+# more robust script
+set -euo pipefail
+
+INSTALL_DIR=$1/$SLURM_JOB_PARTITION
+SPACK_DIR=${2:-$HOME/spack-erad}
+
+pushd $HOME
+
+if [ ! -d $SPACK_DIR ]; then
+    echo "spack not yet installed!"
+    git clone http://gitlab+deploy-token-127235:BZMob8RJoRPZAdLtsstX@gitlab.com/viniciusvgp/customSpack.git $SPACK_DIR
+    pushd $SPACK_DIR
+    ./install_spack.sh -symr
+    popd
+fi
+
+. $SPACK_DIR/src/spack/share/spack/setup-env.sh
+
+# find available compilers for this machine
+spack compiler find
+
+# get current node info
+ARCH=$(spack arch)
+
+# create the install dir if there isn't one
+[ ! -d $INSTALL_DIR ] && mkdir -p $INSTALL_DIR
+
+pushd $INSTALL_DIR
+
+if [ ! -d openblas-0.3.7 ]; then
+    echo "OpenBLAS not yet installed!"
+    mkdir openblas-0.3.7
+    spack install openblas@0.3.7 arch=$ARCH
+    spack view -d true soft openblas-0.3.7 openblas@0.3.7 arch=$ARCH
+fi
+
+if [ ! -d hdf5-1.10.5 ]; then
+    echo "HDF5 not yet installed!"
+    mkdir hdf5-1.10.5
+    spack install hdf5@1.10.5 arch=$ARCH
+    spack view -d true soft hdf5-1.10.5 hdf5@1.10.5 arch=$ARCH
+fi
+
+if [ ! -d starpu-1.3.1 ]; then
+    echo "StarPU not yet installed!"
+    mkdir starpu-1.3.1
+    spack install starpu@1.3.1~fxt~poti~examples~mpi+openmp arch=$ARCH
+    spack view -d true soft starpu-1.3.1 starpu@1.3.1~fxt~poti~examples~mpi+openmp arch=$ARCH
+fi
+
+if [ ! -d netlib-lapack-3.8.0 ]; then
+    echo "lapack not yet installed!"
+    mkdir netlib-lapack-3.8.0
+    spack install netlib-lapack@3.8.0 arch=$ARCH
+    spack view -d true soft netlib-lapack-3.8.0 netlib-lapack@3.8.0 arch=$ARCH
+fi
+
+if [ ! -d libomp-6.0 ]; then
+    echo "libomp not yet installed!"
+    pip install --user lit
+    mkdir libomp-6.0
+    git clone https://github.com/llvm-mirror/openmp.git libomp-6.0/openmp
+    pushd libomp-6.0/openmp
+    git checkout release_60
+    mkdir build
+    pushd build
+    LLVM_PATHS=$(find /usr/lib -name 'llvm-[0-9]*' | sed -e 's/$/\/bin/' | paste -s -d':' -)
+    export PATH+=:$LLVM_PATHS
+    cmake -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR/libomp-6.0 -DLIBOMP_OMPT_SUPPORT=on -DLIBOMP_OMPT_OPTIONAL=on -DLIBOMP_STATS=on ..
+    make -j
+    make -j install
+    popd
+    popd
+fi
+
+if [ ! -d libkomp-master ]; then
+    echo "libkomp not yet installed!"
+    mkdir libkomp-master
+    spack install --keep-stage libkomp@master+the+affinity+numa~tracing~papi+vardep arch=$ARCH
+    spack view -d true soft libkomp-master libkomp@master+the+affinity+numa~tracing~papi+vardep arch=$ARCH
+fi
+
+if [ ! -d kstar-starpu-master ]; then
+    echo "kstar not yet installed!"
+    mkdir kstar-starpu-master
+    spack install --keep-stage kstar@master+starpu^starpu@1.3.1~fxt~poti~examples~mpi+openmp arch=$ARCH
+    spack view -d true soft kstar-starpu-master kstar@master+starpu^starpu@1.3.1~fxt~poti~examples~mpi+openmp arch=$ARCH
+fi
+
+popd
+popd
+#+end_src

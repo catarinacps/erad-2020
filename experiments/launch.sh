@@ -135,7 +135,7 @@ for partition in $PARTITIONLIST; do
         echo "-N 1"
         echo "-J dependencies_${EXPERIMENT_ID}_${partition}"
         echo "-W"
-        echo "$EXP_DIR/deps.sh $INSTALL_DIR"
+        echo "$(dirname $EXP_DIR)/deps.sh $INSTALL_DIR $EXP_DIR"
         echo
     elif [ $LOCAL != true ]; then
         sbatch \
@@ -143,7 +143,7 @@ for partition in $PARTITIONLIST; do
             -N 1 \
             -J dependencies_${EXPERIMENT_ID}_${partition} \
             -W \
-            $EXP_DIR/deps.sh $INSTALL_DIR
+            $(dirname $EXP_DIR)/deps.sh $INSTALL_DIR $EXP_DIR
     fi
     echo "... and done!"
     echo
