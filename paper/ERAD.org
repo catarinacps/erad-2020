@@ -77,9 +77,9 @@
   - Figura mostrando o funcionamento (com o texto a explicando)
 #+end_comment
 
-** Manipulação de dados com ferramentas modernas de /data science/
-
 ** Projeto Experimental
+
+** Manipulação de dados com ferramentas modernas de /data science/
 
 * Resultados Experimentais e Observações
 
