@@ -66,6 +66,7 @@ export STARPU_FXT_TRACE=0
 export KAAPI_RECORD_TRACE=0
 export OMP_PLACES={0:$real_core_count}
 export OMP_PROC_BIND=true
+export KMP_STACKSIZE=$((1024*1024*34))
 
 echo "Environment variables set up!"
 
@@ -97,29 +98,25 @@ while read -r id runtime matrix num_blocks; do
 
     # execute given runtime and log results
 
-    LD_LIBRARY_PATH_NOW=
-    LD_LIBRARY_PATH_NOW+=$LAPACK_PATH/lib
+    LD_LIBRARY_PATH=$LAPACK_PATH/lib
 
     if [[ $runtime = starpu ]] || [[ $runtime = kstar_starpu ]]; then
-        LD_LIBRARY_PATH_NOW+=:$HDF5_PATH/lib
-        LD_LIBRARY_PATH_NOW+=:$OPENBLAS_PATH/lib
-        LD_LIBRARY_PATH_NOW+=:$STARPU_PATH/lib
+        LD_LIBRARY_PATH+=:$HDF5_PATH/lib
+        LD_LIBRARY_PATH+=:$OPENBLAS_PATH/lib
+        LD_LIBRARY_PATH+=:$STARPU_PATH/lib
     elif [[ $runtime = openmp ]]; then
-        LD_LIBRARY_PATH_NOW+=:$LIBOMP_PATH/lib
+        LD_LIBRARY_PATH+=:$LIBOMP_PATH/lib
     elif [[ $runtime = libkomp_gcc ]] || [[ $runtime = libkomp_clang ]]; then
-        LD_LIBRARY_PATH_NOW+=:$LIBKOMP_PATH/lib
+        LD_LIBRARY_PATH+=:$LIBKOMP_PATH/lib
     fi
 
-    ret=1
-    while [ $ret != 0 ]; do
-        echo "execution"
-        LD_LIBRARY_PATH=$LD_LIBRARY_PATH_NOW ./code/build/block_qr_$runtime \
-                       $matrix \
-                       $num_blocks \
-                       $RAND_SEED \
-                       $MAXVAL > $log_file 2>&1
-        ret="$?"
-    done
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+
+    ./code/build/block_qr_$runtime \
+                   $matrix \
+                   $num_blocks \
+                   $RAND_SEED \
+                   $MAXVAL > $log_file 2>&1
 
     # get compute and total times from output
     ctime=$(grep -w compute_time $log_file | awk '{print $2}')
