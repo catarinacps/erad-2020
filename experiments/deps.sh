@@ -68,7 +68,7 @@ while read -r method spec; do
             spack_install_spec $spec $arch
             ;;
         manual)
-            $EXP_DIR/${spec//@/-}.sh
+            $EXP_DIR/${spec//@/-}.sh $INSTALL_DIR
             ;;
         *)
             echo
