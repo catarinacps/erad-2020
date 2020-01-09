@@ -57,6 +57,9 @@ own topic in my lab-book.
 
 As its kinda time-critical right now.
 
+***** TODO Split the experiment design
+- State "TODO"       from              [2020-01-09 qui 17:12]
+
 *** Secondary items
 
 Empty! :)
@@ -1321,7 +1324,6 @@ done
 
 wait
 #+end_src
-
 
 * Resources
 :PROPERTIES:
