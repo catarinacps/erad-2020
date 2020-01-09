@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --time=72:00:00
+#SBATCH --time=24:00:00
 #SBATCH --chdir=.
 #SBATCH --output=/home/users/hcpsilva/slurm_outputs/%x_%j.out
 #SBATCH --error=/home/users/hcpsilva/slurm_outputs/%x_%j.err
