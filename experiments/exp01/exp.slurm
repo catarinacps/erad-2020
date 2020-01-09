@@ -47,7 +47,7 @@ LAPACK_PATH=$(readlink -f $INSTALL/netlib-lapack-3.8.0)
 HDF5_PATH=$(readlink -f $INSTALL/hdf5-1.10.5)
 OPENBLAS_PATH=$(readlink -f $INSTALL/openblas-0.3.7)
 LIBKOMP_PATH=$(readlink -f $INSTALL/libkomp-master)
-KSTAR_PATH=$(readlink -f $INSTALL/kstar-starpu-master)
+KSTAR_PATH=$(readlink -f $INSTALL/kstar-master)
 
 PATH+=:$STARPU_PATH/bin
 PATH+=:$KSTAR_PATH/bin
