@@ -7,7 +7,7 @@
 #SBATCH --mail-user=hcpsilva@inf.ufrgs.br
 
 # more robust script
-set -euo pipefail
+# set -euo pipefail
 
 # parameters:
 # the experiment ID, defined in the lab-book
@@ -97,24 +97,28 @@ while read -r id runtime matrix num_blocks; do
 
     # execute given runtime and log results
 
-   LD_LIBRARY_PATH_NOW=
-   LD_LIBRARY_PATH_NOW+=$LAPACK_PATH/lib
+    LD_LIBRARY_PATH_NOW=
+    LD_LIBRARY_PATH_NOW+=$LAPACK_PATH/lib
 
-   if [[ $runtime = starpu ]] || [[ $runtime = kstar_starpu ]]; then
-       LD_LIBRARY_PATH_NOW+=:$HDF5_PATH/lib
-       LD_LIBRARY_PATH_NOW+=:$OPENBLAS_PATH/lib
-       LD_LIBRARY_PATH_NOW+=:$STARPU_PATH/lib
-   elif [[ $runtime = openmp ]]; then
-       LD_LIBRARY_PATH_NOW+=:$LIBOMP_PATH/lib
-   elif [[ $runtime = libkomp_gcc ]] || [[ $runtime = libkomp_clang ]]; then
-       LD_LIBRARY_PATH_NOW+=:$LIBKOMP_PATH/lib
-   fi
+    if [[ $runtime = starpu ]] || [[ $runtime = kstar_starpu ]]; then
+        LD_LIBRARY_PATH_NOW+=:$HDF5_PATH/lib
+        LD_LIBRARY_PATH_NOW+=:$OPENBLAS_PATH/lib
+        LD_LIBRARY_PATH_NOW+=:$STARPU_PATH/lib
+    elif [[ $runtime = openmp ]]; then
+        LD_LIBRARY_PATH_NOW+=:$LIBOMP_PATH/lib
+    elif [[ $runtime = libkomp_gcc ]] || [[ $runtime = libkomp_clang ]]; then
+        LD_LIBRARY_PATH_NOW+=:$LIBKOMP_PATH/lib
+    fi
 
-   LD_LIBRARY_PATH=$LD_LIBRARY_PATH_NOW ./code/build/block_qr_$runtime \
-         $matrix \
-         $num_blocks \
-         $RAND_SEED \
-         $MAXVAL > $log_file 2>&1
+    ret=1
+    while [ $ret != 0 ]; do
+        LD_LIBRARY_PATH=$LD_LIBRARY_PATH_NOW ./code/build/block_qr_$runtime \
+                       $matrix \
+                       $num_blocks \
+                       $RAND_SEED \
+                       $MAXVAL > $log_file 2>&1
+        ret="$?"
+    done
 
     # get compute and total times from output
     ctime=$(grep -w compute_time $log_file | awk '{print $2}')
