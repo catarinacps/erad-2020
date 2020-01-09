@@ -54,6 +54,9 @@ all: $(TARGET_LIB) $(TARGET_EXE)
 $(OBJ_DIR)/mutils.o: $(SRC_DIR)/mutils/mutils.c
 	$(CC) -c -o $@ $^ $(INC) $(CFLAGS)
 
+$(OBJ_DIR)/mutils_kstar.o: $(SRC_DIR)/mutils/mutils.c
+	$(KSTAR) -c -o $@ $^ $(INC) $(CFLAGS)
+
 #
 # SCOREP - OPENMP task based parallel blocked QR factorization
 #
