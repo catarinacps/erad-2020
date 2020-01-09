@@ -748,6 +748,7 @@ while read -r id runtime matrix num_blocks; do
 
     ret=1
     while [ $ret != 0 ]; do
+        echo "execution"
         LD_LIBRARY_PATH=$LD_LIBRARY_PATH_NOW ./code/build/block_qr_$runtime \
                        $matrix \
                        $num_blocks \
