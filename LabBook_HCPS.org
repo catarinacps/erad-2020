@@ -813,7 +813,7 @@ suppressMessages(library(DoE.base))
 
 matrix = c(1024, 2048, 4096, 8192, 16384, 32768)
 nb = c(32, 64, 128, 256, 512)
-method = c("starpu", "ompt", "scorep")
+method = c("starpu", "ompt", "scorep", "libkomp_gcc", "libkomp_clang", "kstar_starpu")
 
 fac.design(
   nfactors=3,
@@ -1156,6 +1156,12 @@ while read -r runtime matrix num_blocks; do
             ;;
         ompt)
             mv events.out $LIBOMP_TRACE_DIR/${run_id}.trace
+            ;;
+        libkomp_gcc|libkomp_clang)
+            echo
+            ;;
+        kstar_starpu)
+            echo
             ;;
     esac
 

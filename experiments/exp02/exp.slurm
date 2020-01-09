@@ -153,6 +153,12 @@ while read -r runtime matrix num_blocks; do
         ompt)
             mv events.out $LIBOMP_TRACE_DIR/${run_id}.trace
             ;;
+        libkomp_gcc|libkomp_clang)
+            echo
+            ;;
+        kstar_starpu)
+            echo
+            ;;
     esac
 
     # add the execution data to the csv
