@@ -1,0 +1,15 @@
+scorep 8192 512
+ompt 8192 256
+ompt 8192 128
+starpu 8192 64
+scorep 8192 256
+scorep 8192 64
+starpu 8192 256
+scorep 8192 32
+starpu 8192 32
+starpu 8192 512
+ompt 8192 32
+ompt 8192 512
+scorep 8192 128
+starpu 8192 128
+ompt 8192 64

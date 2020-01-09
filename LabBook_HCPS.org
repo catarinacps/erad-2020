@@ -30,6 +30,12 @@ assignment/paper about QR Factorization analysis.
     - [[#dependencies][Dependencies]]
     - [[#makefile][Makefile]]
     - [[#script][Script]]
+  - [[#2---tracing][2 - Tracing]]
+    - [[#design-1][Design]]
+    - [[#dependencies-1][Dependencies]]
+    - [[#makefile-1][Makefile]]
+    - [[#script-1][Script]]
+    - [[#post-processing][Post-processing]]
 - [[#resources][Resources]]
   - [[#archive-1][Archive]]
     - [[#deps-script-backup][Deps script backup]]
@@ -411,7 +417,9 @@ popd
 popd
 #+end_src
 
-** 1 - Overview - makespan only                                      :EXP01:
+** WAITING 1 - Overview - makespan only                              :EXP01:
+- State "WAITING"    from "STARTED"    [2020-01-09 qui 15:22]
+- State "STARTED"    from              [2020-01-09 qui 15:22]
 
 Only a makespan analysis of all different runtime options, no tracing involved
 
@@ -776,6 +784,534 @@ tar czf $EXP_DIR/data/${EXP_NAME}_data.tar.gz *
 popd
 rm -rf $SCRATCH/*
 #+end_src
+
+** STARTED 2 - Tracing
+- State "STARTED"    from              [2020-01-09 qui 15:22]
+
+Following the idea behind the third experiment, this experiment is a reduced
+version of experiment 02! I'll use the same matrix size as the third experiment,
+=8192=.
+
+*** Design
+
+Again we are going with an exhaustive design until second notice.
+
+The random seed will be:
+
+#+begin_src R :session :results value :exports results
+floor(runif(1,1,99999))
+#+end_src
+
+#+RESULTS:
+: 15195
+
+And the design:
+
+#+begin_src R :session :results none
+suppressMessages(library(tidyverse))
+suppressMessages(library(DoE.base))
+
+matrix = c(1024, 2048, 4096, 8192, 16384, 32768)
+nb = c(32, 64, 128, 256, 512)
+method = c("starpu", "ompt", "scorep")
+
+fac.design(
+  nfactors=3,
+  replications=1,
+  repeat.only=FALSE,
+  blocks=1,
+  randomize=TRUE,
+  seed=15195,
+  factor.names=list(
+    matrix_size=matrix,
+    block_size=nb,
+    runtime=method)) %>%
+  as_tibble %>%
+  filter(matrix_size == 8192) %>%
+  transmute(runtime, matrix_size, block_size) %>%
+  write_delim("experiments/exp02/runs.plan", delim=" ", col_names=FALSE)
+
+# the space delimited file is to help with the posterior parsing in the shell
+# script
+#+end_src
+
+*** Dependencies
+
+In this experiment we'll need the following =spack= packages:
+
+- starpu-1.3
+- llvm
+- netlib-lapack
+- scorep
+
+#+begin_src bash :tangle experiments/exp02/exp.deps
+spack openblas@0.3.7
+spack hdf5@1.10.5
+spack starpu@1.3.1+fxt+poti~examples~mpi+openmp
+spack netlib-lapack@3.8.0
+manual libomp@6.0
+spack libkomp@master+the+affinity+numa+tracing+papi+vardep
+spack kstar@master+starpu^starpu@1.3.1+fxt+poti~examples~mpi+openmp
+#+end_src
+
+**** libomp-6.0
+
+From the [[https://github.com/llvm-mirror/openmp][LLVM stdlib]]:
+
+#+begin_src bash :shebang "#!/bin/bash" :exports both :results none :tangle experiments/exp01/libomp-6.0.sh
+set -euo pipefail
+
+INSTALL_DIR=$1
+LIBOMP_DIR=$INSTALL_DIR/libomp-6.0
+
+[ -d $LIBOMP_DIR ] && exit
+
+echo "libomp not yet installed!"
+pip install --user lit
+mkdir $LIBOMP_DIR
+git clone https://github.com/llvm-mirror/openmp.git $LIBOMP_DIR/openmp
+pushd $LIBOMP_DIR/openmp
+git checkout release_60
+mkdir build
+pushd build
+LLVM_PATHS=$(find /usr/lib -name 'llvm-[0-9]*' | sed -e 's/$/\/bin/' | paste -s -d':' -)
+export PATH+=:$LLVM_PATHS
+cmake \
+    -DCMAKE_C_COMPILER=clang \
+    -DCMAKE_CXX_COMPILER=clang++ \
+    -DCMAKE_INSTALL_PREFIX=$LIBOMP_DIR \
+    -DLIBOMP_OMPT_SUPPORT=on \
+    -DLIBOMP_OMPT_OPTIONAL=on \
+    -DLIBOMP_STATS=on \
+    ..
+make -j
+make -j install
+popd
+popd
+#+end_src
+
+*** Makefile
+
+The =makefile= used in this experiment!
+
+#+begin_src makefile :tangle experiments/exp02/code/Makefile
+OBJ_DIR := bin
+OUT_DIR := build
+SRC_DIR := src
+LIB_DIR := lib
+INC_DIR := include
+
+DEBUG :=
+
+#	- Compilation flags:
+#	Compiler and language version
+CC := gcc
+PRELINK := scorep
+DEBUGF := $(if $(DEBUG),-g -fsanitize=address)
+CFLAGS :=\
+	-Wall \
+	-Wextra \
+	-Wpedantic \
+	-Wshadow \
+	-Wunreachable-code
+OMP := -fopenmp
+OPT := $(if $(DEBUG),-O0,-O2 -march=native)
+LIB := -L$(LIB_DIR) \
+	$(shell pkg-config lapack lapacke blas starpu-1.3 fxt poti hwloc --libs)\
+	-lm
+INC := -I$(INC_DIR) -I$(SRC_DIR) \
+	$(shell pkg-config lapack lapacke blas starpu-1.3 --cflags)
+
+# LIBOMP := -L$(LIBOMP_LIB) -Wl,--rpath,$(LIBOMP_LIB) -I$(LIBOMP_INC)
+
+#	Should be defined in the command line
+LIBOMP_LIB :=
+LIBOMP_INC :=
+LIBOMP := -L$(LIBOMP_LIB) -Wl,--rpath,$(LIBOMP_LIB) -I$(LIBOMP_INC)
+
+################################################################################
+#	Files:
+
+# 	- List of targets
+TARGET_EXE := $(OUT_DIR)/block_qr_scorep $(OUT_DIR)/block_qr_starpu $(OUT_DIR)/block_qr_ompt $(OUT_DIR)/matrix_generator $(OUT_DIR)/block_qr_kstar_starpu
+
+#	- Path to all final libraries:
+TARGET_LIB := $(patsubst %, $(LIB_DIR)/lib%.so, $(shell basename $(shell find $(LIB_DIR)/* -maxdepth 0 -type d)))
+
+################################################################################
+#	Targets:
+
+.DEFAULT_GOAL = all
+
+all: $(TARGET_LIB) $(TARGET_EXE)
+
+#
+# mutils
+#
+$(OBJ_DIR)/mutils.o: $(SRC_DIR)/mutils/mutils.c
+	$(CC) -c -o $@ $^ $(INC) $(CFLAGS)
+
+#
+# SCOREP - OPENMP task based parallel blocked QR factorization
+#
+$(OUT_DIR)/block_qr_scorep: $(SRC_DIR)/block_qr_openmp.c $(OBJ_DIR)/mutils.o
+	$(PRELINK) $(CC) -o $@ $^ $(INC) $(OMP) $(LIB) $(CFLAGS)
+
+#
+# STARPU task based parallel blocked QR factorization
+#
+$(OUT_DIR)/block_qr_starpu: $(SRC_DIR)/block_qr_starpu.c $(OBJ_DIR)/mutils.o
+	$(CC) -o $@ $^ $(INC) $(LIB) $(CFLAGS)
+
+#
+# Lib for getting OMPT traces
+#
+$(LIB_DIR)/libinit.so: $(LIB_DIR)/init/initialization.c $(LIB_DIR)/init/initialization.h
+	$(CC) $^ -o $@ -shared -fPIC $(CFLAGS) $(LIBOMP) $(OMP)
+
+$(OUT_DIR)/block_qr_ompt: $(SRC_DIR)/block_qr_ompt.c $(OBJ_DIR)/mutils.o
+	$(CC) -o $@ $^ $(INC) $(LIB) $(CFLAGS) $(OMP) $(LIBOMP) -DDYN_TOOL -linit
+
+#
+# Kstar with starpu runtime
+#
+$(OBJ_DIR)/block_qr_kstar_starpu.o: $(SRC_DIR)/block_qr_openmp.c
+	$(KSTAR) -c -o $@ $^ $(INC) $(OMP) $(LIBOMP) $(CFLAGS)
+
+$(OUT_DIR)/block_qr_kstar_starpu: $(OBJ_DIR)/block_qr_kstar_starpu.o $(OBJ_DIR)/mutils_kstar.o
+	$(KSTAR) -o $@ $^ $(LIB) $(OMP) $(LIBOMP)
+
+#
+# Matrix Generator
+#
+$(OUT_DIR)/matrix_generator: $(SRC_DIR)/matrix_generator.c
+	$(CC) -o $@ $^ $(CFLAGS)
+
+print-%:
+	@echo "$* == $($*)"
+
+clean:
+	rm -f $(OBJ_DIR)/*.o $(INC_DIR)/*~ $(OUT_DIR)/* $(TARGET_EXE) $(LIB_DIR)/*.so *~ *.o
+#+end_src
+
+*** Script
+
+It's going to be based off the last script...
+
+#+begin_src bash :shebang "#!/bin/bash" :tangle experiments/exp02/exp.slurm
+#SBATCH --time=72:00:00
+#SBATCH --chdir=.
+#SBATCH --output=/home/users/hcpsilva/slurm_outputs/%x_%j.out
+#SBATCH --error=/home/users/hcpsilva/slurm_outputs/%x_%j.err
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=hcpsilva@inf.ufrgs.br
+
+# more robust script
+set -euo pipefail
+
+# parameters:
+# the experiment ID, defined in the lab-book
+EXP_ID=$1
+# the experiment directory
+EXP_DIR=$2
+# the path to the directory where we'll find the needed packages
+INSTALL=$3/$SLURM_JOB_PARTITION
+# local run?
+LOCAL=$4
+
+# node name
+HOST=$(hostname)
+
+# maximum element value (defined in experiment design)
+MAXVAL=100
+
+# experiment name (which is the ID and the machine and its core count)
+EXP_NAME=${EXP_ID}_${HOST}_${SLURM_CPUS_ON_NODE}
+
+# seed generated in project design
+RAND_SEED=15195
+
+# go to the scratch dir to execute our operations
+cd $SCRATCH
+
+# clean up my scratch dir
+rm -rf *
+
+# if the LOCAL argument is true, install everything locally
+# (we presume that the path is $INSTALL is local)
+[ $LOCAL = true ] && $EXP_DIR/deps.sh $INSTALL ./spack
+
+STARPU_PATH=$(readlink -f $INSTALL/starpu-1.3.1)
+LIBOMP_PATH=$(readlink -f $INSTALL/libomp-6.0)
+LAPACK_PATH=$(readlink -f $INSTALL/netlib-lapack-3.8.0)
+SCOREP_PATH=$(readlink -f $INSTALL/scorep-6.0)
+HDF5_PATH=$(readlink -f $INSTALL/hdf5-1.10.5)
+OPENBLAS_PATH=$(readlink -f $INSTALL/openblas-0.3.7)
+LIBKOMP_PATH=$(readlink -f $INSTALL/libkomp-master)
+KSTAR_PATH=$(readlink -f $INSTALL/kstar-master)
+
+PATH+=:$STARPU_PATH/bin
+PATH+=:$SCOREP_PATH/bin
+export PATH=$PATH
+
+PKG_CONFIG_PATH+=:$STARPU_PATH/lib/pkgconfig
+PKG_CONFIG_PATH+=:$LAPACK_PATH/lib/pkgconfig
+export PKG_CONFIG_PATH=$PKG_CONFIG_PATH
+
+# prepare env variables
+threads_per_core=$(lscpu | grep "per core" | awk '{print $4}')
+real_core_count=$((${SLURM_CPUS_ON_NODE} / ${threads_per_core:-1}))
+export STARPU_NCPU=$real_core_count
+export OMP_NUM_THREADS=$real_core_count
+export OMP_PLACES={0:$real_core_count}
+export OMP_PROC_BIND=true
+
+export SCOREP_ENABLE_PROFILING=true
+export SCOREP_ENABLE_TRACING=true
+export SCOREP_VERBOSE=true
+export SCOREP_TIMER=gettimeofday
+# why 8G?
+export SCOREP_TOTAL_MEMORY=8G
+
+echo "Environment variables set up!"
+
+# prepare our directory
+mkdir $EXP_NAME
+pushd $EXP_NAME
+
+# copy the code folder
+cp -r $EXP_DIR/code code
+mkdir results
+
+mkdir results/libgomp
+mkdir results/starpu
+mkdir results/libomp
+
+LIBGOMP_TRACE_DIR=$(readlink -f results)/libgomp
+STARPU_TRACE_DIR=$(readlink -f results)/starpu
+LIBOMP_TRACE_DIR=$(readlink -f results)/libomp
+
+export STARPU_FXT_TRACE=1
+
+export SCOREP_EXPERIMENT_DIRECTORY=$LIBGOMP_TRACE_DIR
+
+pushd code
+make clean
+make all LIBOMP_LIB="$LIBOMP_PATH/lib" LIBOMP_INC="$LIBOMP_PATH/include"
+ln -s build/block_qr_libomp build/block_qr_libkomp_clang
+ln -s build/block_qr_libgomp build/block_qr_libkomp_gcc
+popd
+
+# init the results csv
+results_csv=results/${HOST}_data.csv
+echo "node,matrix_size,block_size,runtime,compute_time,total_time" > $results_csv
+
+# execute the experiment
+while read -r runtime matrix num_blocks; do
+    echo "-> Parameters set to: $runtime $matrix $num_blocks"
+    run_id=${runtime}_${matrix}_${num_blocks}
+
+    # output log file
+    log_file=results/${run_id}.log
+
+    LD_LIBRARY_PATH=$(readlink -f code/lib):$LAPACK_PATH/lib
+
+    if [[ $runtime = starpu ]] || [[ $runtime = kstar_starpu ]]; then
+        LD_LIBRARY_PATH+=:$HDF5_PATH/lib
+        LD_LIBRARY_PATH+=:$OPENBLAS_PATH/lib
+        LD_LIBRARY_PATH+=:$STARPU_PATH/lib
+    elif [[ $runtime = openmp ]]; then
+        LD_LIBRARY_PATH+=:$LIBOMP_PATH/lib
+    elif [[ $runtime = libkomp_gcc ]] || [[ $runtime = libkomp_clang ]]; then
+        LD_LIBRARY_PATH+=:$LIBKOMP_PATH/lib
+    fi
+
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+
+    # execute given runtime and log results
+    ./code/build/block_qr_$runtime \
+         $matrix \
+         $num_blocks \
+         $RAND_SEED \
+         $MAXVAL > $log_file 2>&1
+
+    # get compute and total times from output
+    ctime=$(grep -w compute_time $log_file | awk '{print $2}')
+    ttime=$(grep -w total_time $log_file | awk '{print $2}')
+
+    case $runtime in
+        starpu)
+            mv /tmp/prof_file_${USER}_0 $STARPU_TRACE_DIR/${run_id}.trace
+            ;;
+        scorep)
+            pid=0
+            for file in $(find . -maxdepth 1 -name 'scorep-prof*'); do
+                mv $file $LIBGOMP_TRACE_DIR/${run_id}_${pid}.trace
+                pid=$((pid+1))
+            done
+            ;;
+        ompt)
+            mv events.out $LIBOMP_TRACE_DIR/${run_id}.trace
+            ;;
+    esac
+
+    # add the execution data to the csv
+    echo ${HOST},${matrix},${num_blocks},${runtime},${ctime},${ttime} >> $results_csv
+
+    echo
+done < $EXP_DIR/runs.plan
+
+# gather node info
+./code/scripts/node_info.sh > env.node
+
+# create the data dir if it isn't already there
+[ ! -d $EXP_DIR/data ] && mkdir $EXP_DIR/data
+
+# zip everything and commit to EXP_DIR
+tar czf $EXP_DIR/data/${EXP_NAME}_data.tar.gz *
+
+popd
+rm -rf $SCRATCH/*
+#+end_src
+
+*** Post-processing
+
+Now we gotta do some post-processing in order to manipulate all collected data.
+
+#+begin_src bash :exports both :results output
+set -euo pipefail
+
+DATA_DIR=experiments/exp02/data
+
+for tar_file in $DATA_DIR/*.tar.gz; do
+    echo "Extracting ${tar_file}..."
+    mkdir ${tar_file%.tar.gz}
+    tar xzf $tar_file -C ${tar_file%.tar.gz}
+done
+
+echo "Done extracting the files!"
+#+end_src
+
+#+RESULTS:
+: Extracting experiments/exp04/data/exp04_cei1_48_data.tar.gz...
+: Extracting experiments/exp04/data/exp04_cei2_48_data.tar.gz...
+: Extracting experiments/exp04/data/exp04_cei3_48_data.tar.gz...
+: Extracting experiments/exp04/data/exp04_cei4_48_data.tar.gz...
+: Extracting experiments/exp04/data/exp04_cei5_48_data.tar.gz...
+: Extracting experiments/exp04/data/exp04_cei6_48_data.tar.gz...
+: Extracting experiments/exp04/data/exp04_cei7_48_data.tar.gz...
+: Extracting experiments/exp04/data/exp04_cei8_48_data.tar.gz...
+: Done extracting the files!
+
+With all files extracted, lets collect the traces and transform them into
+CSVs...
+
+**** libomp -> csv
+
+A simple R function using =tidyr= will work here:
+
+#+begin_src R :session :results output :exports both
+options(crayon.enabled = FALSE)
+supressMessages(library(tidyverse))
+supressMessages(library(functional))
+
+libomp_csv <- function(trace_file, out_file) {
+  trace_file %>%
+    read_delim(delim = " ", col_names = FALSE, col_types = cols()) %>%
+    rename(thread = X1,
+           task = X2,
+           callback = X3,
+           operation = X4,
+           time = X5) %>%
+    write_csv(out_file)
+}
+
+data_dir <- "experiments/exp04/data"
+
+data_dir %>%
+  list.files(pattern = glob2rx("ompt*.trace"),
+             recursive = TRUE, full.names = TRUE) %>%
+  mapply(., FUN = libomp_csv, lapply(paste, ., ".csv", sep = ""))
+#+end_src
+
+**** libgomp -> csv
+
+Here we'll need an extra script to do the conversion, called
+=otf2ompprint2paje.pl=:
+
+#+begin_src bash :exports both :results output
+# attention!
+# you need both scorep and pajeng installed in order to run this command
+# also, be sure that both are in your path
+
+cd experiments/exp04/data
+
+for trace_file in $(find . -name 'scorep*.trace'); do
+    ./scripts/otf2ompprint2paje.pl $trace_file |
+        pj_dump --user-defined |
+        grep ^State > ${trace_file}.csv
+done
+#+end_src
+
+Then, lets put that generated CSV in an acceptable shape:
+
+#+begin_src R :session :results output :exports both
+options(crayon.enabled = FALSE)
+supressMessages(library(tidyverse))
+supressMessages(library(functional))
+
+libgomp_csv <- function(trace_file, out_file) {
+  trace_file %>%
+    read_csv(col_names = FALSE, col_types = cols(), trim_ws = TRUE) %>%
+    rename(worker = X2,
+           start = X4,
+           end = X5,
+           duration = X6,
+           imbrication = X7,
+           value = X8,
+           job.id = X9) %>%
+    write_csv(out_file)
+}
+
+data_dir <- "experiments/exp04/data"
+
+data_dir %>%
+  list.files(pattern = glob2rx("scorep*.trace.csv"),
+             recursive = TRUE, full.names = TRUE) %>%
+  mapply(., FUN = libomp_csv, .)
+#+end_src
+
+**** starpu -> csv
+
+Here, we'll use =starvz=! Given that =starvz= presumes the default file name for
+StarPU traces, we'll do some symbolic links in order to analyze those traces.
+
+#+begin_src bash :exports both :results output
+set -euo pipefail
+
+process_trace() {
+    mkdir -p $2
+    pushd $2
+    ln -s $1 prof_file_${USER}_0
+    # starvz
+    # mv files that starvz created
+    popd
+    rm -rf $2
+}
+
+DATA_DIR=$(readlink -f experiments/exp04/data/)
+TRACES_STARPU=$(find $DATA_DIR -type f -wholename '*/results/starpu/*.trace')
+
+cd $DATA_DIR
+
+i=0
+for file in $TRACES_STARPU; do
+    process_trace $file tmp_$((i++)) &
+done
+
+wait
+#+end_src
+
 
 * Resources
 :PROPERTIES:
