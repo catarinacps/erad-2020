@@ -102,8 +102,6 @@ ln -s build/block_qr_libomp build/block_qr_libkomp_clang
 ln -s build/block_qr_libgomp build/block_qr_libkomp_gcc
 popd
 
-export LD_LIBRARY_PATH+=:$(readlink -f code/lib)
-
 # init the results csv
 results_csv=results/${HOST}_data.csv
 echo "node,matrix_size,block_size,runtime,compute_time,total_time" > $results_csv
@@ -116,7 +114,7 @@ while read -r runtime matrix num_blocks; do
     # output log file
     log_file=results/${run_id}.log
 
-    LD_LIBRARY_PATH=$LAPACK_PATH/lib
+    LD_LIBRARY_PATH=$(readlink -f code/lib):$LAPACK_PATH/lib
 
     if [[ $runtime = starpu ]] || [[ $runtime = kstar_starpu ]]; then
         LD_LIBRARY_PATH+=:$HDF5_PATH/lib
