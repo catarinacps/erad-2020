@@ -20,7 +20,7 @@ function spack_install_spec {
     # if we fall here, we have already installed the package
     [ -d $dir_name ] && return 0
 
-    echo "${simple_name} not yet installed!"
+    echo "${name_version} not yet installed!"
     mkdir $dir_name
     spack install --keep-stage $SPEC arch=$ARCH
     spack view -d true soft -i $dir_name $SPEC arch=$ARCH
