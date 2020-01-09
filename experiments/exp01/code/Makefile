@@ -23,7 +23,7 @@ CFLAGS :=\
 OMP := -fopenmp
 OPT := $(if $(DEBUG),-O0,-O2 -march=native)
 LIB := -L$(LIB_DIR) $(LIB_EXTRA)\
-	$(shell pkg-config lapack lapacke blas starpu-1.3 fxt poti hwloc --libs)\
+	$(shell pkg-config lapack lapacke blas starpu-1.3 hwloc --libs)\
 	-lm
 INC := -I$(INC_DIR) -I$(SRC_DIR) $(INC_EXTRA)\
 	$(shell pkg-config lapack lapacke blas starpu-1.3 --cflags)
