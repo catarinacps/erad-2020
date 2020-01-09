@@ -1,4 +1,8 @@
 #!/bin/bash
+set -euo pipefail
+
+[ -d libomp-6.0 ] && return 0
+
 echo "libomp not yet installed!"
 pip install --user lit
 mkdir libomp-6.0

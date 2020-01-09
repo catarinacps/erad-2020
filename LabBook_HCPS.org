@@ -485,6 +485,10 @@ spack kstar@master+starpu^starpu@1.3.1~fxt~poti~examples~mpi+openmp
 From the [[https://github.com/llvm-mirror/openmp][LLVM stdlib]]:
 
 #+begin_src bash :shebang "#!/bin/bash" :exports both :results none :tangle experiments/exp01/libomp-6.0.sh
+set -euo pipefail
+
+[ -d libomp-6.0 ] && return 0
+
 echo "libomp not yet installed!"
 pip install --user lit
 mkdir libomp-6.0
