@@ -167,7 +167,7 @@ while read -r runtime matrix num_blocks; do
     echo ${HOST},${matrix},${num_blocks},${runtime},${ctime},${ttime} >> $results_csv
 
     echo
-done < $EXP_DIR/runs.plan$PLAN_SUFFIX
+done < $EXP_DIR/runs.plan${PLAN_SUFFIX:-}
 
 # gather node info
 ./code/scripts/node_info.sh > env.node
