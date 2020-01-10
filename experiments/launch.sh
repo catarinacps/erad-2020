@@ -197,7 +197,7 @@ for partition in $PARTITIONLIST; do
                 $EXP_DIR/exp.slurm $EXPERIMENT_ID $EXP_DIR $INSTALL_DIR $LOCAL ${plan_part:-}
         fi
 
-        if [ -z ${plan_part+z} ]; then
+        if [ ! -z ${plan_part+z} ]; then
             plan_part=$((plan_part+1))
         fi
     done
