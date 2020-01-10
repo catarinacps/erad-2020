@@ -57,7 +57,9 @@ own topic in my lab-book.
 
 As its kinda time-critical right now.
 
-***** TODO Split the experiment design
+***** DONE Split the experiment design
+CLOSED: [2020-01-10 sex 18:54]
+- State "DONE"       from "TODO"       [2020-01-10 sex 18:54]
 - State "TODO"       from              [2020-01-09 qui 17:12]
 
 *** Secondary items
