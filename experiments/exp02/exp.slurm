@@ -18,6 +18,8 @@ EXP_DIR=$2
 INSTALL=$3/$SLURM_JOB_PARTITION
 # local run?
 LOCAL=$4
+# are we splitting plans?
+PLAN_SUFFIX=${5:+.}${5:-}
 
 # node name
 HOST=$(hostname)
@@ -165,7 +167,7 @@ while read -r runtime matrix num_blocks; do
     echo ${HOST},${matrix},${num_blocks},${runtime},${ctime},${ttime} >> $results_csv
 
     echo
-done < $EXP_DIR/runs.plan
+done < $EXP_DIR/runs.plan$PLAN_SUFFIX
 
 # gather node info
 ./code/scripts/node_info.sh > env.node
