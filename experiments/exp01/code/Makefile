@@ -23,10 +23,10 @@ CFLAGS :=\
 OMP := -fopenmp
 OPT := $(if $(DEBUG),-O0,-O2 -march=native)
 LIB := -L$(LIB_DIR) $(LIB_EXTRA)\
-	$(shell pkg-config lapack lapacke blas starpu-1.3 hwloc --libs)\
+	$(shell pkg-config lapack lapacke blas --libs)\
 	-lm
 INC := -I$(INC_DIR) -I$(SRC_DIR) $(INC_EXTRA)\
-	$(shell pkg-config lapack lapacke blas starpu-1.3 --cflags)
+	$(shell pkg-config lapack lapacke blas --cflags)
 
 #	Should be defined in the command line
 LIBOMP_LIB :=
@@ -68,10 +68,10 @@ $(OUT_DIR)/block_qr_libgomp: $(OBJ_DIR)/block_qr_libgomp.o $(OBJ_DIR)/mutils.o
 # STARPU task based parallel blocked QR factorization
 #
 $(OBJ_DIR)/block_qr_starpu.o: $(SRC_DIR)/block_qr_starpu.c
-	$(CC) -c -o $@ $^ $(INC) $(CFLAGS)
+	$(CC) -c -o $@ $^ $(INC) $(shell pkg-config starpu-1.3 --cflags) $(CFLAGS)
 
 $(OUT_DIR)/block_qr_starpu: $(OBJ_DIR)/block_qr_starpu.o $(OBJ_DIR)/mutils.o
-	$(CC) -o $@ $^ $(INC) $(LIB)
+	$(CC) -o $@ $^ $(INC) $(shell pkg-config starpu-1.3 hwloc --libs --cflags) $(LIB)
 
 
 #
@@ -87,10 +87,10 @@ $(OUT_DIR)/block_qr_libomp: $(OBJ_DIR)/block_qr_libomp.o $(OBJ_DIR)/mutils.o
 # Kstar with starpu runtime
 #
 $(OBJ_DIR)/block_qr_kstar_starpu.o: $(SRC_DIR)/block_qr_openmp.c
-	$(KSTAR) -c -o $@ $^ $(INC) $(OMP) $(LIBOMP) $(CFLAGS)
+	$(KSTAR) -c -o $@ $^ $(INC) $(shell pkg-config starpu-1.3 --cflags) $(OMP) $(LIBOMP) $(CFLAGS)
 
 $(OUT_DIR)/block_qr_kstar_starpu: $(OBJ_DIR)/block_qr_kstar_starpu.o $(OBJ_DIR)/mutils_kstar.o
-	$(KSTAR) -o $@ $^ $(LIB) $(OMP) $(LIBOMP)
+	$(KSTAR) -o $@ $^ $(shell pkg-config starpu-1.3 hwloc --libs) $(LIB) $(OMP) $(LIBOMP)
 
 #
 # Matrix Generator

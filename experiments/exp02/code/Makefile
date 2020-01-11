@@ -20,10 +20,10 @@ CFLAGS :=\
 OMP := -fopenmp
 OPT := $(if $(DEBUG),-O0,-O2 -march=native)
 LIB := -L$(LIB_DIR) \
-	$(shell pkg-config lapack lapacke blas starpu-1.3 fxt poti hwloc --libs)\
+	$(shell pkg-config lapack lapacke blas --libs)\
 	-lm
 INC := -I$(INC_DIR) -I$(SRC_DIR) \
-	$(shell pkg-config lapack lapacke blas starpu-1.3 --cflags)
+	$(shell pkg-config lapack lapacke blas --cflags)
 
 # LIBOMP := -L$(LIBOMP_LIB) -Wl,--rpath,$(LIBOMP_LIB) -I$(LIBOMP_INC)
 
@@ -67,7 +67,7 @@ $(OUT_DIR)/block_qr_scorep: $(SRC_DIR)/block_qr_openmp.c $(OBJ_DIR)/mutils.o
 # STARPU task based parallel blocked QR factorization
 #
 $(OUT_DIR)/block_qr_starpu: $(SRC_DIR)/block_qr_starpu.c $(OBJ_DIR)/mutils.o
-	$(CC) -o $@ $^ $(INC) $(LIB) $(CFLAGS)
+	$(CC) -o $@ $^ $(INC) $(shell pkg-config starpu-1.3 hwloc fxt poti --libs --cflags) $(LIB) $(CFLAGS)
 
 #
 # Lib for getting OMPT traces
@@ -85,7 +85,7 @@ $(OBJ_DIR)/block_qr_kstar_starpu.o: $(SRC_DIR)/block_qr_openmp.c
 	$(KSTAR) -c -o $@ $^ $(INC) $(OMP) $(LIBOMP) $(CFLAGS)
 
 $(OUT_DIR)/block_qr_kstar_starpu: $(OBJ_DIR)/block_qr_kstar_starpu.o $(OBJ_DIR)/mutils_kstar.o
-	$(KSTAR) -o $@ $^ $(LIB) $(OMP) $(LIBOMP)
+	$(KSTAR) -o $@ $^ $(shell pkg-config starpu-1.3 hwloc fxt poti --libs) $(LIB) $(OMP) $(LIBOMP)
 
 #
 # Matrix Generator
