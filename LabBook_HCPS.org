@@ -478,7 +478,7 @@ method = c("starpu", "libomp", "libgomp", "libkomp_gcc", "libkomp_clang", "kstar
 
 complete <- fac.design(
   nfactors=3,
-  replications=3,
+  replications=10,
   repeat.only=FALSE,
   blocks=1,
   randomize=TRUE,
