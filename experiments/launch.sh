@@ -131,6 +131,12 @@ if [ ! -n "$EXP_DIR" ]; then
     exit
 fi
 
+if [ $DRY = true ]; then
+    DRYCMD=echo
+else
+    DRYCMD=
+fi
+
 pushd $REPO_DIR
 
 # update the repo?
@@ -139,16 +145,8 @@ pushd $REPO_DIR
 for partition in $PARTITIONLIST; do
     # lets install all needed dependencies first
     echo "-> Launching dependency installing job for partition $partition!"
-    if [ $DRY = true -a $LOCAL != true ]; then
-        echo "sbatch"
-        echo "-p $partition"
-        echo "-N 1"
-        echo "-J dependencies_${EXPERIMENT_ID}_${partition}"
-        echo "-W"
-        echo "$(dirname $EXP_DIR)/deps.sh $INSTALL_DIR $EXP_DIR"
-        echo
-    elif [ $LOCAL != true ]; then
-        sbatch \
+    if [ $LOCAL != true ]; then
+        ${DRYCMD:-} sbatch \
             -p ${partition} \
             -N 1 \
             -J dependencies_${EXPERIMENT_ID}_${partition} \
@@ -170,8 +168,8 @@ for partition in $PARTITIONLIST; do
     # splits the plan if we were told to
     if [ $SPLIT = true ]; then
         num_nodes=$(wc -w <<<$nodes)
-        rm -f $EXP_DIR/runs.plan.*
-        split -n l/$num_nodes -d -a 1 $EXP_DIR/runs.plan $EXP_DIR/runs.plan.
+        ${DRYCMD:-} rm -f $EXP_DIR/runs.plan.${partition}.*
+        ${DRYCMD:-} split -n l/$num_nodes -d -a 1 $EXP_DIR/runs.plan $EXP_DIR/runs.plan.${partition}.
     fi
 
     # counter to access the correct plan
@@ -180,22 +178,12 @@ for partition in $PARTITIONLIST; do
     for execution in $nodes; do
         # launch the slurm script for this node
         echo "Launching job for node ${execution%%_*}..."
-        if [ $DRY = true ]; then
-            echo "sbatch"
-            echo "-p ${partition}"
-            echo "-w ${execution%%_*}"
-            echo "-c ${execution#*_}"
-            echo "-J qr_analysis_${EXPERIMENT_ID}"
-            echo "$EXP_DIR/exp.slurm $EXPERIMENT_ID $EXP_DIR $INSTALL_DIR $LOCAL ${plan_part:-}"
-            echo
-        else
-            sbatch \
-                -p ${partition} \
-                -w ${execution%%_*} \
-                -c ${execution#*_} \
-                -J qr_analysis_${EXPERIMENT_ID} \
-                $EXP_DIR/exp.slurm $EXPERIMENT_ID $EXP_DIR $INSTALL_DIR $LOCAL ${plan_part:-}
-        fi
+        ${DRYCMD:-} sbatch \
+            -p ${partition} \
+            -w ${execution%%_*} \
+            -c ${execution#*_} \
+            -J qr_analysis_${EXPERIMENT_ID} \
+            $EXP_DIR/exp.slurm $EXPERIMENT_ID $EXP_DIR $INSTALL_DIR $LOCAL ${plan_part:-}
 
         if [ ! -z ${plan_part+z} ]; then
             plan_part=$((plan_part+1))
