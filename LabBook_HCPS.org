@@ -20,6 +20,7 @@ assignment/paper about QR Factorization analysis.
     - [[#archive][Archive]]
   - [[#daily][Daily]]
     - [[#2020-01-03][2020-01-03]]
+    - [[#2020-01-12][2020-01-12]]
   - [[#meetings][Meetings]]
 - [[#experiments][Experiments]]
   - [[#preamble][Preamble]]
@@ -80,6 +81,40 @@ Daily thoughts and developments.
 *** 2020-01-03
 
 First day of this repo!
+
+*** 2020-01-12
+
+I've observed the following behavior when trying to execute the =kstar starpu=
+version:
+
+#+begin_example
+[starpu][read_a_places_list] Error: colon support unimplemented in numeric place list
+
+/home/users/hcpsilva/Installs/spack/cei/starpu-1.3.1/lib/libstarpu-1.3.so.0(+0x9b3ef)[0x7f977b4753ef]
+/home/users/hcpsilva/Installs/spack/cei/starpu-1.3.1/lib/libstarpu-1.3.so.0(_starpu_omp_environment_init+0x13)[0x7f977b475993]
+/home/users/hcpsilva/Installs/spack/cei/starpu-1.3.1/lib/libstarpu-1.3.so.0(starpu_omp_init+0x143)[0x7f977b470403]
+/home/users/hcpsilva/Installs/spack/cei/kstar-master/lib/libkstar_starpu.so.1(+0x33c9)[0x7f977b4ee3c9]
+/lib64/ld-linux-x86-64.so.2(+0xf37a)[0x7f977bfd737a]
+/lib64/ld-linux-x86-64.so.2(+0xf476)[0x7f977bfd7476]
+/lib64/ld-linux-x86-64.so.2(+0x10ca)[0x7f977bfc90ca]
+[starpu][abort][read_a_places_list()@util/openmp_runtime_support_environment.c:444]
+Aborted
+#+end_example
+
+I don't get why this is happening, but as of now this is the only version which
+fails to execute. Some notes on that:
+
+- All libraries are properly linked;
+- The backtrace does originate from =libkstar_starpu.so=;
+- The =starpu= version is working without error.
+
+I've also fixed a list of issues I've found while trying to execute the
+experiment over the course of this weekend. I'm well aware that these events
+certainly hinder the progress of this article, I must also note that I'm not
+feeling as well as I'd hope to fully commit to this task.
+
+I hope that this issue gets fixed by tomorrow, when I get in touch with
+Vinicius.
 
 ** Meetings
 
