@@ -48,7 +48,6 @@ LIBOMP_PATH=$(readlink -f $INSTALL/libomp-6.0)
 LAPACK_PATH=$(readlink -f $INSTALL/netlib-lapack-3.8.0)
 SCOREP_PATH=$(readlink -f $INSTALL/scorep-6.0)
 HDF5_PATH=$(readlink -f $INSTALL/hdf5-1.10.5)
-OPENBLAS_PATH=$(readlink -f $INSTALL/openblas-0.3.7)
 LIBKOMP_PATH=$(readlink -f $INSTALL/libkomp-master)
 KSTAR_PATH=$(readlink -f $INSTALL/kstar-master)
 
@@ -100,8 +99,8 @@ export SCOREP_EXPERIMENT_DIRECTORY=$LIBGOMP_TRACE_DIR
 pushd code
 make clean
 make all LIBOMP_LIB="$LIBOMP_PATH/lib" LIBOMP_INC="$LIBOMP_PATH/include"
-ln -s build/block_qr_libomp build/block_qr_libkomp_clang
-ln -s build/block_qr_libgomp build/block_qr_libkomp_gcc
+ln -s $PWD/build/block_qr_libomp $PWD/build/block_qr_libkomp_clang
+ln -s $PWD/build/block_qr_libgomp $PWD/build/block_qr_libkomp_gcc
 popd
 
 # init the results csv
@@ -120,8 +119,9 @@ while read -r runtime matrix num_blocks; do
 
     if [[ $runtime = starpu ]] || [[ $runtime = kstar_starpu ]]; then
         LD_LIBRARY_PATH+=:$HDF5_PATH/lib
-        LD_LIBRARY_PATH+=:$OPENBLAS_PATH/lib
         LD_LIBRARY_PATH+=:$STARPU_PATH/lib
+    elif [[ $runtime = kstar_starpu ]]; then
+        LD_LIBRARY_PATH+=:$KSTAR_PATH/lib
     elif [[ $runtime = openmp ]]; then
         LD_LIBRARY_PATH+=:$LIBOMP_PATH/lib
     elif [[ $runtime = libkomp_gcc ]] || [[ $runtime = libkomp_clang ]]; then
