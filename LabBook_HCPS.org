@@ -213,11 +213,11 @@ for i in "$@"; do
             exit
             ;;
         -d|--dry)
-            DRY=true
+            DRY=echo
             shift
             ;;
         -u|--update)
-            UPDATE=true
+            git pull
             shift
             ;;
         --install=*)
@@ -268,16 +268,10 @@ INSTALL_DIR=${INSTALL_DIR:-$HOME/Installs/spack}
 EXPERIMENT_ID=$1
 
 # the work (repo) dir
-REPO_DIR=${2:-$(pwd)}
-
-# dry run boolean
-DRY=${DRY:-false}
+REPO_DIR=${2:-$PWD}
 
 # default run partition
 PARTITIONLIST=${PARTITIONLIST:-cei}
-
-# update boolean
-UPDATE=${UPDATE:-false}
 
 # local install boolean
 LOCAL=${LOCAL:-false}
@@ -301,22 +295,13 @@ if [ ! -n "$EXP_DIR" ]; then
     exit
 fi
 
-if [ $DRY = true ]; then
-    DRYCMD=echo
-else
-    DRYCMD=
-fi
-
 pushd $REPO_DIR
-
-# update the repo?
-[ $UPDATE = true ] && git pull
 
 for partition in $PARTITIONLIST; do
     # lets install all needed dependencies first
     echo "-> Launching dependency installing job for partition $partition!"
     if [ $LOCAL != true ]; then
-        ${DRYCMD:-} sbatch \
+        ${DRY:-} sbatch \
             -p ${partition} \
             -N 1 \
             -J dependencies_${EXPERIMENT_ID}_${partition} \
@@ -338,8 +323,8 @@ for partition in $PARTITIONLIST; do
     # splits the plan if we were told to
     if [ $SPLIT = true ]; then
         num_nodes=$(wc -w <<<$nodes)
-        ${DRYCMD:-} rm -f $EXP_DIR/runs.plan.${partition}.*
-        ${DRYCMD:-} split -n l/$num_nodes -d -a 1 $EXP_DIR/runs.plan $EXP_DIR/runs.plan.${partition}.
+        ${DRY:-} rm -f $EXP_DIR/runs.plan.${partition}.*
+        ${DRY:-} split -n l/$num_nodes -d -a 1 $EXP_DIR/runs.plan $EXP_DIR/runs.plan.${partition}.
     fi
 
     # counter to access the correct plan
@@ -348,7 +333,7 @@ for partition in $PARTITIONLIST; do
     for execution in $nodes; do
         # launch the slurm script for this node
         echo "Launching job for node ${execution%%_*}..."
-        ${DRYCMD:-} sbatch \
+        ${DRY:-} sbatch \
             -p ${partition} \
             -w ${execution%%_*} \
             -c ${execution#*_} \
