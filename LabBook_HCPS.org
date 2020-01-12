@@ -63,6 +63,11 @@ CLOSED: [2020-01-10 sex 18:54]
 - State "DONE"       from "TODO"       [2020-01-10 sex 18:54]
 - State "TODO"       from              [2020-01-09 qui 17:12]
 
+**** TODO Find out what's happening with the =kstar= version
+- State "TODO"       from              [2020-01-12 dom 19:28]
+
+It's the only version that isn't working.
+
 *** Secondary items
 
 Empty! :)
@@ -115,6 +120,11 @@ feeling as well as I'd hope to fully commit to this task.
 
 I hope that this issue gets fixed by tomorrow, when I get in touch with
 Vinicius.
+
+--
+
+Some curious behavior also happened when executing =libkomp=: no errors, but
+some parameter combinations are taking longer than 5h to execute sometimes.
 
 ** Meetings
 
