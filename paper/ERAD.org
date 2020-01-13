@@ -89,9 +89,11 @@ identificador, o(s) processador(es), a quantidade e níveis de memória /cache/ 
 quantidade de memória /RAM/.
 
 #+name: tab:plataformas
+#+attr_latex: :float t :placement [!htb] :font \small
+#+caption: Configuração das plataformas utilizadas nos experimentos.
 |---------+----------------------------------------+---------+--------------------+-------------|
 | <l>     | <l>                                    | <l>     | <l>                | <l>         |
-| *Nome*  | *CPU*                                  | *Nodes* | *L1/L2/LLC*        | *RAM*       |
+| *Nome*  | *CPU*                                  | *Nodos* | *L1/L2/LLC*        | *RAM*       |
 |---------+----------------------------------------+---------+--------------------+-------------|
 | =draco= | $2 \times 8$ Xeon E5 2640 v2 2.5 GHz   | $7$     | 32KB/256KB/20MB    | 64 GB DDR3  |
 | =cei=   | $2 \times 12$ Xeon Silver 4116 2.1 GHz | $8$     | 32KB/1024KB/16.5MB | 93 GB DDR4  |
