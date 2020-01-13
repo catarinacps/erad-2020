@@ -79,7 +79,7 @@
 
 Nessa seção versaremos sobre a metodologia experimental desse trabalho, assim
 como o ferramental de /software/ utilizado para a análise dos dados
-coletados. Além disso, abordaremos o /workflow/ adotado a fim de maximizar (?) a
+coletados. Além disso, abordaremos o /workflow/ adotado a fim de aprimorar a
 reprodutibilidade dos resultados aqui apresentados.
 
 #+latex: \noindent
