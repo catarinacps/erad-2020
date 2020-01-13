@@ -21,6 +21,7 @@ assignment/paper about QR Factorization analysis.
   - [[#daily][Daily]]
     - [[#2020-01-03][2020-01-03]]
     - [[#2020-01-12][2020-01-12]]
+    - [[#2020-01-13][2020-01-13]]
   - [[#meetings][Meetings]]
 - [[#experiments][Experiments]]
   - [[#preamble][Preamble]]
@@ -125,6 +126,10 @@ Vinicius.
 
 Some curious behavior also happened when executing =libkomp=: no errors, but
 some parameter combinations are taking longer than 5h to execute sometimes.
+
+*** 2020-01-13
+
+Interesting read: [[https://bastibe.de/2014-09-23-org-cite.html]]
 
 ** Meetings
 
