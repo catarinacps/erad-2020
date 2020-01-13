@@ -41,7 +41,7 @@ rm -rf *
 
 # if the LOCAL argument is true, install everything locally
 # (we presume that the path is $INSTALL is local)
-[ $LOCAL = true ] && $EXP_DIR/deps.sh $INSTALL $EXP_DIR $SCRATCH/spack
+[ $LOCAL = true ] && $(dirname $EXP_DIR)/deps.sh $INSTALL $EXP_DIR $SCRATCH/spack
 
 STARPU_PATH=$(readlink -f $INSTALL/starpu-1.3.1)
 LIBOMP_PATH=$(readlink -f $INSTALL/libomp-6.0)
