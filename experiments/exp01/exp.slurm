@@ -15,7 +15,7 @@ EXP_ID=$1
 # the experiment directory
 EXP_DIR=$2
 # the path to the directory where we'll find the needed packages
-INSTALL=$3/$SLURM_JOB_PARTITION
+INSTALL=$3
 # local run?
 LOCAL=$4
 # are we splitting plans?
@@ -42,6 +42,8 @@ rm -rf *
 # if the LOCAL argument is true, install everything locally
 # (we presume that the path is $INSTALL is local)
 [ $LOCAL = true ] && $(dirname $EXP_DIR)/deps.sh $INSTALL $EXP_DIR $SCRATCH/spack
+
+INSTALL+=/$SLURM_JOB_PARTITION
 
 STARPU_PATH=$(readlink -f $INSTALL/starpu-1.3.1)
 LIBOMP_PATH=$(readlink -f $INSTALL/libomp-6.0)
