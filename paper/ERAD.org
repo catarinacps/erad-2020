@@ -3,7 +3,7 @@
 # -*- mode: org -*-
 
 #+title: Paper for ERAD 2020
-#+author: Henrique
+#+author: Henrique Silva
 
 #+startup: overview indent
 #+language: pt-br
@@ -76,6 +76,26 @@
 - Visão geral do workflow
   - Figura mostrando o funcionamento (com o texto a explicando)
 #+end_comment
+
+Nessa seção versaremos sobre a metodologia experimental desse trabalho, assim
+como o ferramental de /software/ utilizado para a análise dos dados
+coletados. Além disso, abordaremos o /workflow/ adotado a fim de maximizar (?) a
+reprodutibilidade dos resultados aqui apresentados.
+
+#+latex: \noindent
+*Configuração do Ambiente de Testes*: Para a execução da aplicação, utilizamos
+as plataformas descritas na [[tab:plataformas][Tabela 1]]. Listamos em cada uma dessas o seu
+identificador, o(s) processador(es), a quantidade e níveis de memória /cache/ e
+quantidade de memória /RAM/.
+
+#+name: tab:plataformas
+|--------+---------------------------------------+-----------------+------------|
+| <l>    | <l>                                   | <l>             | <l>        |
+| *Nome* | *CPU*                                 | *L1/L2/LLC*     | *RAM*      |
+|--------+---------------------------------------+-----------------+------------|
+| draco  | $2 \times 8$ Xeon E5 2630V2 2.5 GHz   | 32KB/256KB/20MB | 64 GB DDR3 |
+| cei    | $2 \times 8$ Xeon Silver 4116 2.1 GHz |                 |            |
+|--------+---------------------------------------+-----------------+------------|
 
 ** Projeto Experimental
 
