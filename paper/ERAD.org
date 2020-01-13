@@ -136,8 +136,8 @@ Figura que a gente conversou
 
 # See next section to understand how refs.bib file is created.
 
-\bibliographystyle{sbc}
-\bibliography{refs}
+#+latex: \bibliographystyle{sbc}
+#+latex: \bibliography{refs}
 
 * Miscs                                                            :noexport:
 ** Bib file                                                       :noexport:
