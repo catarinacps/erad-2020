@@ -19,7 +19,7 @@ INSTALL=$3/$SLURM_JOB_PARTITION
 # local run?
 LOCAL=$4
 # are we splitting plans?
-PLAN_SUFFIX=${5:+.}${5:-}
+PLAN_SUFFIX=${5:+.${SLURM_JOB_PARTITION}.}${5:-}
 
 # node name
 HOST=$(hostname)
