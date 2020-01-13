@@ -114,11 +114,11 @@ while read -r id runtime matrix num_blocks; do
 
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH
 
-    ./code/build/block_qr_$runtime \
-                   $matrix \
-                   $num_blocks \
-                   $RAND_SEED \
-                   $MAXVAL > $log_file 2>&1
+    timeout 2h ./code/build/block_qr_$runtime \
+            $matrix \
+            $num_blocks \
+            $RAND_SEED \
+            $MAXVAL > $log_file 2>&1
 
     # get compute and total times from output
     ctime=$(grep -w compute_time $log_file | awk '{print $2}')
