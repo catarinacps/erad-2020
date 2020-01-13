@@ -87,10 +87,10 @@ $(OUT_DIR)/block_qr_libomp: $(OBJ_DIR)/block_qr_libomp.o $(OBJ_DIR)/mutils.o
 # Kstar with starpu runtime
 #
 $(OBJ_DIR)/block_qr_kstar_starpu.o: $(SRC_DIR)/block_qr_openmp.c
-	$(KSTAR) -c -o $@ $^ $(INC) $(shell pkg-config starpu-1.3 --cflags) $(OMP) $(LIBOMP) $(CFLAGS)
+	$(KSTAR) -c -o $@ $^ $(INC) $(OMP) $(CFLAGS)
 
 $(OUT_DIR)/block_qr_kstar_starpu: $(OBJ_DIR)/block_qr_kstar_starpu.o $(OBJ_DIR)/mutils_kstar.o
-	$(KSTAR) -o $@ $^ $(shell pkg-config starpu-1.3 hwloc --libs) $(LIB) $(OMP) $(LIBOMP)
+	$(KSTAR) -o $@ $^ $(LIB) $(OMP)
 
 #
 # Matrix Generator
