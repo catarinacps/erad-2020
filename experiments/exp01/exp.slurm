@@ -41,7 +41,7 @@ rm -rf *
 
 # if the LOCAL argument is true, install everything locally
 # (we presume that the path is $INSTALL is local)
-[ $LOCAL = true ] && $(dirname $EXP_DIR)/deps.sh $INSTALL $EXP_DIR $SCRATCH/spack
+[ $LOCAL = true ] && $(dirname $EXP_DIR)/deps.sh $INSTALL $EXP_DIR $SCRATCH/.spack
 
 INSTALL+=/$SLURM_JOB_PARTITION
 
