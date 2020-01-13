@@ -79,7 +79,7 @@
 
 Nessa seção versaremos sobre a metodologia experimental desse trabalho, assim
 como o ferramental de /software/ utilizado para a análise dos dados
-coletados. Além disso, abordaremos o /workflow/ adotado a fim de maximizar (?) a
+coletados. Além disso, abordaremos o /workflow/ adotado a fim de aprimorar a
 reprodutibilidade dos resultados aqui apresentados.
 
 #+latex: \noindent
@@ -144,8 +144,67 @@ Figura que a gente conversou
 
 Tangle this file with C-c C-v t
 
-#+begin_src bib :tangle refs.bib
+#+begin_src bibtex :tangle refs.bib
+@InProceedings{10.1007/978-3-642-30961-8_8,
+author="Broquedis, Fran{\c{c}}ois
+and Gautier, Thierry
+and Danjean, Vincent",
+editor="Chapman, Barbara M.
+and Massaioli, Federico
+and M{\"u}ller, Matthias S.
+and Rorro, Marco",
+title="libKOMP, an Efficient OpenMP Runtime System for Both Fork-Join and Data Flow Paradigms",
+booktitle="OpenMP in a Heterogeneous World",
+year="2012",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="102--115",
+isbn="978-3-642-30961-8"
+}
 
+@inproceedings{wscadMarcelo,
+ author = {Marcelo Miletto and Lucas Schnorr},
+ title = {OpenMP and StarPU Abreast: the Impact of Runtime in Task-Based Block QR Factorization Performance},
+ booktitle = {Anais do XX Simpósio em Sistemas Computacionais de Alto Desempenho},
+ location = {Campo Grande},
+ year = {2019},
+ keywords = {},
+ issn = {0000-0000},
+ pages = {25--36},
+ publisher = {SBC},
+ address = {Porto Alegre, RS, Brasil},
+ doi = {10.5753/wscad.2019.8654},
+ url = {https://sol.sbc.org.br/index.php/wscad/article/view/8654}
+}
+
+@article{doi:10.1002/cpe.4472,
+author = {Garcia Pinto, Vinícius and Mello Schnorr, Lucas and Stanisic, Luka and Legrand, Arnaud and Thibault, Samuel and Danjean, Vincent},
+title = {A visual performance analysis framework for task-based parallel applications running on hybrid clusters},
+journal = {Concurrency and Computation: Practice and Experience},
+volume = {30},
+number = {18},
+pages = {e4472},
+keywords = {Cholesky, heterogeneous platforms, high-performance computing, task-based applications, trace visualization},
+doi = {10.1002/cpe.4472},
+url = {https://onlinelibrary.wiley.com/doi/abs/10.1002/cpe.4472},
+eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1002/cpe.4472},
+note = {e4472 cpe.4472},
+year = {2018}
+}
+
+@article{doi:10.1002/cpe.1631,
+author = {Augonnet, Cédric and Thibault, Samuel and Namyst, Raymond and Wacrenier, Pierre-André},
+title = {StarPU: a unified platform for task scheduling on heterogeneous multicore architectures},
+journal = {Concurrency and Computation: Practice and Experience},
+volume = {23},
+number = {2},
+pages = {187-198},
+keywords = {GPU, multicore, accelerator, scheduling, runtime system},
+doi = {10.1002/cpe.1631},
+url = {https://onlinelibrary.wiley.com/doi/abs/10.1002/cpe.1631},
+eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1002/cpe.1631},
+year = {2011}
+}
 #+end_src
 
 ** Emacs setup                                                    :noexport:
