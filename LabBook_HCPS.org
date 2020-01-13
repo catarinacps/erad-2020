@@ -482,6 +482,7 @@ complete <- fac.design(
     runtime=method)) %>%
   as_tibble %>%
   filter(matrix_size == 8192) %>%
+  filter(block_size != 32) %>%
   transmute(id=as.numeric(Blocks), runtime, matrix_size, block_size) %>%
   write_delim(paste0("experiments/", expKey, "/runs.plan"), delim=" ", col_names=FALSE)
 
