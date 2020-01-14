@@ -504,7 +504,7 @@ In this experiment we'll need the following =spack= packages:
 - kstar-starpu
 
 #+begin_src text :exports both :tangle experiments/exp01/exp.deps
-spack hdf5@1.10.5
+spack hdf5@1.10.5~mpi
 spack starpu@1.3.1~fxt~poti~examples~mpi+openmp
 spack netlib-lapack@3.8.0
 manual libomp@6.0
@@ -871,7 +871,7 @@ In this experiment we'll need the following =spack= packages:
 - scorep
 
 #+begin_src bash :tangle experiments/exp02/exp.deps
-spack hdf5@1.10.5
+spack hdf5@1.10.5~mpi
 spack starpu@1.3.1+fxt+poti~examples~mpi+openmp
 spack netlib-lapack@3.8.0
 manual libomp@6.0
