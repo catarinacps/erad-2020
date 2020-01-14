@@ -64,7 +64,7 @@ threads_per_core=$(lscpu | grep "per core" | awk '{print $4}')
 real_core_count=$((${SLURM_CPUS_ON_NODE} / ${threads_per_core:-1}))
 export STARPU_NCPU=$real_core_count
 export OMP_NUM_THREADS=$real_core_count
-export OMP_PLACES={0:$real_core_count}
+export OMP_PLACES=cores
 export OMP_PROC_BIND=true
 
 export SCOREP_ENABLE_PROFILING=true

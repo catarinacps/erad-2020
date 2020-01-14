@@ -1,4 +1,4 @@
-spack hdf5@1.10.5
+spack hdf5@1.10.5~mpi
 spack starpu@1.3.1+fxt+poti~examples~mpi+openmp
 spack netlib-lapack@3.8.0
 manual libomp@6.0

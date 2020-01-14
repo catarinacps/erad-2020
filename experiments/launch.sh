@@ -84,7 +84,7 @@ for i in "$@"; do
             shift
             ;;
         -l|--local)
-            INSTALL_DIR=/scratch/$USER/installs
+            INSTALL_DIR=/scratch/$USER/.installs
             LOCAL=true
             shift
             ;;

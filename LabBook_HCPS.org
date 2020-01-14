@@ -21,6 +21,8 @@ assignment/paper about QR Factorization analysis.
   - [[#daily][Daily]]
     - [[#2020-01-03][2020-01-03]]
     - [[#2020-01-12][2020-01-12]]
+    - [[#2020-01-13][2020-01-13]]
+    - [[#2020-01-14][2020-01-14]]
   - [[#meetings][Meetings]]
 - [[#experiments][Experiments]]
   - [[#preamble][Preamble]]
@@ -125,6 +127,32 @@ Vinicius.
 
 Some curious behavior also happened when executing =libkomp=: no errors, but
 some parameter combinations are taking longer than 5h to execute sometimes.
+
+*** 2020-01-13
+
+Interesting read: [[https://bastibe.de/2014-09-23-org-cite.html]]
+
+*** 2020-01-14
+
+I'm so tired but I found out what was happening with =kstar=:
+This runtime is yet to implement the comma-separated core-list for the
+environment variable =OMP_PLACES=. This variable currently can take the
+following values:
+
+- cores :: placement occurs to every /core/ available
+- threads :: placement occurs to every /thread/ available
+- sockets :: placement occurs to every /socket/ available, in a round-robin
+             fashion
+- ={list,of,cores}= :: supports multiple syntaxes, was the way we were doing
+     things.
+
+So, as we intend on evading SMT, I've set this variable to =cores=, and I've
+observed that we still obtain the desired behavior and, as a bonus, =kstar= now
+works.
+
+Also, I've noted that the timeout issue still occurs when multiple nodes are
+trying to install the experiment dependencies. I'll run everything again, just
+to be sure.
 
 ** Meetings
 
@@ -254,7 +282,7 @@ for i in "$@"; do
             shift
             ;;
         -l|--local)
-            INSTALL_DIR=/scratch/$USER/installs
+            INSTALL_DIR=/scratch/$USER/.installs
             LOCAL=true
             shift
             ;;
@@ -683,7 +711,7 @@ EXP_ID=$1
 # the experiment directory
 EXP_DIR=$2
 # the path to the directory where we'll find the needed packages
-INSTALL=$3/$SLURM_JOB_PARTITION
+INSTALL=$3
 # local run?
 LOCAL=$4
 # are we splitting plans?
@@ -709,7 +737,9 @@ rm -rf *
 
 # if the LOCAL argument is true, install everything locally
 # (we presume that the path is $INSTALL is local)
-[ $LOCAL = true ] && $(dirname $EXP_DIR)/deps.sh $INSTALL $EXP_DIR $SCRATCH/spack
+[ $LOCAL = true ] && $(dirname $EXP_DIR)/deps.sh $INSTALL $EXP_DIR $SCRATCH/.spack
+
+INSTALL+=/$SLURM_JOB_PARTITION
 
 STARPU_PATH=$(readlink -f $INSTALL/starpu-1.3.1)
 LIBOMP_PATH=$(readlink -f $INSTALL/libomp-6.0)
@@ -733,7 +763,7 @@ export STARPU_NCPU=$real_core_count
 export OMP_NUM_THREADS=$real_core_count
 export STARPU_FXT_TRACE=0
 export KAAPI_RECORD_TRACE=0
-export OMP_PLACES={0:$real_core_count}
+export OMP_PLACES=cores
 export OMP_PROC_BIND=true
 export KMP_STACKSIZE=$((1024*1024*34))
 
@@ -782,7 +812,7 @@ while read -r id runtime matrix num_blocks; do
 
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH
 
-    timeout 2h ./code/build/block_qr_$runtime \
+    timeout 1h ./code/build/block_qr_$runtime \
             $matrix \
             $num_blocks \
             $RAND_SEED \
@@ -1093,7 +1123,7 @@ threads_per_core=$(lscpu | grep "per core" | awk '{print $4}')
 real_core_count=$((${SLURM_CPUS_ON_NODE} / ${threads_per_core:-1}))
 export STARPU_NCPU=$real_core_count
 export OMP_NUM_THREADS=$real_core_count
-export OMP_PLACES={0:$real_core_count}
+export OMP_PLACES=cores
 export OMP_PROC_BIND=true
 
 export SCOREP_ENABLE_PROFILING=true

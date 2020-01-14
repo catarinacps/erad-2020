@@ -102,7 +102,26 @@ quantidade de memória /RAM/.
 
 ** Projeto Experimental
 
+A fim de analisar o impacto dos diferentes /runtimes/ aqui avaliados, definimos
+como fatores do projeto experimentar o tamanho da *matriz* e o tamanho do
+*bloco*. O tamanho do bloco varia em fatores de $2$ entre $[32, 512]$,
+resultando, assim, em cinco níveis, enquanto o tamanho da matriz foi fixado em
+$8192$. Essa variedade de combinações foi o suficiente para que nós
+observássemos acuradamente o impacto do número das tarefas geradas pela a
+aplicação. Cada combinação foi repetida 5 vezes para cada experimento em cada
+nó.
+
 ** Manipulação de dados com ferramentas modernas de /data science/
+
+A manipulação e análise de dados foi realizada utilizando a linguagem de
+programação =R= em conjunto com o pacote de bibliotecas =tidyverse= através de
+blocos de códigos embutidos em arquivos =org=. Tal abordagem oferece fácil
+reprodutibilidade e posterior verificação dos resultados obtidos, além de uma
+plataforma robusta para a posterior visualização desses resultados.
+
+#+begin_comment
+Estou cansado já, mas essa parte precisa de uma séria atenção.
+#+end_comment
 
 * Resultados Experimentais e Observações
 
@@ -136,8 +155,8 @@ Figura que a gente conversou
 
 # See next section to understand how refs.bib file is created.
 
-\bibliographystyle{sbc}
-\bibliography{refs}
+#+latex: \bibliographystyle{sbc}
+#+latex: \bibliography{refs}
 
 * Miscs                                                            :noexport:
 ** Bib file                                                       :noexport:
