@@ -1008,9 +1008,9 @@ exp01_hype5_40_data.tar.gz
 And then lets get all that csv data!
 
 #+begin_src R :session :results output :exports both
+options(crayon.enabled = FALSE)
 library(functional)
 library(tidyverse)
-options(crayon.enabled = FALSE)
 
 collect_exp <- function(filename, exp_name) {
   read_csv(filename) %>%
@@ -1138,7 +1138,7 @@ exp01_df
 Now for some visualizations, I'll replicate the first figure from Marcelo's
 paper.
 
-#+begin_src R :session :results output :exports both
+#+begin_src R :session :results none :exports both
 calculate_tasks <- function(x) {
   if(x == 1) return (1) else return (x*x + calculate_tasks(x-1))
 }
@@ -1157,7 +1157,6 @@ fig_1
 
 #+RESULTS:
 #+begin_example
-
 # A tibble: 139 x 8
    node  matrix_size block_size runtime       avg_time repetitions error num_tasks
    <
@@ -1183,54 +1182,34 @@ fig_1
 
 now for the plot...
 
-#+begin_src R :results output :session :exports both
-fig_1
-#+end_src
-
-#+RESULTS:
-#+begin_example
-# A tibble: 139 x 8
-   node  matrix_size block_size runtime       avg_time repetitions error num_tasks
-   <
-      <
-     <
-<
-           <
-      <
-<
-    <dbl>
- 1 cei2         8192         32 kstar_starpu      84.0           1    NA   5625216
- 2 cei2         8192         32 libgomp          739.            1    NA   5625216
- 3 cei2         8192         32 libkomp_clang     NA             1    NA   5625216
- 4 cei2         8192         32 libomp           761.            1    NA   5625216
- 5 cei2         8192         32 starpu           783.            1    NA   5625216
- 6 cei2         8192         64 kstar_starpu      10.2           1    NA    707264
- 7 cei2         8192         64 libgomp          240.            1    NA    707264
- 8 cei2         8192         64 libkomp_clang    306.            1    NA    707264
- 9 cei2         8192         64 libkomp_gcc      306.            1    NA    707264
-10 cei2         8192         64 starpu           229.            1    NA    707264
-# … with 129 more rows
-#+end_example
-
-#+begin_src R :session :results output graphics :file (org-babel-temp-file "figure" ".png") :exports both :width 600 :height 400
+#+begin_src R :session :results output graphics :file (org-babel-temp-file "figure" ".png") :exports both :width 500 :height 300
 fig_1 %>%
   ggplot(aes(x = as.factor(matrix_size),
              y = avg_time,
              color = as.factor(runtime))) +
-  geom_point(size = 1, position = position_dodge2()) +
+  geom_point(size = 2,
+             position=position_dodge(width = 1)) +
   geom_errorbar(aes(ymin = avg_time - error,
-                ymax = avg_time + error),
-                position = position_dodge2()) +
-  facet_grid(block_size ~ ., scales = "free") +
-  labs(x = "Number of tasks",
-       y = "Average task time (seconds)",
-       fill = "Utilized runtime") +
+                    ymax = avg_time + error),
+                width = 0.5,
+                position=position_dodge(width = 1)) +
+  labs(x = "Tamanho da matriz",
+       y = "Tempo médio de execução [seg]",
+       color = "Runtime utilizado") +
   ylim(0, NA) +
+  scale_y_continuous(expand = expand_scale(mult = c(0, 0.05)),
+                     breaks = scales::pretty_breaks(n = 8)) +
+  facet_grid(. ~ block_size) +
   theme_bw() +
-  theme(text = element_text(family = "Palatino", size = 16)) -> plot1
+  theme(text = element_text(family = "Palatino", size = 16),
+        legend.position = "top",
+        axis.text.x = element_text(angle = 45, hjust = 1))
 #+end_src
 
 #+RESULTS:
+[[file:/tmp/babel-FB6Yle/figureXcaqpG.png]]
+
+there is inter-node variability...
 
 ** STARTED 2 - Tracing
 - State "STARTED"    from              [2020-01-09 qui 15:22]
