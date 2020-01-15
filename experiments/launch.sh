@@ -2,37 +2,38 @@
 # more robust script
 set -euo pipefail
 
-function usage()
-{
-    echo "  $0 [OPTIONS] <EXP_ID> [REPO_DIRECTORY]"
-    echo
-    echo "  WHERE <EXP_ID> is the identificator of the experiment"
-    echo
-    echo "  WHERE [OPTIONS] can be any of the following, in no particular order:"
-    echo "    -h | --help"
-    echo "      shows this message and exits"
-    echo "    -d | --dry"
-    echo "      prints what it would do instead of actually doing it"
-    echo "    -u | --update"
-    echo "      updates the repo before running any commands"
-    echo "    -i | --install[=]path/to/the/installs"
-    echo "      use another dir instead of the default $HOME/Installs/spack"
-    echo "    -p | --partitions[=]list,of,partitions,comma,separated"
-    echo "      define the desired partitions to be used (default: cei)"
-    echo "    -s | --split"
-    echo "      split the execution plan between all nodes that ought to be used"
-    echo "      WARNING: the splitting will occur between same-partition nodes only"
-    echo "               i.e.: if more than one partition is listed, we'll repeat"
-    echo "               the process in the other partitions"
-    echo "    -n | --nodes[=]list,of,nodes,comma,separated"
-    echo "      define the desired nodes to be used"
-    echo "      WARNING: this option disables usage of the partition list!"
-    echo "    -l | --local"
-    echo "      install all packages locally in each machine"
-    echo "      WARNING: probably won't work because of timeouts in spack"
-    echo
-    echo "  WHERE [REPO_DIRECTORY] is the *full* path to the repository"
-    echo "    It is presumed that you are in it, if you don't provide this argument"
+function usage {
+cat << EOF
+  $0 [OPTIONS] <EXP_ID> [REPO_DIRECTORY]
+
+  WHERE <EXP_ID> is the identificator of the experiment
+
+  WHERE [OPTIONS] can be any of the following, in no particular order:
+    -h | --help
+      shows this message and exits
+    -d | --dry
+      prints what it would do instead of actually doing it
+    -u | --update
+      updates the repo before running any commands
+    -i | --install[=]path/to/the/installs
+      use another dir instead of the default $HOME/Installs/spack
+    -p | --partitions[=]list,of,partitions,comma,separated
+      define the desired partitions to be used (default: cei)
+    -s | --split
+      split the execution plan between all nodes that ought to be used
+      WARNING: the splitting will occur between same-partition nodes only
+               i.e.: if more than one partition is listed, we'll repeat
+               the process in the other partitions
+    -n | --nodes[=]list,of,nodes,comma,separated
+      define the desired nodes to be used
+      WARNING: this option disables usage of the partition list!
+    -l | --local
+      install all packages locally in each machine
+      WARNING: probably won't work because of timeouts in spack
+
+  WHERE [REPO_DIRECTORY] is the *full* path to the repository
+    It is presumed that you are in it, if you don't provide this argument
+EOF
 }
 
 for i in "$@"; do
@@ -40,13 +41,13 @@ for i in "$@"; do
         -h|--help)
             echo "USAGE:"
             usage
-            exit
+            exit 0
             ;;
-        -d|--dry)
+        --dry)
             DRY=echo
             shift
             ;;
-        -u|--update)
+        --update)
             git pull
             shift
             ;;
@@ -54,12 +55,12 @@ for i in "$@"; do
             INSTALL_DIR=${i#*=}
             shift
             ;;
-        -i|--install)
+        --install)
             shift
             INSTALL_DIR=$1
             shift
             ;;
-        -s|--split)
+        --split)
             SPLIT=true
             shift
             ;;
@@ -67,7 +68,7 @@ for i in "$@"; do
             PARTITIONLIST=$(tr ',' ' ' <<<${i#*=})
             shift
             ;;
-        -p|--partitions)
+        --partitions)
             shift
             PARTITIONLIST=$(tr ',' ' ' <<<$1)
             shift
@@ -77,15 +78,63 @@ for i in "$@"; do
             PARTITIONLIST=$(sed -E 's/([0-9]+)//g' <<<$NODELIST | uniq | xargs)
             shift
             ;;
-        -n|--nodes)
+        --nodes)
             shift
             NODELIST=$(tr ',' '\n' <<<$1)
             PARTITIONLIST=$(sed -E 's/([0-9]+)//g' <<<$NODELIST | uniq | xargs)
             shift
             ;;
-        -l|--local)
+        --local)
             INSTALL_DIR=/scratch/$USER/.installs
             LOCAL=true
+            shift
+            ;;
+        --*)
+            echo "ERROR: Unknown long option '$i'"
+            echo
+            echo "USAGE:"
+            usage
+            exit 1
+            ;;
+        -*)
+            options=$(sed 's/./& /g' <<<${i#-})
+            for letter in $options; do
+                case $letter in
+                    d)
+                        DRY=echo
+                        ;;
+                    u)
+                        git pull
+                        ;;
+                    i)
+                        shift
+                        INSTALL_DIR=$1
+                        ;;
+                    s)
+                        SPLIT=true
+                        ;;
+                    p)
+                        shift
+                        PARTITIONLIST=$(tr ',' ' ' <<<$1)
+                        ;;
+                    n)
+                        shift
+                        NODELIST=$(tr ',' '\n' <<<$1)
+                        PARTITIONLIST=$(sed -E 's/([0-9]+)//g' <<<$NODELIST | uniq | xargs)
+                        ;;
+                    l)
+                        INSTALL_DIR=/scratch/$USER/.installs
+                        LOCAL=true
+                        ;;
+                    *)
+                        echo "ERROR: Unknown short option '-${letter}'"
+                        echo
+                        echo "USAGE:"
+                        usage
+                        exit 1
+                        ;;
+                esac
+            done
             shift
             ;;
     esac
