@@ -24,7 +24,7 @@ function spack_install_spec {
     echo "${name_version} not yet installed!"
     [ $OVER = true ] && rm -rf $dir_name && flags+=' --overwrite'
     mkdir $dir_name
-    spack install --keep-stage ${flags:-} $SPEC arch=$ARCH
+    spack install --keep-stage ${flags:-} -y $SPEC arch=$ARCH
     spack view -d true soft -i $dir_name $SPEC arch=$ARCH
 
     [ ! -f installs.log ] && echo "SPECS HERE INSTALLED" > installs.log
