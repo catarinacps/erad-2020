@@ -213,19 +213,20 @@ for partition in $PARTITIONLIST; do
     # lets install all needed dependencies first
     echo "-> Launching dependency installing job for partition $partition!"
     if [ $LOCAL != true ]; then
+        INSTALL_DIR+=/$partition # as we are not running locally
         ${DRY:-} sbatch \
             -p ${partition} \
             -N 1 \
             -J dependencies_${EXPERIMENT_ID}_${partition} \
             -W \
-            $(dirname $EXP_DIR)/deps.sh $INSTALL_DIR/$partition $EXP_DIR $SPACK_DIR $OVERWRITE
+            $(dirname $EXP_DIR)/deps.sh $INSTALL_DIR $EXP_DIR $SPACK_DIR $OVERWRITE
         echo
     fi
     echo "... and done!"
     echo
 
     # change the gppd-info to sinfo when porting
-    ALLNODES=$(gppd-info --long --Node -S NODELIST -p $partition -h | awk '{print $1 "_" $5}')
+    ALLNODES=$(gppd-info --long --Node -S NODELIST -p $partition -h | awk '{print $1}')
     if [ -z ${NODELIST+x} ]; then
         nodes=$(paste -s -d" " - <<<$ALLNODES)
     else
@@ -242,20 +243,32 @@ for partition in $PARTITIONLIST; do
     # counter to access the correct plan
     plan_part=${num_nodes:+0}
 
-    for execution in $nodes; do
+    for node in $nodes; do
+        # if we are in local mode, install dependencies for this node
+        if [ $LOCAL = true ]; then
+            echo "Launching installation job locally for node ${node}..."
+            ${DRY:-} sbatch \
+                -p ${partition} \
+                -w ${node} \
+                -J dependencies_${EXPERIMENT_ID}_${node} \
+                $(dirname $EXP_DIR)/deps.sh $INSTALL_DIR $EXP_DIR $SPACK_DIR $OVERWRITE
+        fi
+
         # launch the slurm script for this node
-        echo "Launching job for node ${execution%%_*}..."
+        echo "Launching job for node ${node}..."
         ${DRY:-} sbatch \
             -p ${partition} \
-            -w ${execution%%_*} \
-            -c ${execution#*_} \
+            -w ${node} \
             -J qr_analysis_${EXPERIMENT_ID} \
-            $EXP_DIR/exp.slurm $EXPERIMENT_ID $EXP_DIR $INSTALL_DIR $LOCAL:$SPACK_DIR:$OVERWRITE ${plan_part:-}
+            $EXP_DIR/exp.slurm $EXPERIMENT_ID $EXP_DIR $INSTALL_DIR ${plan_part:-}
 
         if [ ! -z ${plan_part:+z} ]; then
             plan_part=$((plan_part+1))
         fi
     done
+
+    # revert the path so we can repeat to the next partition
+    INSTALL_DIR=$(dirname $INSTALL_DIR)
 
     echo
 done

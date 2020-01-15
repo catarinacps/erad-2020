@@ -16,13 +16,8 @@ EXP_ID=$1
 EXP_DIR=$2
 # the path to the directory where we'll find the needed packages
 INSTALL=$3
-# local run? where to put spack?
-DEFS=($(tr ':' ' ' <<<$4))
-LOCAL=${DEFS[0]}
-SPACK=${DEFS[1]}
-OVERWRITE=${DEFS[2]}
 # are we splitting plans?
-PLAN_SUFFIX=${5:+.${SLURM_JOB_PARTITION}.}${5:-}
+PLAN_SUFFIX=${4:+.${SLURM_JOB_PARTITION}.}${4:-}
 
 # node name
 HOST=$(hostname)
@@ -41,14 +36,6 @@ cd $SCRATCH
 
 # clean up my scratch dir
 rm -rf *
-
-# if the LOCAL argument is true, install everything locally
-# (we presume that the path is $INSTALL is local)
-if [ $LOCAL = true ]; then
-    $(dirname $EXP_DIR)/deps.sh $INSTALL $EXP_DIR $SPACK $OVERWRITE
-else
-    INSTALL+=/$SLURM_JOB_PARTITION
-fi
 
 STARPU_PATH=$(readlink -f $INSTALL/starpu-1.3.1)
 LIBOMP_PATH=$(readlink -f $INSTALL/libomp-6.0)
