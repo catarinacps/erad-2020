@@ -154,6 +154,24 @@ Also, I've noted that the timeout issue still occurs when multiple nodes are
 trying to install the experiment dependencies. I'll run everything again, just
 to be sure.
 
+--
+
+While that issue has been resolved, we are still facing this other one:
+
+#+begin_example
+Error from /home/users/hcpsilva/spack-erad/src/spack/opt/spack/linux-debian10-skylake_avx512/gcc-8.3.0/kstar-master-6f46dnqwbgqazcyqud7ldawevt6akn35/bin/kstar-omp:
+In file included from /scratch/hcpsilva/exp01_cei5_48/code/src/block_qr_openmp.c:1:
+In file included from src/mutils/mutils.h:3:
+/usr/include/stdio.h:33:10: fatal error: 'stddef.h' file not found
+#include <stddef.h>
+         ^
+kstar-omp: frontend/InclusionRewriter.cpp:184: virtual void {anonymous}::InclusionRewriter::InclusionDirective(clang::SourceLocation, const clang::Token&, llvm::StringRef, bool, clang::CharSourceRange, const clang::FileEntry*, llvm::StringRef, llvm::StringRef, const clang::Module*): Assertion `LastInclusionLocation.isInvalid() && "Another inclusion directive was found before the previous one " "was processed"' failed.
+
+make: *** [Makefile:90: bin/block_qr_kstar_starpu.o] Error 250
+#+end_example
+
+Particularly cryptic because it doesn't make any sense.
+
 ** Meetings
 
 Like daily entries, but for meetings.
