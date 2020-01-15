@@ -33,6 +33,7 @@ assignment/paper about QR Factorization analysis.
     - [[#dependencies][Dependencies]]
     - [[#makefile][Makefile]]
     - [[#script][Script]]
+    - [[#analysis][Analysis]]
   - [[#2---tracing][2 - Tracing]]
     - [[#design-1][Design]]
     - [[#dependencies-1][Dependencies]]
@@ -592,6 +593,16 @@ popd
 
 Only a makespan analysis of all different runtime options, no tracing involved
 
+*UPDATE*: 2020-01-15
+
+Utilized following partitions and nodes
+
+| Partition | Nodes |
+|-----------+-------|
+| cei       |   2:8 |
+| hype      |   3:5 |
+| draco     |   1:5 |
+
 *** Design
 
 The random seed will be:
@@ -951,6 +962,266 @@ tar czf $EXP_DIR/data/${EXP_NAME}_data.tar.gz *
 popd
 rm -rf $SCRATCH/*
 #+end_src
+
+*** Analysis
+
+So, for the analysis of this data, I intend to create a function to amass all
+collected data.
+
+#+begin_src R :session :results output :exports both
+library(functional)
+library(tidyverse)
+options(crayon.enabled = FALSE)
+
+data_dir <- "experiments/exp01/data"
+
+data_dir %>%
+  list.files(pattern = glob2rx("*cei*.tar.gz"), full.names = TRUE) %>%
+  lapply(., Curry(untar, exdir = str_replace(., ".tar.gz", "/")) -> ret
+#+end_src
+
+#+begin_src bash :exports both :results output :var EXP_DATA="experiments/exp01/data"
+echo $EXP_DATA
+mkdir $EXP_DATA/cei
+for file in $(find $EXP_DATA -type f -name "*cei*.tar.gz"); do
+    echo $file
+    tar xzf $file -C $EXP_DATA/cei
+done
+#+end_src
+
+#+RESULTS:
+: experiments/exp01/data
+: experiments/exp01/data/exp01_cei7_48_data.tar.gz
+: experiments/exp01/data/exp01_cei4_48_data.tar.gz
+: experiments/exp01/data/exp01_cei8_48_data.tar.gz
+: experiments/exp01/data/exp01_cei6_48_data.tar.gz
+: experiments/exp01/data/exp01_cei5_48_data.tar.gz
+: experiments/exp01/data/exp01_cei2_48_data.tar.gz
+: experiments/exp01/data/exp01_cei3_48_data.tar.gz
+
+And then lets get all that csv data!
+
+#+begin_src R :session :results output :exports both
+options(crayon.enabled = FALSE)
+collect_exp <- function(filename, exp_name) {
+  read_csv(filename) %>%
+    mutate(expid = exp_name)
+}
+
+data_dir <- "experiments/exp01/data/cei"
+
+data_dir %>%
+  paste0("/results") %>%
+  list.files(pattern = glob2rx("*.csv"), full.names = TRUE) %>%
+  lapply(Curry(collect_exp, exp_name = "exp01")) -> dfs
+#+end_src
+
+#+RESULTS:
+#+begin_example
+
+Parsed with column specification:
+cols(
+  node = col_character(),
+  rep_id = col_double(),
+  matrix_size = col_double(),
+  block_size = col_double(),
+  runtime = col_character(),
+  compute_time = col_double(),
+  total_time = col_double()
+)
+Parsed with column specification:
+cols(
+  node = col_character(),
+  rep_id = col_double(),
+  matrix_size = col_double(),
+  block_size = col_double(),
+  runtime = col_character(),
+  compute_time = col_double(),
+  total_time = col_double()
+)
+Parsed with column specification:
+cols(
+  node = col_character(),
+  rep_id = col_double(),
+  matrix_size = col_double(),
+  block_size = col_double(),
+  runtime = col_character(),
+  compute_time = col_double(),
+  total_time = col_double()
+)
+Parsed with column specification:
+cols(
+  node = col_character(),
+  rep_id = col_double(),
+  matrix_size = col_double(),
+  block_size = col_double(),
+  runtime = col_character(),
+  compute_time = col_double(),
+  total_time = col_double()
+)
+Parsed with column specification:
+cols(
+  node = col_character(),
+  rep_id = col_double(),
+  matrix_size = col_double(),
+  block_size = col_double(),
+  runtime = col_character(),
+  compute_time = col_double(),
+  total_time = col_double()
+)
+Parsed with column specification:
+cols(
+  node = col_character(),
+  rep_id = col_double(),
+  matrix_size = col_double(),
+  block_size = col_double(),
+  runtime = col_character(),
+  compute_time = col_double(),
+  total_time = col_double()
+)
+Parsed with column specification:
+cols(
+  node = col_character(),
+  rep_id = col_double(),
+  matrix_size = col_double(),
+  block_size = col_double(),
+  runtime = col_character(),
+  compute_time = col_double(),
+  total_time = col_double()
+)
+#+end_example
+
+With all that data collected, lets put all of it in the same dataframe!
+
+#+begin_src R :session :results output :exports both
+dfs %>%
+  reduce(bind_rows) -> exp01_df
+
+exp01_df
+#+end_src
+
+#+RESULTS:
+#+begin_example
+
+# A tibble: 150 x 8
+   node  rep_id matrix_size block_size runtime       compute_time total_time expid
+   <
+ <
+      <
+     <
+<
+               <
+     <
+<chr>
+ 1 cei2       1        8192        512 libomp               107.       108.  exp01
+ 2 cei2       1        8192         32 libkomp_clang         NA         NA   exp01
+ 3 cei2       1        8192        256 libkomp_gcc           92.7       94.1 exp01
+ 4 cei2       1        8192        512 starpu               107.       109.  exp01
+ 5 cei2       1        8192        512 libkomp_clang        107.       108.  exp01
+ 6 cei2       1        8192         64 libkomp_gcc          306.       307.  exp01
+ 7 cei2       1        8192         64 starpu               229.       231.  exp01
+ 8 cei2       1        8192        256 libgomp               86.7       88.2 exp01
+ 9 cei2       1        8192         32 libomp               761.       763.  exp01
+10 cei2       1        8192         64 libgomp              240.       241.  exp01
+# … with 140 more rows
+#+end_example
+
+Now for some visualizations, I'll replicate the first figure from Marcelo's
+paper.
+
+#+begin_src R :session :results output :exports both
+calculate_tasks <- function(x) {
+  if(x == 1) return (1) else return (x*x + calculate_tasks(x-1))
+}
+
+exp01_df %>%
+  group_by(node, matrix_size, block_size, runtime) %>%
+  summarize(avg_time = mean(compute_time),
+            repetitions = n(),
+            error = 3 * sd(compute_time) / sqrt(repetitions)) %>%
+    rowwise() %>%
+    mutate(num_tasks = calculate_tasks(matrix_size / block_size)) %>%
+    ungroup() -> fig_1
+
+fig_1
+#+end_src
+
+#+RESULTS:
+#+begin_example
+
+# A tibble: 139 x 8
+   node  matrix_size block_size runtime       avg_time repetitions error num_tasks
+   <
+      <
+     <
+<
+           <
+      <
+<
+    <dbl>
+ 1 cei2         8192         32 kstar_starpu      84.0           1    NA   5625216
+ 2 cei2         8192         32 libgomp          739.            1    NA   5625216
+ 3 cei2         8192         32 libkomp_clang     NA             1    NA   5625216
+ 4 cei2         8192         32 libomp           761.            1    NA   5625216
+ 5 cei2         8192         32 starpu           783.            1    NA   5625216
+ 6 cei2         8192         64 kstar_starpu      10.2           1    NA    707264
+ 7 cei2         8192         64 libgomp          240.            1    NA    707264
+ 8 cei2         8192         64 libkomp_clang    306.            1    NA    707264
+ 9 cei2         8192         64 libkomp_gcc      306.            1    NA    707264
+10 cei2         8192         64 starpu           229.            1    NA    707264
+# … with 129 more rows
+#+end_example
+
+now for the plot...
+
+#+begin_src R :results output :session :exports both
+fig_1
+#+end_src
+
+#+RESULTS:
+#+begin_example
+# A tibble: 139 x 8
+   node  matrix_size block_size runtime       avg_time repetitions error num_tasks
+   <
+      <
+     <
+<
+           <
+      <
+<
+    <dbl>
+ 1 cei2         8192         32 kstar_starpu      84.0           1    NA   5625216
+ 2 cei2         8192         32 libgomp          739.            1    NA   5625216
+ 3 cei2         8192         32 libkomp_clang     NA             1    NA   5625216
+ 4 cei2         8192         32 libomp           761.            1    NA   5625216
+ 5 cei2         8192         32 starpu           783.            1    NA   5625216
+ 6 cei2         8192         64 kstar_starpu      10.2           1    NA    707264
+ 7 cei2         8192         64 libgomp          240.            1    NA    707264
+ 8 cei2         8192         64 libkomp_clang    306.            1    NA    707264
+ 9 cei2         8192         64 libkomp_gcc      306.            1    NA    707264
+10 cei2         8192         64 starpu           229.            1    NA    707264
+# … with 129 more rows
+#+end_example
+
+#+begin_src R :session :results output graphics :file (org-babel-temp-file "figure" ".png") :exports both :width 600 :height 400
+fig_1 %>%
+  ggplot(aes(x = as.factor(matrix_size),
+             y = avg_time,
+             color = as.factor(runtime))) +
+  geom_point(size = 1, position = position_dodge2()) +
+  geom_errorbar(aes(ymin = avg_time - error,
+                ymax = avg_time + error),
+                position = position_dodge2()) +
+  facet_grid(block_size ~ ., scales = "free") +
+  labs(x = "Number of tasks",
+       y = "Average task time (seconds)",
+       fill = "Utilized runtime") +
+  ylim(0, NA) +
+  theme_bw() +
+  theme(text = element_text(family = "Palatino", size = 16)) -> plot1
+#+end_src
+
+#+RESULTS:
 
 ** STARTED 2 - Tracing
 - State "STARTED"    from              [2020-01-09 qui 15:22]
