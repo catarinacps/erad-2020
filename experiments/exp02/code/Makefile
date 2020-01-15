@@ -9,6 +9,7 @@ DEBUG :=
 #	- Compilation flags:
 #	Compiler and language version
 CC := gcc
+KSTAR := kstar --runtime starpu
 PRELINK := scorep
 DEBUGF := $(if $(DEBUG),-g -fsanitize=address)
 CFLAGS :=\
