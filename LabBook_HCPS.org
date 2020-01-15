@@ -429,7 +429,7 @@ pushd $REPO_DIR
 for partition in $PARTITIONLIST; do
     # lets install all needed dependencies first
     echo "-> Launching dependency installing job for partition $partition!"
-    if [ $LOCAL != true ]; then
+    if [ $LOCAL = false ]; then
         INSTALL_DIR+=/$partition # as we are not running locally
         ${DRY:-} sbatch \
             -p ${partition} \
@@ -484,8 +484,8 @@ for partition in $PARTITIONLIST; do
         fi
     done
 
-    # revert the path so we can repeat to the next partition
-    INSTALL_DIR=$(dirname $INSTALL_DIR)
+    # if not local, revert the path so we can repeat to the next partition
+    [ $LOCAL = false ] && INSTALL_DIR=$(dirname $INSTALL_DIR)
 
     echo
 done
