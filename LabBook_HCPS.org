@@ -482,6 +482,7 @@ for partition in $PARTITIONLIST; do
         if [ ! -z ${plan_part:+z} ]; then
             plan_part=$((plan_part+1))
         fi
+        echo
     done
 
     # if not local, revert the path so we can repeat to the next partition
@@ -968,41 +969,49 @@ rm -rf $SCRATCH/*
 So, for the analysis of this data, I intend to create a function to amass all
 collected data.
 
+#+begin_src bash :exports both :results output :dir experiments/exp01/data :var INPUT="cei draco hype"
+partitions=($INPUT)
+
+for part in ${partitions[@]}; do
+    echo $part
+
+    mkdir $part
+    for file in *${part}*.tar.gz; do
+        echo $file
+        tar xzf $file -C $part
+    done
+done
+#+end_src
+
+#+RESULTS:
+#+begin_example
+cei
+exp01_cei2_48_data.tar.gz
+exp01_cei3_48_data.tar.gz
+exp01_cei4_48_data.tar.gz
+exp01_cei5_48_data.tar.gz
+exp01_cei6_48_data.tar.gz
+exp01_cei7_48_data.tar.gz
+exp01_cei8_48_data.tar.gz
+draco
+exp01_draco1_32_data.tar.gz
+exp01_draco2_32_data.tar.gz
+exp01_draco3_32_data.tar.gz
+exp01_draco4_32_data.tar.gz
+exp01_draco5_32_data.tar.gz
+hype
+exp01_hype3_40_data.tar.gz
+exp01_hype4_40_data.tar.gz
+exp01_hype5_40_data.tar.gz
+#+end_example
+
+And then lets get all that csv data!
+
 #+begin_src R :session :results output :exports both
 library(functional)
 library(tidyverse)
 options(crayon.enabled = FALSE)
 
-data_dir <- "experiments/exp01/data"
-
-data_dir %>%
-  list.files(pattern = glob2rx("*cei*.tar.gz"), full.names = TRUE) %>%
-  lapply(., Curry(untar, exdir = str_replace(., ".tar.gz", "/")) -> ret
-#+end_src
-
-#+begin_src bash :exports both :results output :var EXP_DATA="experiments/exp01/data"
-echo $EXP_DATA
-mkdir $EXP_DATA/cei
-for file in $(find $EXP_DATA -type f -name "*cei*.tar.gz"); do
-    echo $file
-    tar xzf $file -C $EXP_DATA/cei
-done
-#+end_src
-
-#+RESULTS:
-: experiments/exp01/data
-: experiments/exp01/data/exp01_cei7_48_data.tar.gz
-: experiments/exp01/data/exp01_cei4_48_data.tar.gz
-: experiments/exp01/data/exp01_cei8_48_data.tar.gz
-: experiments/exp01/data/exp01_cei6_48_data.tar.gz
-: experiments/exp01/data/exp01_cei5_48_data.tar.gz
-: experiments/exp01/data/exp01_cei2_48_data.tar.gz
-: experiments/exp01/data/exp01_cei3_48_data.tar.gz
-
-And then lets get all that csv data!
-
-#+begin_src R :session :results output :exports both
-options(crayon.enabled = FALSE)
 collect_exp <- function(filename, exp_name) {
   read_csv(filename) %>%
     mutate(expid = exp_name)
