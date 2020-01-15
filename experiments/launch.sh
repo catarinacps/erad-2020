@@ -17,6 +17,8 @@ cat << EOF
       updates the repo before running any commands
     -i | --install[=]path/to/the/installs
       use another dir instead of the default $HOME/Installs/spack
+    --spack[=]path/to/spack
+      use another spack dir instead of the default $HOME/spack-erad
     -p | --partitions[=]list,of,partitions,comma,separated
       define the desired partitions to be used (default: cei)
     -s | --split
@@ -30,6 +32,8 @@ cat << EOF
     -l | --local
       install all packages locally in each machine
       WARNING: probably won't work because of timeouts in spack
+    -o | --overwrite
+      force the reinstall of all packages listed as a dependency
 
   WHERE [REPO_DIRECTORY] is the *full* path to the repository
     It is presumed that you are in it, if you don't provide this argument
@@ -60,6 +64,19 @@ for i in "$@"; do
             INSTALL_DIR=$1
             shift
             ;;
+        --spack=*)
+            SPACK_DIR=${i#*=}
+            shift
+            ;;
+        --spack)
+            shift
+            SPACK_DIR=$1
+            shift
+            ;;
+        --overwrite)
+            OVERWRITE=true
+            shift
+            ;;
         --split)
             SPLIT=true
             shift
@@ -86,6 +103,7 @@ for i in "$@"; do
             ;;
         --local)
             INSTALL_DIR=/scratch/$USER/.installs
+            SPACK_DIR=/scratch/$USER/.spack
             LOCAL=true
             shift
             ;;
@@ -110,6 +128,9 @@ for i in "$@"; do
                         shift
                         INSTALL_DIR=$1
                         ;;
+                    o)
+                        OVERWRITE=true
+                        ;;
                     s)
                         SPLIT=true
                         ;;
@@ -124,6 +145,7 @@ for i in "$@"; do
                         ;;
                     l)
                         INSTALL_DIR=/scratch/$USER/.installs
+                        SPACK_DIR=/scratch/$USER/.spack
                         LOCAL=true
                         ;;
                     *)
@@ -158,20 +180,31 @@ LOCAL=${LOCAL:-false}
 # the split plan boolean
 SPLIT=${SPLIT:-false}
 
+# overwrite the packages?
+OVERWRITE=${OVERWRITE:-false}
+
+# the path to the spack installation
+SPACK_DIR=${SPACK_DIR:-$HOME/spack-erad}
+
 if [[ $REPO_DIR != /* ]]; then
-    echo "Path to repository is not absolute, please use the absolute path..."
-    exit
+    echo "ERROR: Path to repository is not absolute, please use the absolute path..."
+    exit 2
 fi
 
 if [[ $INSTALL_DIR != /* ]]; then
-    echo "Path to installation dir is not absolute, please use the absolute path..."
-    exit
+    echo "ERROR: Path to installation dir is not absolute, please use the absolute path..."
+    exit 2
+fi
+
+if [[ $SPACK_DIR != /* ]]; then
+    echo "ERROR: Path to spack isn't absolute, please use the absolute path..."
+    exit 2
 fi
 
 EXP_DIR=$(find $REPO_DIR -type d -path "*/experiments/$EXPERIMENT_ID")
 if [ ! -n "$EXP_DIR" ]; then
-    echo "There isn't any experiment with this ID..."
-    exit
+    echo "ERROR: There isn't any experiment with this ID..."
+    exit 3
 fi
 
 pushd $REPO_DIR
@@ -185,7 +218,7 @@ for partition in $PARTITIONLIST; do
             -N 1 \
             -J dependencies_${EXPERIMENT_ID}_${partition} \
             -W \
-            $(dirname $EXP_DIR)/deps.sh $INSTALL_DIR $EXP_DIR
+            $(dirname $EXP_DIR)/deps.sh $INSTALL_DIR/$partition $EXP_DIR $SPACK_DIR $OVERWRITE
         echo
     fi
     echo "... and done!"
@@ -217,7 +250,7 @@ for partition in $PARTITIONLIST; do
             -w ${execution%%_*} \
             -c ${execution#*_} \
             -J qr_analysis_${EXPERIMENT_ID} \
-            $EXP_DIR/exp.slurm $EXPERIMENT_ID $EXP_DIR $INSTALL_DIR $LOCAL ${plan_part:-}
+            $EXP_DIR/exp.slurm $EXPERIMENT_ID $EXP_DIR $INSTALL_DIR $LOCAL:$SPACK_DIR:$OVERWRITE ${plan_part:-}
 
         if [ ! -z ${plan_part:+z} ]; then
             plan_part=$((plan_part+1))

@@ -13,27 +13,30 @@ set -euo pipefail
 function spack_install_spec {
     SPEC=$1
     ARCH=$2
+    OVER=$3
 
     name_version=${SPEC%%[~|+|^]*}
     dir_name=$(echo $name_version | tr '@' '-')
 
     # if we fall here, we have already installed the package
-    [ -d $dir_name ] && return 0
+    [ -d $dir_name ] && [ $OVER = false ] && return 0
 
     echo "${name_version} not yet installed!"
+    [ $OVER = true ] && rm -rf $dir_name && flags+=' --overwrite'
     mkdir $dir_name
-    spack install --keep-stage $SPEC arch=$ARCH
+    spack install --keep-stage ${flags:-} $SPEC arch=$ARCH
     spack view -d true soft -i $dir_name $SPEC arch=$ARCH
 
     [ ! -f installs.log ] && echo "SPECS HERE INSTALLED" > installs.log
     echo >> installs.log
-    echo "PACKAGE:\t${name_version}" >> installs.log
-    echo "SPEC:\t${SPEC}" >> installs.log
+    echo -e "PACKAGE:\t${name_version}" >> installs.log
+    echo -e "SPEC:\t${SPEC}" >> installs.log
 }
 
-INSTALL_DIR=$1/$SLURM_JOB_PARTITION
+INSTALL_DIR=$1
 EXP_DIR=$2
-SPACK_DIR=${3:-$HOME/spack-erad}
+SPACK_DIR=$3
+OVERWRITE=$4
 
 pushd $HOME
 
@@ -65,15 +68,15 @@ while read -r method spec; do
 
     case $method in
         spack)
-            spack_install_spec $spec $arch
+            spack_install_spec $spec $arch $OVERWRITE
             ;;
         manual)
-            $EXP_DIR/${spec//@/-}.sh $INSTALL_DIR
+            $EXP_DIR/${spec//@/-}.sh $INSTALL_DIR $OVERWRITE
             ;;
         *)
             echo
             echo "ERROR: method not supported..."
-            exit
+            exit 128
             ;;
     esac
 done < $EXP_DIR/exp.deps

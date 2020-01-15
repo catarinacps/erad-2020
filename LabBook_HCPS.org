@@ -233,6 +233,8 @@ cat << EOF
       updates the repo before running any commands
     -i | --install[=]path/to/the/installs
       use another dir instead of the default $HOME/Installs/spack
+    --spack[=]path/to/spack
+      use another spack dir instead of the default $HOME/spack-erad
     -p | --partitions[=]list,of,partitions,comma,separated
       define the desired partitions to be used (default: cei)
     -s | --split
@@ -246,6 +248,8 @@ cat << EOF
     -l | --local
       install all packages locally in each machine
       WARNING: probably won't work because of timeouts in spack
+    -o | --overwrite
+      force the reinstall of all packages listed as a dependency
 
   WHERE [REPO_DIRECTORY] is the *full* path to the repository
     It is presumed that you are in it, if you don't provide this argument
@@ -276,6 +280,19 @@ for i in "$@"; do
             INSTALL_DIR=$1
             shift
             ;;
+        --spack=*)
+            SPACK_DIR=${i#*=}
+            shift
+            ;;
+        --spack)
+            shift
+            SPACK_DIR=$1
+            shift
+            ;;
+        --overwrite)
+            OVERWRITE=true
+            shift
+            ;;
         --split)
             SPLIT=true
             shift
@@ -302,6 +319,7 @@ for i in "$@"; do
             ;;
         --local)
             INSTALL_DIR=/scratch/$USER/.installs
+            SPACK_DIR=/scratch/$USER/.spack
             LOCAL=true
             shift
             ;;
@@ -326,6 +344,9 @@ for i in "$@"; do
                         shift
                         INSTALL_DIR=$1
                         ;;
+                    o)
+                        OVERWRITE=true
+                        ;;
                     s)
                         SPLIT=true
                         ;;
@@ -340,6 +361,7 @@ for i in "$@"; do
                         ;;
                     l)
                         INSTALL_DIR=/scratch/$USER/.installs
+                        SPACK_DIR=/scratch/$USER/.spack
                         LOCAL=true
                         ;;
                     ,*)
@@ -374,20 +396,31 @@ LOCAL=${LOCAL:-false}
 # the split plan boolean
 SPLIT=${SPLIT:-false}
 
+# overwrite the packages?
+OVERWRITE=${OVERWRITE:-false}
+
+# the path to the spack installation
+SPACK_DIR=${SPACK_DIR:-$HOME/spack-erad}
+
 if [[ $REPO_DIR != /* ]]; then
-    echo "Path to repository is not absolute, please use the absolute path..."
-    exit
+    echo "ERROR: Path to repository is not absolute, please use the absolute path..."
+    exit 2
 fi
 
 if [[ $INSTALL_DIR != /* ]]; then
-    echo "Path to installation dir is not absolute, please use the absolute path..."
-    exit
+    echo "ERROR: Path to installation dir is not absolute, please use the absolute path..."
+    exit 2
+fi
+
+if [[ $SPACK_DIR != /* ]]; then
+    echo "ERROR: Path to spack isn't absolute, please use the absolute path..."
+    exit 2
 fi
 
 EXP_DIR=$(find $REPO_DIR -type d -path "*/experiments/$EXPERIMENT_ID")
 if [ ! -n "$EXP_DIR" ]; then
-    echo "There isn't any experiment with this ID..."
-    exit
+    echo "ERROR: There isn't any experiment with this ID..."
+    exit 3
 fi
 
 pushd $REPO_DIR
@@ -401,7 +434,7 @@ for partition in $PARTITIONLIST; do
             -N 1 \
             -J dependencies_${EXPERIMENT_ID}_${partition} \
             -W \
-            $(dirname $EXP_DIR)/deps.sh $INSTALL_DIR $EXP_DIR
+            $(dirname $EXP_DIR)/deps.sh $INSTALL_DIR/$partition $EXP_DIR $SPACK_DIR $OVERWRITE
         echo
     fi
     echo "... and done!"
@@ -433,7 +466,7 @@ for partition in $PARTITIONLIST; do
             -w ${execution%%_*} \
             -c ${execution#*_} \
             -J qr_analysis_${EXPERIMENT_ID} \
-            $EXP_DIR/exp.slurm $EXPERIMENT_ID $EXP_DIR $INSTALL_DIR $LOCAL ${plan_part:-}
+            $EXP_DIR/exp.slurm $EXPERIMENT_ID $EXP_DIR $INSTALL_DIR $LOCAL:$SPACK_DIR:$OVERWRITE ${plan_part:-}
 
         if [ ! -z ${plan_part:+z} ]; then
             plan_part=$((plan_part+1))
@@ -465,27 +498,30 @@ set -euo pipefail
 function spack_install_spec {
     SPEC=$1
     ARCH=$2
+    OVER=$3
 
     name_version=${SPEC%%[~|+|^]*}
     dir_name=$(echo $name_version | tr '@' '-')
 
     # if we fall here, we have already installed the package
-    [ -d $dir_name ] && return 0
+    [ -d $dir_name ] && [ $OVER = false ] && return 0
 
     echo "${name_version} not yet installed!"
+    [ $OVER = true ] && rm -rf $dir_name && flags+=' --overwrite'
     mkdir $dir_name
-    spack install --keep-stage $SPEC arch=$ARCH
+    spack install --keep-stage ${flags:-} $SPEC arch=$ARCH
     spack view -d true soft -i $dir_name $SPEC arch=$ARCH
 
     [ ! -f installs.log ] && echo "SPECS HERE INSTALLED" > installs.log
     echo >> installs.log
-    echo "PACKAGE:\t${name_version}" >> installs.log
-    echo "SPEC:\t${SPEC}" >> installs.log
+    echo -e "PACKAGE:\t${name_version}" >> installs.log
+    echo -e "SPEC:\t${SPEC}" >> installs.log
 }
 
-INSTALL_DIR=$1/$SLURM_JOB_PARTITION
+INSTALL_DIR=$1
 EXP_DIR=$2
-SPACK_DIR=${3:-$HOME/spack-erad}
+SPACK_DIR=$3
+OVERWRITE=$4
 
 pushd $HOME
 
@@ -517,15 +553,15 @@ while read -r method spec; do
 
     case $method in
         spack)
-            spack_install_spec $spec $arch
+            spack_install_spec $spec $arch $OVERWRITE
             ;;
         manual)
-            $EXP_DIR/${spec//@/-}.sh $INSTALL_DIR
+            $EXP_DIR/${spec//@/-}.sh $INSTALL_DIR $OVERWRITE
             ;;
         ,*)
             echo
             echo "ERROR: method not supported..."
-            exit
+            exit 128
             ;;
     esac
 done < $EXP_DIR/exp.deps
@@ -615,15 +651,18 @@ From the [[https://github.com/llvm-mirror/openmp][LLVM stdlib]]:
 set -euo pipefail
 
 INSTALL_DIR=$1
+OVERWRITE=$2
 LIBOMP_DIR=$INSTALL_DIR/libomp-6.0
 
-[ -d $LIBOMP_DIR ] && exit
+[ -d $LIBOMP_DIR ] && [ $OVERWRITE = false ] && exit 0
+
+[ $OVERWRITE = true ] && rm -rf $LIBOMP_DIR
 
 echo "libomp not yet installed!"
 pip install --user lit
 mkdir $LIBOMP_DIR
-git clone https://github.com/llvm-mirror/openmp.git $LIBOMP_DIR/openmp
-pushd $LIBOMP_DIR/openmp
+git clone https://github.com/llvm-mirror/openmp.git $LIBOMP_DIR/repo
+pushd $LIBOMP_DIR/repo
 git checkout release_60
 mkdir build
 pushd build
@@ -779,8 +818,11 @@ EXP_ID=$1
 EXP_DIR=$2
 # the path to the directory where we'll find the needed packages
 INSTALL=$3
-# local run?
-LOCAL=$4
+# local run? where to put spack?
+DEFS=($(tr ':' ' ' <<<$4))
+LOCAL=${DEFS[0]}
+SPACK=${DEFS[1]}
+OVERWRITE=${DEFS[2]}
 # are we splitting plans?
 PLAN_SUFFIX=${5:+.${SLURM_JOB_PARTITION}.}${5:-}
 
@@ -804,9 +846,7 @@ rm -rf *
 
 # if the LOCAL argument is true, install everything locally
 # (we presume that the path is $INSTALL is local)
-[ $LOCAL = true ] && $(dirname $EXP_DIR)/deps.sh $INSTALL $EXP_DIR $SCRATCH/.spack
-
-INSTALL+=/$SLURM_JOB_PARTITION
+[ $LOCAL = true ] && $(dirname $EXP_DIR)/deps.sh $INSTALL $EXP_DIR $SPACK $OVERWRITE
 
 STARPU_PATH=$(readlink -f $INSTALL/starpu-1.3.1)
 LIBOMP_PATH=$(readlink -f $INSTALL/libomp-6.0)
@@ -985,15 +1025,18 @@ From the [[https://github.com/llvm-mirror/openmp][LLVM stdlib]]:
 set -euo pipefail
 
 INSTALL_DIR=$1
+OVERWRITE=$2
 LIBOMP_DIR=$INSTALL_DIR/libomp-6.0
 
-[ -d $LIBOMP_DIR ] && exit
+[ -d $LIBOMP_DIR ] && [ $OVERWRITE = false ] && exit 0
+
+[ $OVERWRITE = true ] && rm -rf $LIBOMP_DIR
 
 echo "libomp not yet installed!"
 pip install --user lit
 mkdir $LIBOMP_DIR
-git clone https://github.com/llvm-mirror/openmp.git $LIBOMP_DIR/openmp
-pushd $LIBOMP_DIR/openmp
+git clone https://github.com/llvm-mirror/openmp.git $LIBOMP_DIR/repo
+pushd $LIBOMP_DIR/repo
 git checkout release_60
 mkdir build
 pushd build
@@ -1141,9 +1184,12 @@ EXP_ID=$1
 # the experiment directory
 EXP_DIR=$2
 # the path to the directory where we'll find the needed packages
-INSTALL=$3/$SLURM_JOB_PARTITION
-# local run?
-LOCAL=$4
+INSTALL=$3
+# local run? where to put spack?
+DEFS=($(tr ':' ' ' <<<$4))
+LOCAL=${DEFS[0]}
+SPACK=${DEFS[1]}
+OVERWRITE=${DEFS[2]}
 # are we splitting plans?
 PLAN_SUFFIX=${5:+.${SLURM_JOB_PARTITION}.}${5:-}
 
@@ -1167,7 +1213,7 @@ rm -rf *
 
 # if the LOCAL argument is true, install everything locally
 # (we presume that the path is $INSTALL is local)
-[ $LOCAL = true ] && $EXP_DIR/deps.sh $INSTALL ./spack
+[ $LOCAL = true ] && $(dirname $EXP_DIR)/deps.sh $INSTALL $EXP_DIR $SPACK $OVERWRITE
 
 STARPU_PATH=$(readlink -f $INSTALL/starpu-1.3.1)
 LIBOMP_PATH=$(readlink -f $INSTALL/libomp-6.0)

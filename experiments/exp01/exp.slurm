@@ -16,8 +16,11 @@ EXP_ID=$1
 EXP_DIR=$2
 # the path to the directory where we'll find the needed packages
 INSTALL=$3
-# local run?
-LOCAL=$4
+# local run? where to put spack?
+DEFS=($(tr ':' ' ' <<<$4))
+LOCAL=${DEFS[0]}
+SPACK=${DEFS[1]}
+OVERWRITE=${DEFS[2]}
 # are we splitting plans?
 PLAN_SUFFIX=${5:+.${SLURM_JOB_PARTITION}.}${5:-}
 
@@ -41,9 +44,7 @@ rm -rf *
 
 # if the LOCAL argument is true, install everything locally
 # (we presume that the path is $INSTALL is local)
-[ $LOCAL = true ] && $(dirname $EXP_DIR)/deps.sh $INSTALL $EXP_DIR $SCRATCH/.spack
-
-INSTALL+=/$SLURM_JOB_PARTITION
+[ $LOCAL = true ] && $(dirname $EXP_DIR)/deps.sh $INSTALL $EXP_DIR $SPACK $OVERWRITE
 
 STARPU_PATH=$(readlink -f $INSTALL/starpu-1.3.1)
 LIBOMP_PATH=$(readlink -f $INSTALL/libomp-6.0)
