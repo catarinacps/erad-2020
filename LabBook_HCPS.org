@@ -484,7 +484,7 @@ for partition in $PARTITIONLIST; do
     done
 
     # revert the path so we can repeat to the next partition
-    $INSTALL_DIR=$(dirname $INSTALL_DIR)
+    INSTALL_DIR=$(dirname $INSTALL_DIR)
 
     echo
 done
