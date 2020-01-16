@@ -1504,6 +1504,7 @@ KSTAR_PATH=$(readlink -f $INSTALL/kstar-master)
 
 PATH+=:$STARPU_PATH/bin
 PATH+=:$SCOREP_PATH/bin
+PATH+=:$KSTAR_PATH/bin
 export PATH=$PATH
 
 PKG_CONFIG_PATH+=:$STARPU_PATH/lib/pkgconfig
