@@ -48,6 +48,7 @@ KSTAR_PATH=$(readlink -f $INSTALL/kstar-master)
 PATH+=:$STARPU_PATH/bin
 PATH+=:$SCOREP_PATH/bin
 PATH+=:$KSTAR_PATH/bin
+PATH+=:$LIBKOMP_PATH/bin
 export PATH=$PATH
 
 PKG_CONFIG_PATH+=:$STARPU_PATH/lib/pkgconfig
@@ -70,7 +71,6 @@ export SCOREP_ENABLE_PROFILING=true
 export SCOREP_ENABLE_TRACING=true
 export SCOREP_VERBOSE=true
 export SCOREP_TIMER=gettimeofday
-export SCOREP_EXPERIMENT_DIRECTORY=$LIBGOMP_TRACE_DIR
 # why 8G?
 export SCOREP_TOTAL_MEMORY=8G
 
@@ -90,19 +90,9 @@ pushd $EXP_NAME
 cp -r $EXP_DIR/code code
 mkdir results
 
-mkdir results/libgomp
-mkdir results/starpu
-mkdir results/libomp
-
-LIBGOMP_TRACE_DIR=$(readlink -f results)/libgomp
-STARPU_TRACE_DIR=$(readlink -f results)/starpu
-LIBOMP_TRACE_DIR=$(readlink -f results)/libomp
-
 pushd code
 make clean
 make all LIBOMP_LIB="$LIBOMP_PATH/lib" LIBOMP_INC="$LIBOMP_PATH/include"
-ln -s $PWD/build/block_qr_libomp $PWD/build/block_qr_libkomp_clang
-ln -s $PWD/build/block_qr_libgomp $PWD/build/block_qr_libkomp_gcc
 popd
 
 # init the results csv
@@ -119,7 +109,10 @@ while read -r runtime matrix num_blocks; do
 
     LD_LIBRARY_PATH=$(readlink -f code/lib):$LAPACK_PATH/lib
 
+    mkdir -p results/$run_id
+
     if [[ $runtime = starpu ]] || [[ $runtime = kstar_starpu ]]; then
+        export STARPU_FXT_PREFIX=results/$run_id
         LD_LIBRARY_PATH+=:$HDF5_PATH/lib
         LD_LIBRARY_PATH+=:$STARPU_PATH/lib
     elif [[ $runtime = kstar_starpu ]]; then
@@ -127,7 +120,10 @@ while read -r runtime matrix num_blocks; do
     elif [[ $runtime = openmp ]]; then
         LD_LIBRARY_PATH+=:$LIBOMP_PATH/lib
     elif [[ $runtime = libkomp_gcc ]] || [[ $runtime = libkomp_clang ]]; then
+        export LD_PRELOAD=$LIBKOMP_PATH/lib/trace-libomp.so
         LD_LIBRARY_PATH+=:$LIBKOMP_PATH/lib
+    elif [[ $runtime = libgomp ]]; then
+        export SCOREP_EXPERIMENT_DIRECTORY=results/$run_id
     fi
 
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH
@@ -144,24 +140,15 @@ while read -r runtime matrix num_blocks; do
     ttime=$(grep -w total_time $log_file | awk '{print $2}')
 
     case $runtime in
-        starpu)
-            mv /tmp/prof_file_${USER}_0 $STARPU_TRACE_DIR/${run_id}.trace
-            ;;
-        scorep)
-            pid=0
-            for file in $(find . -maxdepth 1 -name 'scorep-prof*'); do
-                mv $file $LIBGOMP_TRACE_DIR/${run_id}_${pid}.trace
-                pid=$((pid+1))
-            done
-            ;;
         ompt)
-            mv events.out $LIBOMP_TRACE_DIR/${run_id}.trace
+            mv events.out results/$run_id
             ;;
         libkomp_gcc|libkomp_clang)
-            echo
-            ;;
-        kstar_starpu)
-            echo
+            mv /tmp/events.*.evt results/$run_id
+            pushd results/$run_id
+            katracereader --csv events.*
+            popd
+            mv stat.* results/$run_id
             ;;
     esac
 
@@ -169,6 +156,8 @@ while read -r runtime matrix num_blocks; do
     echo ${HOST},${matrix},${num_blocks},${runtime},${ctime},${ttime} >> $results_csv
 
     echo
+
+    export LD_PRELOAD=
 done < $EXP_DIR/runs.plan${PLAN_SUFFIX:-}
 
 # gather node info
