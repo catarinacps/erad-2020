@@ -522,7 +522,7 @@ function spack_install_spec {
     dir_name=$(echo $name_version | tr '@' '-')
 
     # if we fall here, we have already installed the package
-    [ -d $dir_name ] && [ $OVER = false ] && return 0
+    [ -d ${dir_name}/lib ] && [ $OVER = false ] && return 0
 
     echo "${name_version} not yet installed!"
     [ $OVER = true ] && rm -rf $dir_name && flags+=' --overwrite'
