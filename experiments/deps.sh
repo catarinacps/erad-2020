@@ -26,6 +26,7 @@ function spack_install_spec {
     mkdir $dir_name
     spack install --keep-stage ${flags:-} -y $SPEC arch=$ARCH
     spack view -d true soft -i $dir_name $SPEC arch=$ARCH
+    spack find -l
 
     [ ! -f installs.log ] && echo "SPECS HERE INSTALLED" > installs.log
     echo >> installs.log
