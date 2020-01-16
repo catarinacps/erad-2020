@@ -1211,6 +1211,30 @@ fig_1 %>%
 
 there is inter-node variability...
 
+#+begin_src R :session :results output graphics :file (org-babel-temp-file "figure" ".png") :exports both :width 500 :height 300
+fig_1 %>%
+  ggplot(aes(x = as.factor(matrix_size),
+             y = avg_time,
+             color = as.factor(runtime))) +
+  geom_point(size = 2,
+             position=position_dodge(width = 1)) +
+  geom_errorbar(aes(ymin = avg_time - error,
+                    ymax = avg_time + error),
+                width = 0.5,
+                position=position_dodge(width = 1)) +
+  labs(x = "Tamanho da matriz",
+       y = "Tempo médio de execução [seg]",
+       color = "Runtime utilizado") +
+  scale_y_continuous(expand = expand_scale(mult = c(0, 0.05)),
+                     breaks = scales::pretty_breaks(n = 8)) +
+  facet_wrap(~block_size, scales="free", nrow=1) +
+  ylim(0, NA) +
+  theme_bw() +
+  theme(text = element_text(family = "Palatino", size = 16),
+        legend.position = "top",
+        axis.text.x = element_text(angle = 45, hjust = 1))
+#+end_src
+
 ** STARTED 2 - Tracing
 - State "STARTED"    from              [2020-01-09 qui 15:22]
 
