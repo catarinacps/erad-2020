@@ -134,4 +134,4 @@ done < $EXP_DIR/runs.plan${PLAN_SUFFIX:-}
 tar czf $EXP_DIR/data/${EXP_NAME}_data.tar.gz *
 
 popd
-rm -rf $SCRATCH/*
+rm -rf $SCRATCH/* $SCRATCH/.installs
