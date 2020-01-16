@@ -1017,9 +1017,11 @@ collect_exp <- function(filename, exp_name) {
     mutate(expid = exp_name)
 }
 
-data_dir <- "experiments/exp01/data/cei"
+data_dir <- "experiments/exp01/data/"
+partitions <- c("cei", "hype", "draco")
 
-data_dir %>%
+partitions %>%
+  lapply(Curry(paste0, data_dir)) %>%
   paste0("/results") %>%
   list.files(pattern = glob2rx("*.csv"), full.names = TRUE) %>%
   lapply(Curry(collect_exp, exp_name = "exp01")) -> dfs
@@ -1028,6 +1030,12 @@ data_dir %>%
 #+RESULTS:
 #+begin_example
 
+Error: unexpected ')' in:
+"  read_csv(filename) %>%
+    mutate(expid = exp_name, platform = unlist(strsplit(filename, "/", fixed = TRUE))[-2]))"
+
+Error: unexpected '}' in "}"
+
 Parsed with column specification:
 cols(
   node = col_character(),
@@ -1038,73 +1046,15 @@ cols(
   compute_time = col_double(),
   total_time = col_double()
 )
-Parsed with column specification:
-cols(
-  node = col_character(),
-  rep_id = col_double(),
-  matrix_size = col_double(),
-  block_size = col_double(),
-  runtime = col_character(),
-  compute_time = col_double(),
-  total_time = col_double()
-)
-Parsed with column specification:
-cols(
-  node = col_character(),
-  rep_id = col_double(),
-  matrix_size = col_double(),
-  block_size = col_double(),
-  runtime = col_character(),
-  compute_time = col_double(),
-  total_time = col_double()
-)
-Parsed with column specification:
-cols(
-  node = col_character(),
-  rep_id = col_double(),
-  matrix_size = col_double(),
-  block_size = col_double(),
-  runtime = col_character(),
-  compute_time = col_double(),
-  total_time = col_double()
-)
-Parsed with column specification:
-cols(
-  node = col_character(),
-  rep_id = col_double(),
-  matrix_size = col_double(),
-  block_size = col_double(),
-  runtime = col_character(),
-  compute_time = col_double(),
-  total_time = col_double()
-)
-Parsed with column specification:
-cols(
-  node = col_character(),
-  rep_id = col_double(),
-  matrix_size = col_double(),
-  block_size = col_double(),
-  runtime = col_character(),
-  compute_time = col_double(),
-  total_time = col_double()
-)
-Parsed with column specification:
-cols(
-  node = col_character(),
-  rep_id = col_double(),
-  matrix_size = col_double(),
-  block_size = col_double(),
-  runtime = col_character(),
-  compute_time = col_double(),
-  total_time = col_double()
-)
+Error: Column `platform` must be length 22 (the number of rows) or one, not 5
 #+end_example
 
 With all that data collected, lets put all of it in the same dataframe!
 
 #+begin_src R :session :results output :exports both
 dfs %>%
-  reduce(bind_rows) -> exp01_df
+  reduce(bind_rows) %>%
+  mutate(platform = str_remove(node, "[0-9]")) -> exp01_df
 
 exp01_df
 #+end_src
@@ -1112,8 +1062,8 @@ exp01_df
 #+RESULTS:
 #+begin_example
 
-# A tibble: 150 x 8
-   node  rep_id matrix_size block_size runtime       compute_time total_time expid
+# A tibble: 450 x 9
+   node  rep_id matrix_size block_size runtime       compute_time total_time expid platform
    <
  <
       <
@@ -1121,18 +1071,20 @@ exp01_df
 <
                <
      <
-<chr>
- 1 cei2       1        8192        512 libomp               107.       108.  exp01
- 2 cei2       1        8192         32 libkomp_clang         NA         NA   exp01
- 3 cei2       1        8192        256 libkomp_gcc           92.7       94.1 exp01
- 4 cei2       1        8192        512 starpu               107.       109.  exp01
- 5 cei2       1        8192        512 libkomp_clang        107.       108.  exp01
- 6 cei2       1        8192         64 libkomp_gcc          306.       307.  exp01
- 7 cei2       1        8192         64 starpu               229.       231.  exp01
- 8 cei2       1        8192        256 libgomp               86.7       88.2 exp01
- 9 cei2       1        8192         32 libomp               761.       763.  exp01
-10 cei2       1        8192         64 libgomp              240.       241.  exp01
-# … with 140 more rows
+<
+<
+
+ 1 cei2       1        8192        512 libomp               107.       108.  exp01 cei
+ 2 cei2       1        8192         32 libkomp_clang         NA         NA   exp01 cei
+ 3 cei2       1        8192        256 libkomp_gcc           92.7       94.1 exp01 cei
+ 4 cei2       1        8192        512 starpu               107.       109.  exp01 cei
+ 5 cei2       1        8192        512 libkomp_clang        107.       108.  exp01 cei
+ 6 cei2       1        8192         64 libkomp_gcc          306.       307.  exp01 cei
+ 7 cei2       1        8192         64 starpu               229.       231.  exp01 cei
+ 8 cei2       1        8192        256 libgomp               86.7       88.2 exp01 cei
+ 9 cei2       1        8192         32 libomp               761.       763.  exp01 cei
+10 cei2       1        8192         64 libgomp              240.       241.  exp01 cei
+# … with 440 more rows
 #+end_example
 
 Now for some visualizations, I'll replicate the first figure from Marcelo's
@@ -1144,7 +1096,7 @@ calculate_tasks <- function(x) {
 }
 
 exp01_df %>%
-  group_by(matrix_size, block_size, runtime) %>%
+  group_by(platform, matrix_size, block_size, runtime) %>%
   summarize(avg_time = mean(compute_time),
             repetitions = n(),
             error = 3 * sd(compute_time) / sqrt(repetitions)) %>%
@@ -1158,8 +1110,9 @@ fig_1
 #+RESULTS:
 #+begin_example
 
-# A tibble: 30 x 7
-   matrix_size block_size runtime       avg_time repetitions error num_tasks
+# A tibble: 90 x 8
+   platform matrix_size block_size runtime       avg_time repetitions error num_tasks
+   <
          <
      <
 <
@@ -1167,22 +1120,22 @@ fig_1
       <
 <
     <dbl>
- 1        8192         32 kstar_starpu      82.9           5  1.38   5625216
- 2        8192         32 libgomp          763.            5 40.3    5625216
- 3        8192         32 libkomp_clang     NA             5 NA      5625216
- 4        8192         32 libkomp_gcc       NA             5 NA      5625216
- 5        8192         32 libomp           706.            5 52.9    5625216
- 6        8192         32 starpu           751.            5 63.9    5625216
- 7        8192         64 kstar_starpu      10.5           5  1.30    707264
- 8        8192         64 libgomp          241.            5  7.58    707264
- 9        8192         64 libkomp_clang    308.            5  8.02    707264
-10        8192         64 libkomp_gcc      306.            5  6.39    707264
-# … with 20 more rows
+ 1 cei             8192         32 kstar_starpu      82.9           5  1.38   5625216
+ 2 cei             8192         32 libgomp          763.            5 40.3    5625216
+ 3 cei             8192         32 libkomp_clang     NA             5 NA      5625216
+ 4 cei             8192         32 libkomp_gcc       NA             5 NA      5625216
+ 5 cei             8192         32 libomp           706.            5 52.9    5625216
+ 6 cei             8192         32 starpu           751.            5 63.9    5625216
+ 7 cei             8192         64 kstar_starpu      10.5           5  1.30    707264
+ 8 cei             8192         64 libgomp          241.            5  7.58    707264
+ 9 cei             8192         64 libkomp_clang    308.            5  8.02    707264
+10 cei             8192         64 libkomp_gcc      306.            5  6.39    707264
+# … with 80 more rows
 #+end_example
 
 now for the plot...
 
-#+begin_src R :session :results output graphics :file (org-babel-temp-file "figure" ".png") :exports both :width 500 :height 300
+#+begin_src R :session :results output :file (org-babel-temp-file "figure" ".png") :exports both :width 500 :height 300
 fig_1 %>%
   ggplot(aes(x = as.factor(matrix_size),
              y = avg_time,
@@ -1199,7 +1152,7 @@ fig_1 %>%
   ylim(0, NA) +
   scale_y_continuous(expand = expand_scale(mult = c(0, 0.05)),
                      breaks = scales::pretty_breaks(n = 8)) +
-  facet_grid(. ~ block_size) +
+  facet_grid(platform ~ block_size) +
   theme_bw() +
   theme(text = element_text(family = "Palatino", size = 16),
         legend.position = "top",
@@ -1207,15 +1160,24 @@ fig_1 %>%
 #+end_src
 
 #+RESULTS:
-[[file:/tmp/babel-FB6Yle/figurefJXc0C.png]]
+:
+: Scale for 'y' is already present. Adding another scale for 'y', which will replace the existing scale.
+: Warning messages:
+: 1: Removed 13 rows containing missing values (geom_point).
+: 2: Removed 13 rows containing missing values (geom_errorbar).
 
 there is inter-node variability...
 
-#+begin_src R :session :results output graphics :file (org-babel-temp-file "figure" ".png") :exports both :width 500 :height 300
+#+begin_src R :session :results output graphics :file (org-babel-temp-file "figure" ".png") :exports both :width 500 :height 450
+suppressMessages(library(gtools))
+
 fig_1 %>%
+  mutate(case = factor(paste(platform, block_size, sep = " : "))) %>%
+  mutate(case = factor(case, levels = mixedsort(levels(case)))) %>%
   ggplot(aes(x = as.factor(matrix_size),
              y = avg_time,
-             color = as.factor(runtime))) +
+             color = as.factor(runtime),
+             shape = as.factor(runtime))) +
   geom_point(size = 2,
              position=position_dodge(width = 1)) +
   geom_errorbar(aes(ymin = avg_time - error,
@@ -1224,16 +1186,24 @@ fig_1 %>%
                 position=position_dodge(width = 1)) +
   labs(x = "Tamanho da matriz",
        y = "Tempo médio de execução [seg]",
-       color = "Runtime utilizado") +
+       color = "Runtime utilizado",
+       shape = "Runtime utilizado") +
   scale_y_continuous(expand = expand_scale(mult = c(0, 0.05)),
                      breaks = scales::pretty_breaks(n = 8)) +
-  facet_wrap(~block_size, scales="free", nrow=1) +
+  facet_wrap(~ case, scales="free", nrow = 3) +
   ylim(0, NA) +
   theme_bw() +
   theme(text = element_text(family = "Palatino", size = 16),
         legend.position = "top",
         axis.text.x = element_text(angle = 45, hjust = 1))
 #+end_src
+
+#+RESULTS:
+:
+: Scale for 'y' is already present. Adding another scale for 'y', which will replace the existing scale.
+: Warning messages:
+: 1: Removed 13 rows containing missing values (geom_point).
+: 2: Removed 16 rows containing missing values (geom_errorbar).
 
 ** STARTED 2 - Tracing
 - State "STARTED"    from              [2020-01-09 qui 15:22]
