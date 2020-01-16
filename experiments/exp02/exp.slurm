@@ -7,7 +7,7 @@
 #SBATCH --mail-user=hcpsilva@inf.ufrgs.br
 
 # more robust script
-set -euo pipefail
+# set -euo pipefail
 
 # parameters:
 # the experiment ID, defined in the lab-book
@@ -129,7 +129,7 @@ while read -r runtime matrix num_blocks; do
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH
 
     # execute given runtime and log results
-    ./code/build/block_qr_$runtime \
+    timeout 2h ./code/build/block_qr_$runtime \
          $matrix \
          $num_blocks \
          $RAND_SEED \
