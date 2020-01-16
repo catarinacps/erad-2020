@@ -1138,13 +1138,13 @@ exp01_df
 Now for some visualizations, I'll replicate the first figure from Marcelo's
 paper.
 
-#+begin_src R :session :results none :exports both
+#+begin_src R :session :results output :exports both
 calculate_tasks <- function(x) {
   if(x == 1) return (1) else return (x*x + calculate_tasks(x-1))
 }
 
 exp01_df %>%
-  group_by(node, matrix_size, block_size, runtime) %>%
+  group_by(matrix_size, block_size, runtime) %>%
   summarize(avg_time = mean(compute_time),
             repetitions = n(),
             error = 3 * sd(compute_time) / sqrt(repetitions)) %>%
@@ -1157,27 +1157,27 @@ fig_1
 
 #+RESULTS:
 #+begin_example
-# A tibble: 139 x 8
-   node  matrix_size block_size runtime       avg_time repetitions error num_tasks
-   <
-      <
+
+# A tibble: 30 x 7
+   matrix_size block_size runtime       avg_time repetitions error num_tasks
+         <
      <
 <
            <
       <
 <
     <dbl>
- 1 cei2         8192         32 kstar_starpu      84.0           1    NA   5625216
- 2 cei2         8192         32 libgomp          739.            1    NA   5625216
- 3 cei2         8192         32 libkomp_clang     NA             1    NA   5625216
- 4 cei2         8192         32 libomp           761.            1    NA   5625216
- 5 cei2         8192         32 starpu           783.            1    NA   5625216
- 6 cei2         8192         64 kstar_starpu      10.2           1    NA    707264
- 7 cei2         8192         64 libgomp          240.            1    NA    707264
- 8 cei2         8192         64 libkomp_clang    306.            1    NA    707264
- 9 cei2         8192         64 libkomp_gcc      306.            1    NA    707264
-10 cei2         8192         64 starpu           229.            1    NA    707264
-# … with 129 more rows
+ 1        8192         32 kstar_starpu      82.9           5  1.38   5625216
+ 2        8192         32 libgomp          763.            5 40.3    5625216
+ 3        8192         32 libkomp_clang     NA             5 NA      5625216
+ 4        8192         32 libkomp_gcc       NA             5 NA      5625216
+ 5        8192         32 libomp           706.            5 52.9    5625216
+ 6        8192         32 starpu           751.            5 63.9    5625216
+ 7        8192         64 kstar_starpu      10.5           5  1.30    707264
+ 8        8192         64 libgomp          241.            5  7.58    707264
+ 9        8192         64 libkomp_clang    308.            5  8.02    707264
+10        8192         64 libkomp_gcc      306.            5  6.39    707264
+# … with 20 more rows
 #+end_example
 
 now for the plot...
@@ -1191,7 +1191,7 @@ fig_1 %>%
              position=position_dodge(width = 1)) +
   geom_errorbar(aes(ymin = avg_time - error,
                     ymax = avg_time + error),
-                width = 0.5,
+                width = 0.6,
                 position=position_dodge(width = 1)) +
   labs(x = "Tamanho da matriz",
        y = "Tempo médio de execução [seg]",
@@ -1207,7 +1207,7 @@ fig_1 %>%
 #+end_src
 
 #+RESULTS:
-[[file:/tmp/babel-FB6Yle/figureXcaqpG.png]]
+[[file:/tmp/babel-FB6Yle/figurefJXc0C.png]]
 
 there is inter-node variability...
 
