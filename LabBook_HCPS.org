@@ -1484,17 +1484,28 @@ export PKG_CONFIG_PATH=$PKG_CONFIG_PATH
 # prepare env variables
 threads_per_core=$(lscpu | grep "per core" | awk '{print $4}')
 real_core_count=$((${SLURM_CPUS_ON_NODE} / ${threads_per_core:-1}))
+
 export STARPU_NCPU=$real_core_count
+export STARPU_FXT_TRACE=1
+
 export OMP_NUM_THREADS=$real_core_count
 export OMP_PLACES=cores
 export OMP_PROC_BIND=true
+export OMP_TOOL=enabled
 
 export SCOREP_ENABLE_PROFILING=true
 export SCOREP_ENABLE_TRACING=true
 export SCOREP_VERBOSE=true
 export SCOREP_TIMER=gettimeofday
+export SCOREP_EXPERIMENT_DIRECTORY=$LIBGOMP_TRACE_DIR
 # why 8G?
 export SCOREP_TOTAL_MEMORY=8G
+
+export KAAPI_RECORD_TRACE=1
+export KAAPI_RECORD_MASK=compute,omp,perfctr
+export KAAPI_PERF_EVENTS=TASK,TASKSPAWN
+export KAAPI_TASKPERF_EVENTS=work,time
+export KAAPI_DISPLAY_PERF=full
 
 echo "Environment variables set up!"
 
@@ -1513,10 +1524,6 @@ mkdir results/libomp
 LIBGOMP_TRACE_DIR=$(readlink -f results)/libgomp
 STARPU_TRACE_DIR=$(readlink -f results)/starpu
 LIBOMP_TRACE_DIR=$(readlink -f results)/libomp
-
-export STARPU_FXT_TRACE=1
-
-export SCOREP_EXPERIMENT_DIRECTORY=$LIBGOMP_TRACE_DIR
 
 pushd code
 make clean
