@@ -1993,22 +1993,15 @@ wget https://raw.githubusercontent.com/schnorr/starvz/master/full_config.yaml
 pajer <- config::get(file = "full_config.yaml")
  #+end_src
 
+ #+RESULTS:
+
 **** Plots
- #+begin_src R :results output graphics :file qr-starpu-kstar-starvz.png :exports both :width 1600 :height 1500 :session Rvz :eval no-export
-pajer$st$abe$active=TRUE
-
-pajer$lackready$active = TRUE
-
-pajer$pmtool$state$active = TRUE
-pajer$pmtool$state$sched = "dmdas"
-
-pajer$pmtool$kiteration$active = FALSE
-
-pajer$pmtool$bounds$active = TRUE
-pajer$pmtool$bounds$alg = blockQrStarpuKstar[[1]]$Pmtool %>% filter(!is.na(Time)) %>% .$Alg %>% unique
-
-the_master_function(blockQrStarpuKstar[[1]])
+ #+begin_src R :results output graphics :file img/trace-qr-starpu-kstar-starvz.png :exports both :width 1600 :height 1500 :session Rvz :eval no-export
+state_chart(blockQrStarpuKstar[[1]])
  #+end_src
+
+ #+RESULTS:
+ [[file:img/qr-starpu-kstar-starvz.png]]
 
 * Resources
 :PROPERTIES:
