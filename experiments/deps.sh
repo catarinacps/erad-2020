@@ -45,8 +45,8 @@ function source_install_spec {
     EXP_DIR=$2
     OVER=$3
 
-    name_version=${SPEC%%[~|+|^]*}
-    prefix=$PWD/$(tr '@' '-' <<<$name_version)
+    name_version=$(tr '@' '-' <<<${SPEC%%[~|+|^]*})
+    prefix=$PWD/$name_version
     repo=$prefix/repo
 
     # if we fall here, we have already installed the package
@@ -58,7 +58,7 @@ function source_install_spec {
 
     # install by the provided shell install script
     mkdir -p $prefix
-    ${EXP_DIR}/${prefix}.sh $prefix/ $repo
+    ${EXP_DIR}/${name_version}.sh $prefix/ $repo
 
     [ ! -f installs.log ] && echo "SPECS HERE INSTALLED" > installs.log
     echo >> installs.log
