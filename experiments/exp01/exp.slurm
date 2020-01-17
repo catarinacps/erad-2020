@@ -75,7 +75,7 @@ mkdir results
 
 pushd code
 make clean
-make all LIBOMP_LIB="$LIBOMP_PATH/lib" LIBOMP_INC="$LIBOMP_PATH/include"
+make all LIBOMP_PATH="$LIBOMP_PATH"
 ln -s $PWD/build/block_qr_libomp $PWD/build/block_qr_libkomp_clang
 ln -s $PWD/build/block_qr_libgomp $PWD/build/block_qr_libkomp_gcc
 popd
@@ -134,4 +134,4 @@ done < $EXP_DIR/runs.plan${PLAN_SUFFIX:-}
 tar czf $EXP_DIR/data/${EXP_NAME}_data.tar.gz *
 
 popd
-rm -rf $SCRATCH/* $SCRATCH/.installs
+rm -rf $SCRATCH/*

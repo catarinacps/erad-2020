@@ -519,7 +519,7 @@ function spack_install_spec {
     OVER=$3
 
     name_version=${SPEC%%[~|+|^]*}
-    dir_name=$(echo $name_version | tr '@' '-')
+    dir_name=$(tr '@' '-' <<<$name_version)
 
     # if we fall here, we have already installed the package
     [ -d ${dir_name}/lib ] && [ $OVER = false ] && return 0
@@ -530,6 +530,32 @@ function spack_install_spec {
     spack install --keep-stage ${flags:-} -y $SPEC arch=$ARCH
     spack view -d true soft -i $dir_name $SPEC arch=$ARCH
     spack find -l
+
+    [ ! -f installs.log ] && echo "SPECS HERE INSTALLED" > installs.log
+    echo >> installs.log
+    echo -e "PACKAGE:\t${name_version}" >> installs.log
+    echo -e "SPEC:\t${SPEC}" >> installs.log
+}
+
+function source_install_spec {
+    SPEC=$1
+    EXP_DIR=$2
+    OVERWRITE=$3
+
+    name_version=${SPEC%%[~|+|^]*}
+    prefix=$(tr '@' '-' <<<$name_version)
+    repo=${prefix}/repo
+
+    # if we fall here, we have already installed the package
+    [ -d ${prefix}/lib ] && [ $OVERWRITE = false ] && exit 0
+
+    [ $OVERWRITE = true ] && rm -rf $prefix
+
+    echo "${name_version} not yet installed!"
+
+    # install by the provided shell install script
+    mkdir -p $prefix
+    ${EXP_DIR}/${prefix}.sh $prefix $repo
 
     [ ! -f installs.log ] && echo "SPECS HERE INSTALLED" > installs.log
     echo >> installs.log
@@ -575,7 +601,7 @@ while read -r method spec; do
             spack_install_spec $spec $arch $OVERWRITE
             ;;
         manual)
-            $EXP_DIR/${spec//@/-}.sh $INSTALL_DIR $OVERWRITE
+            source_install_spec $spec $EXP_DIR $OVERWRITE
             ;;
         ,*)
             echo
@@ -677,21 +703,12 @@ spack kstar@master+starpu^starpu@1.3.1~fxt~poti~examples~mpi+openmp
 From the [[https://github.com/llvm-mirror/openmp][LLVM stdlib]]:
 
 #+begin_src bash :shebang "#!/bin/bash" :exports both :results none :tangle experiments/exp01/libomp-6.0.sh
-set -euo pipefail
-
 INSTALL_DIR=$1
-OVERWRITE=$2
-LIBOMP_DIR=$INSTALL_DIR/libomp-6.0
+REPO_DIR=$2
 
-[ -d $LIBOMP_DIR ] && [ $OVERWRITE = false ] && exit 0
-
-[ $OVERWRITE = true ] && rm -rf $LIBOMP_DIR
-
-echo "libomp not yet installed!"
 pip install --user lit
-mkdir $LIBOMP_DIR
-git clone https://github.com/llvm-mirror/openmp.git $LIBOMP_DIR/repo
-pushd $LIBOMP_DIR/repo
+git clone https://github.com/llvm-mirror/openmp.git $REPO_DIR
+pushd $REPO_DIR
 git checkout release_60
 mkdir build
 pushd build
@@ -700,15 +717,14 @@ export PATH+=:$LLVM_PATHS
 cmake \
     -DCMAKE_C_COMPILER=clang \
     -DCMAKE_CXX_COMPILER=clang++ \
-    -DCMAKE_INSTALL_PREFIX=$LIBOMP_DIR \
-    -DLIBOMP_OMPT_SUPPORT=on \
-    -DLIBOMP_OMPT_OPTIONAL=on \
-    -DLIBOMP_STATS=on \
+    -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR \
     ..
 make -j
 make -j install
 popd
 popd
+
+rm -rf $REPO_DIR
 #+end_src
 
 *** Makefile
@@ -747,9 +763,8 @@ INC := -I$(INC_DIR) -I$(SRC_DIR) $(INC_EXTRA)\
 	$(shell pkg-config lapack lapacke blas --cflags)
 
 #	Should be defined in the command line
-LIBOMP_LIB :=
-LIBOMP_INC :=
-LIBOMP := -L$(LIBOMP_LIB) -Wl,--rpath,$(LIBOMP_LIB) -I$(LIBOMP_INC)
+LIBOMP_PATH :=
+LIBOMP := -L$(LIBOMP_PATH)/lib -Wl,--rpath,$(LIBOMP_PATH)/lib -I$(LIBOMP_PATH)/include
 
 ################################################################################
 #	Files:
@@ -906,7 +921,7 @@ mkdir results
 
 pushd code
 make clean
-make all LIBOMP_LIB="$LIBOMP_PATH/lib" LIBOMP_INC="$LIBOMP_PATH/include"
+make all LIBOMP_PATH="$LIBOMP_PATH"
 ln -s $PWD/build/block_qr_libomp $PWD/build/block_qr_libkomp_clang
 ln -s $PWD/build/block_qr_libgomp $PWD/build/block_qr_libkomp_gcc
 popd
@@ -965,7 +980,7 @@ done < $EXP_DIR/runs.plan${PLAN_SUFFIX:-}
 tar czf $EXP_DIR/data/${EXP_NAME}_data.tar.gz *
 
 popd
-rm -rf $SCRATCH/* $SCRATCH/.installs
+rm -rf $SCRATCH/*
 #+end_src
 
 *** Analysis
@@ -1201,7 +1216,14 @@ exp01_df
 
 # A tibble: 450 x 9
    node  rep_id matrix_size block_size runtime compute_time total_time expid
-   <chr>  <dbl>       <dbl>      <dbl> <chr>          <dbl>      <dbl> <chr>
+   <
+ <
+      <
+     <
+<
+         <
+     <
+<chr>
  1 cei2       1        8192        512 libomp         107.       108.  exp01
  2 cei2       1        8192         32 libkom…         NA         NA   exp01
  3 cei2       1        8192        256 libkom…         92.7       94.1 exp01
@@ -1282,7 +1304,8 @@ fig_1 %>%
 
 #+RESULTS:
 :
-: Scale for 'y' is already present. Adding another scale for 'y', which will replace the existing scale.
+: Scale for 'y' is already present. Adding another scale for 'y', which will
+: replace the existing scale.
 : Warning messages:
 : 1: Removed 13 rows containing missing values (geom_point).
 : 2: Removed 13 rows containing missing values (geom_errorbar).
@@ -1309,17 +1332,18 @@ fig_1 %>%
        y = "Tempo médio de execução [seg]",
        color = "Runtime utilizado",
        shape = "Runtime utilizado") +
-  scale_y_continuous(expand = expand_scale(mult = c(0, 0.05)),
-                     breaks = scales::pretty_breaks(n = 8)) +
   facet_wrap(~ case, scales="free", nrow = 3) +
-  ylim(0, NA) +
+  scale_y_continuous(expand = expand_scale(mult = c(0, 0.05)),
+                     breaks = scales::pretty_breaks(n = 8),
+                     limits = c(0, NA)) +
   theme_bw() +
   theme(text = element_text(family = "Palatino", size = 16),
+        strip.text = element_text(size = 12),
+        # strip.background = element_rect(fill = "white"),
         legend.position = "top")
 #+end_src
 
 #+RESULTS:
-[[file:img/makespan-all.png]]
 
 ** STARTED 2 - Tracing
 - State "STARTED"    from              [2020-01-09 qui 15:22]
@@ -1380,36 +1404,28 @@ In this experiment we'll need the following =spack= packages:
 - netlib-lapack
 - scorep
 
-#+begin_src bash :tangle experiments/exp02/exp.deps
+#+begin_src text :tangle experiments/exp02/exp.deps
 spack hdf5@1.10.5~mpi
 spack starpu@1.3.1+fxt+poti~examples~mpi+openmp
 spack netlib-lapack@3.8.0
 manual libomp@6.0
+manual libomp-ompt@6.0
 spack libkomp@master+the+affinity+numa+tracing+papi+vardep
 spack kstar@master+starpu^starpu@1.3.1+fxt+poti~examples~mpi+openmp
 spack scorep@6.0
 #+end_src
 
-**** libomp-6.0
+**** libomp-ompt-6.0
 
 From the [[https://github.com/llvm-mirror/openmp][LLVM stdlib]]:
 
-#+begin_src bash :shebang "#!/bin/bash" :exports both :results none :tangle experiments/exp02/libomp-6.0.sh
-set -euo pipefail
-
+#+begin_src bash :shebang "#!/bin/bash" :exports both :results none :tangle experiments/exp02/libomp-ompt-6.0.sh
 INSTALL_DIR=$1
-OVERWRITE=$2
-LIBOMP_DIR=$INSTALL_DIR/libomp-6.0
+REPO_DIR=$2
 
-[ -d $LIBOMP_DIR ] && [ $OVERWRITE = false ] && exit 0
-
-[ $OVERWRITE = true ] && rm -rf $LIBOMP_DIR
-
-echo "libomp not yet installed!"
 pip install --user lit
-mkdir $LIBOMP_DIR
-git clone https://github.com/llvm-mirror/openmp.git $LIBOMP_DIR/repo
-pushd $LIBOMP_DIR/repo
+git clone https://github.com/llvm-mirror/openmp.git $REPO_DIR
+pushd $REPO_DIR
 git checkout release_60
 mkdir build
 pushd build
@@ -1418,7 +1434,7 @@ export PATH+=:$LLVM_PATHS
 cmake \
     -DCMAKE_C_COMPILER=clang \
     -DCMAKE_CXX_COMPILER=clang++ \
-    -DCMAKE_INSTALL_PREFIX=$LIBOMP_DIR \
+    -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR \
     -DLIBOMP_OMPT_SUPPORT=on \
     -DLIBOMP_OMPT_OPTIONAL=on \
     -DLIBOMP_STATS=on \
@@ -1427,6 +1443,37 @@ make -j
 make -j install
 popd
 popd
+
+rm -rf $REPO_DIR
+#+end_src
+
+**** libomp-6.0
+
+From the [[https://github.com/llvm-mirror/openmp][LLVM stdlib]]:
+
+#+begin_src bash :shebang "#!/bin/bash" :exports both :results none :tangle experiments/exp02/libomp-6.0.sh
+INSTALL_DIR=$1
+REPO_DIR=$2
+
+pip install --user lit
+git clone https://github.com/llvm-mirror/openmp.git $REPO_DIR
+pushd $REPO_DIR
+git checkout release_60
+mkdir build
+pushd build
+LLVM_PATHS=$(find /usr/lib -name 'llvm-[0-9]*' | sed -e 's/$/\/bin/' | paste -s -d':' -)
+export PATH+=:$LLVM_PATHS
+cmake \
+    -DCMAKE_C_COMPILER=clang \
+    -DCMAKE_CXX_COMPILER=clang++ \
+    -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR \
+    ..
+make -j
+make -j install
+popd
+popd
+
+rm -rf $REPO_DIR
 #+end_src
 
 *** Makefile
@@ -1465,14 +1512,15 @@ INC := -I$(INC_DIR) -I$(SRC_DIR) \
 # LIBOMP := -L$(LIBOMP_LIB) -Wl,--rpath,$(LIBOMP_LIB) -I$(LIBOMP_INC)
 
 #	Should be defined in the command line
-LIBOMP_LIB :=
-LIBOMP_INC :=
-LIBOMP := -L$(LIBOMP_LIB) -Wl,--rpath,$(LIBOMP_LIB) -I$(LIBOMP_INC)
+LIBOMP_PATH :=
+LIBOMP := -L$(LIBOMP_PATH)/lib -Wl,--rpath,$(LIBOMP_PATH)/lib -I$(LIBOMP_PATH)/include
+LIBOMP_OMPT_PATH :=
+LIBOMP_OMPT := -L$(LIBOMP_OMPT_PATH)/lib -Wl,--rpath,$(LIBOMP_OMPT_PATH)/lib -I$(LIBOMP_OMPT_PATH)/include
 
 ################################################################################
 #	Files:
 
-# 	- List of targets
+#	- List of targets
 TARGET_EXE := $(OUT_DIR)/block_qr_scorep $(OUT_DIR)/block_qr_starpu $(OUT_DIR)/block_qr_ompt $(OUT_DIR)/matrix_generator $(OUT_DIR)/block_qr_kstar_starpu $(OUT_DIR)/block_qr_libkomp_clang $(OUT_DIR)/block_qr_libkomp_gcc
 
 #	- Path to all final libraries:
@@ -1510,10 +1558,10 @@ $(OUT_DIR)/block_qr_starpu: $(SRC_DIR)/block_qr_starpu.c $(OBJ_DIR)/mutils.o
 # Lib for getting OMPT traces
 #
 $(LIB_DIR)/libinit.so: $(LIB_DIR)/init/initialization.c $(LIB_DIR)/init/initialization.h
-	$(CC) $^ -o $@ -shared -fPIC $(CFLAGS) $(LIBOMP) $(OMP)
+	$(CC) $^ -o $@ -shared -fPIC $(CFLAGS) $(LIBOMP_OMPT) $(OMP)
 
 $(OUT_DIR)/block_qr_ompt: $(SRC_DIR)/block_qr_ompt.c $(OBJ_DIR)/mutils.o
-	$(CC) -o $@ $^ $(INC) $(LIB) $(CFLAGS) $(OMP) $(LIBOMP) -DDYN_TOOL -linit
+	$(CC) -o $@ $^ $(INC) $(LIB) $(CFLAGS) $(OMP) $(LIBOMP_OMPT) -DDYN_TOOL -linit
 
 #
 # Kstar with starpu runtime
@@ -1591,6 +1639,7 @@ rm -rf *
 
 STARPU_PATH=$(readlink -f $INSTALL/starpu-1.3.1)
 LIBOMP_PATH=$(readlink -f $INSTALL/libomp-6.0)
+LIBOMP_OMPT_PATH=$(readlink -f $INSTALL/libomp-ompt-6.0)
 LAPACK_PATH=$(readlink -f $INSTALL/netlib-lapack-3.8.0)
 SCOREP_PATH=$(readlink -f $INSTALL/scorep-6.0)
 HDF5_PATH=$(readlink -f $INSTALL/hdf5-1.10.5)
@@ -1645,7 +1694,7 @@ mkdir results
 
 pushd code
 make clean
-make all LIBOMP_LIB="$LIBOMP_PATH/lib" LIBOMP_INC="$LIBOMP_PATH/include"
+make all LIBOMP_PATH="$LIBOMP_PATH" LIBOMP_OMPT_PATH="$LIBOMP_OMPT_PATH"
 popd
 
 # init the results csv
@@ -1703,9 +1752,9 @@ while read -r runtime matrix num_blocks; do
             popd
             mv stat.* results/$run_id
             ;;
-	starpu|kstar_starpu)
-	    mv activity.data dag.dot data.rec distrib.data paje.trace tasks.rec trace.html trace.rec results/$run_id
-	    ;;
+        starpu|kstar_starpu)
+            mv activity.data dag.dot data.rec distrib.data paje.trace tasks.rec trace.html trace.rec results/$run_id
+            ;;
     esac
 
     # add the execution data to the csv
@@ -1726,7 +1775,7 @@ done < $EXP_DIR/runs.plan${PLAN_SUFFIX:-}
 tar czf $EXP_DIR/data/${EXP_NAME}_data.tar.gz *
 
 popd
-rm -rf $SCRATCH/* $SCRATCH/.installs
+rm -rf $SCRATCH/*
 #+end_src
 
 *** Post-processing

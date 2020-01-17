@@ -29,9 +29,8 @@ INC := -I$(INC_DIR) -I$(SRC_DIR) $(INC_EXTRA)\
 	$(shell pkg-config lapack lapacke blas --cflags)
 
 #	Should be defined in the command line
-LIBOMP_LIB :=
-LIBOMP_INC :=
-LIBOMP := -L$(LIBOMP_LIB) -Wl,--rpath,$(LIBOMP_LIB) -I$(LIBOMP_INC)
+LIBOMP_PATH :=
+LIBOMP := -L$(LIBOMP_PATH)/lib -Wl,--rpath,$(LIBOMP_PATH)/lib -I$(LIBOMP_PATH)/include
 
 ################################################################################
 #	Files:

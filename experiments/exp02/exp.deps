@@ -2,6 +2,7 @@ spack hdf5@1.10.5~mpi
 spack starpu@1.3.1+fxt+poti~examples~mpi+openmp
 spack netlib-lapack@3.8.0
 manual libomp@6.0
+manual libomp-ompt@6.0
 spack libkomp@master+the+affinity+numa+tracing+papi+vardep
 spack kstar@master+starpu^starpu@1.3.1+fxt+poti~examples~mpi+openmp
 spack scorep@6.0

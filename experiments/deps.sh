@@ -16,7 +16,7 @@ function spack_install_spec {
     OVER=$3
 
     name_version=${SPEC%%[~|+|^]*}
-    dir_name=$(echo $name_version | tr '@' '-')
+    dir_name=$(tr '@' '-' <<<$name_version)
 
     # if we fall here, we have already installed the package
     [ -d ${dir_name}/lib ] && [ $OVER = false ] && return 0
@@ -27,6 +27,32 @@ function spack_install_spec {
     spack install --keep-stage ${flags:-} -y $SPEC arch=$ARCH
     spack view -d true soft -i $dir_name $SPEC arch=$ARCH
     spack find -l
+
+    [ ! -f installs.log ] && echo "SPECS HERE INSTALLED" > installs.log
+    echo >> installs.log
+    echo -e "PACKAGE:\t${name_version}" >> installs.log
+    echo -e "SPEC:\t${SPEC}" >> installs.log
+}
+
+function source_install_spec {
+    SPEC=$1
+    EXP_DIR=$2
+    OVERWRITE=$3
+
+    name_version=${SPEC%%[~|+|^]*}
+    prefix=$(tr '@' '-' <<<$name_version)
+    repo=${prefix}/repo
+
+    # if we fall here, we have already installed the package
+    [ -d ${prefix}/lib ] && [ $OVERWRITE = false ] && exit 0
+
+    [ $OVERWRITE = true ] && rm -rf $prefix
+
+    echo "${name_version} not yet installed!"
+
+    # install by the provided shell install script
+    mkdir -p $prefix
+    ${EXP_DIR}/${prefix}.sh $prefix $repo
 
     [ ! -f installs.log ] && echo "SPECS HERE INSTALLED" > installs.log
     echo >> installs.log
@@ -72,7 +98,7 @@ while read -r method spec; do
             spack_install_spec $spec $arch $OVERWRITE
             ;;
         manual)
-            $EXP_DIR/${spec//@/-}.sh $INSTALL_DIR $OVERWRITE
+            source_install_spec $spec $EXP_DIR $OVERWRITE
             ;;
         *)
             echo

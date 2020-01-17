@@ -29,15 +29,16 @@ INC := -I$(INC_DIR) -I$(SRC_DIR) \
 # LIBOMP := -L$(LIBOMP_LIB) -Wl,--rpath,$(LIBOMP_LIB) -I$(LIBOMP_INC)
 
 #	Should be defined in the command line
-LIBOMP_LIB :=
-LIBOMP_INC :=
-LIBOMP := -L$(LIBOMP_LIB) -Wl,--rpath,$(LIBOMP_LIB) -I$(LIBOMP_INC)
+LIBOMP_PATH :=
+LIBOMP := -L$(LIBOMP_PATH)/lib -Wl,--rpath,$(LIBOMP_PATH)/lib -I$(LIBOMP_PATH)/include
+LIBOMP_OMPT_PATH :=
+LIBOMP_OMPT := -L$(LIBOMP_OMPT_PATH)/lib -Wl,--rpath,$(LIBOMP_OMPT_PATH)/lib -I$(LIBOMP_OMPT_PATH)/include
 
 ################################################################################
 #	Files:
 
-# 	- List of targets
-TARGET_EXE := $(OUT_DIR)/block_qr_scorep $(OUT_DIR)/block_qr_starpu $(OUT_DIR)/block_qr_ompt $(OUT_DIR)/matrix_generator $(OUT_DIR)/block_qr_kstar_starpu
+#	- List of targets
+TARGET_EXE := $(OUT_DIR)/block_qr_scorep $(OUT_DIR)/block_qr_starpu $(OUT_DIR)/block_qr_ompt $(OUT_DIR)/matrix_generator $(OUT_DIR)/block_qr_kstar_starpu $(OUT_DIR)/block_qr_libkomp_clang $(OUT_DIR)/block_qr_libkomp_gcc
 
 #	- Path to all final libraries:
 TARGET_LIB := $(patsubst %, $(LIB_DIR)/lib%.so, $(shell basename $(shell find $(LIB_DIR)/* -maxdepth 0 -type d)))
@@ -74,10 +75,10 @@ $(OUT_DIR)/block_qr_starpu: $(SRC_DIR)/block_qr_starpu.c $(OBJ_DIR)/mutils.o
 # Lib for getting OMPT traces
 #
 $(LIB_DIR)/libinit.so: $(LIB_DIR)/init/initialization.c $(LIB_DIR)/init/initialization.h
-	$(CC) $^ -o $@ -shared -fPIC $(CFLAGS) $(LIBOMP) $(OMP)
+	$(CC) $^ -o $@ -shared -fPIC $(CFLAGS) $(LIBOMP_OMPT) $(OMP)
 
 $(OUT_DIR)/block_qr_ompt: $(SRC_DIR)/block_qr_ompt.c $(OBJ_DIR)/mutils.o
-	$(CC) -o $@ $^ $(INC) $(LIB) $(CFLAGS) $(OMP) $(LIBOMP) -DDYN_TOOL -linit
+	$(CC) -o $@ $^ $(INC) $(LIB) $(CFLAGS) $(OMP) $(LIBOMP_OMPT) -DDYN_TOOL -linit
 
 #
 # Kstar with starpu runtime
@@ -87,6 +88,15 @@ $(OBJ_DIR)/block_qr_kstar_starpu.o: $(SRC_DIR)/block_qr_openmp.c
 
 $(OUT_DIR)/block_qr_kstar_starpu: $(OBJ_DIR)/block_qr_kstar_starpu.o $(OBJ_DIR)/mutils_kstar.o
 	$(KSTAR) -o $@ $^ $(shell pkg-config starpu-1.3 hwloc fxt poti --libs) $(LIB) $(OMP) $(LIBOMP)
+
+#
+# Libkomp
+#
+$(OUT_DIR)/block_qr_libkomp_clang: $(SRC_DIR)/block_qr_openmp.c $(OBJ_DIR)/mutils.o
+	$(CC) -o $@ $^ $(INC) $(LIB) $(CFLAGS) $(OMP) $(LIBOMP)
+
+$(OUT_DIR)/block_qr_libkomp_gcc: $(SRC_DIR)/block_qr_openmp.c $(OBJ_DIR)/mutils.o
+	$(CC) -o $@ $^ $(INC) $(OMP) $(CFLAGS) $(LIB)
 
 #
 # Matrix Generator
