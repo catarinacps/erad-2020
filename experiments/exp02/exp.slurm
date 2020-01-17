@@ -114,7 +114,7 @@ while read -r runtime matrix num_blocks; do
     mkdir -p results/$run_id
 
     if [[ $runtime = starpu ]] || [[ $runtime = kstar_starpu ]]; then
-        export STARPU_FXT_PREFIX=results/$run_id/
+        export STARPU_FXT_PREFIX=$(readlink -f results/$run_id)/
         LD_LIBRARY_PATH+=:$HDF5_PATH/lib
         LD_LIBRARY_PATH+=:$STARPU_PATH/lib
     elif [[ $runtime = kstar_starpu ]]; then
@@ -125,7 +125,7 @@ while read -r runtime matrix num_blocks; do
         export LD_PRELOAD=$LIBKOMP_PATH/lib/trace-libomp.so
         LD_LIBRARY_PATH+=:$LIBKOMP_PATH/lib
     elif [[ $runtime = libgomp ]]; then
-        export SCOREP_EXPERIMENT_DIRECTORY=results/$run_id
+        export SCOREP_EXPERIMENT_DIRECTORY=$(readlink -f results/$run_id)
     fi
 
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH
