@@ -1473,7 +1473,7 @@ LIBOMP := -L$(LIBOMP_LIB) -Wl,--rpath,$(LIBOMP_LIB) -I$(LIBOMP_INC)
 #	Files:
 
 # 	- List of targets
-TARGET_EXE := $(OUT_DIR)/block_qr_scorep $(OUT_DIR)/block_qr_starpu $(OUT_DIR)/block_qr_ompt $(OUT_DIR)/matrix_generator $(OUT_DIR)/block_qr_kstar_starpu
+TARGET_EXE := $(OUT_DIR)/block_qr_scorep $(OUT_DIR)/block_qr_starpu $(OUT_DIR)/block_qr_ompt $(OUT_DIR)/matrix_generator $(OUT_DIR)/block_qr_kstar_starpu $(OUT_DIR)/block_qr_libkomp_clang $(OUT_DIR)/block_qr_libkomp_gcc
 
 #	- Path to all final libraries:
 TARGET_LIB := $(patsubst %, $(LIB_DIR)/lib%.so, $(shell basename $(shell find $(LIB_DIR)/* -maxdepth 0 -type d)))
