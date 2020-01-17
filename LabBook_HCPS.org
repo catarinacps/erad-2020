@@ -1986,13 +1986,33 @@ names(blockQrStarpuKstar) <-
 
 
 **** Full config
- #+begin_src shell :results output :exports both :eval no-export
+#+name: getFullConfig
+ #+begin_src shell :results output :exports both :eval no-export :cache yes
 wget https://raw.githubusercontent.com/schnorr/starvz/master/full_config.yaml
  #+end_src
 
- #+begin_src R :results output :exports both :session Rvz :eval no-export
+ #+RESULTS:
+
+#+name: fullConfig
+#+header: :var dep1=getFullConfig
+ #+begin_src R :results output :exports both :session Rvz :eval no-export :cache yes 
 pajer <- config::get(file = "full_config.yaml")
  #+end_src
+
+**** Custom config
+#+name: customConfig
+#+header: :var dep1=fullConfig
+     #+begin_src shell :results output :exports both
+pajer$st$outliers = FALSE
+pajer$st$cpb = FALSE
+pajer$pmtool$bounds$active = FALSE
+pajer$activenodes$active = FALSE
+pajer$computingnodes$active = FALSE
+pajer$kiteration$active = FALSE
+pajer$lackready$active=TRUE
+pajer$lackready$aggregation = 500
+pajer$st$alpha = 0.8    
+     #+end_src
 
  #+RESULTS:
 
