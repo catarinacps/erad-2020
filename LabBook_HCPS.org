@@ -2017,8 +2017,11 @@ pajer$st$alpha = 0.8
  #+RESULTS:
 
 **** Plots
- #+begin_src R :results output graphics :file img/trace-qr-starpu-kstar-starvz.png :exports both :width 1600 :height 1500 :session Rvz :eval no-export
-state_chart(blockQrStarpuKstar[[1]])
+#+header: :var dep1=customConfig
+ #+begin_src R :results output graphics :file img/trace-qr-starpu-kstar-starvz.png :exports both :width 1350 :height 2000 :session Rvz :eval no-export
+
+#state_chart(blockQrStarpuKstar[[1]])
+the_master_function(blockQrStarpuKstar[[1]])
  #+end_src
 
  #+RESULTS:
