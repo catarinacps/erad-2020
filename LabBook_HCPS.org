@@ -2002,7 +2002,7 @@ pajer <- config::get(file = "full_config.yaml")
 **** Custom config
 #+name: customConfig
 #+header: :var dep1=fullConfig
-     #+begin_src shell :results output :exports both
+#+begin_src R :results output :session Rvz :exports both
 pajer$st$outliers = FALSE
 pajer$st$cpb = FALSE
 pajer$pmtool$bounds$active = FALSE
