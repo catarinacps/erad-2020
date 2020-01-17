@@ -14,6 +14,9 @@ cmake \
     -DCMAKE_C_COMPILER=clang \
     -DCMAKE_CXX_COMPILER=clang++ \
     -DCMAKE_INSTALL_PREFIX=$INSTALL_DIR \
+    -DLIBOMP_OMPT_SUPPORT=on \
+    -DLIBOMP_OMPT_OPTIONAL=on \
+    -DLIBOMP_STATS=on \
     ..
 make -j
 make -j install

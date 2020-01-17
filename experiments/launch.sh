@@ -265,6 +265,7 @@ for partition in $PARTITIONLIST; do
         if [ ! -z ${plan_part:+z} ]; then
             plan_part=$((plan_part+1))
         fi
+        echo
     done
 
     # if not local, revert the path so we can repeat to the next partition

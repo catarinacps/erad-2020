@@ -39,6 +39,7 @@ rm -rf *
 
 STARPU_PATH=$(readlink -f $INSTALL/starpu-1.3.1)
 LIBOMP_PATH=$(readlink -f $INSTALL/libomp-6.0)
+LIBOMP_OMPT_PATH=$(readlink -f $INSTALL/libomp-ompt-6.0)
 LAPACK_PATH=$(readlink -f $INSTALL/netlib-lapack-3.8.0)
 SCOREP_PATH=$(readlink -f $INSTALL/scorep-6.0)
 HDF5_PATH=$(readlink -f $INSTALL/hdf5-1.10.5)
@@ -61,6 +62,7 @@ real_core_count=$((${SLURM_CPUS_ON_NODE} / ${threads_per_core:-1}))
 
 export STARPU_NCPU=$real_core_count
 export STARPU_FXT_TRACE=1
+export STARPU_GENERATE_TRACE=1
 
 export OMP_NUM_THREADS=$real_core_count
 export OMP_PLACES=cores
@@ -92,7 +94,7 @@ mkdir results
 
 pushd code
 make clean
-make all LIBOMP_LIB="$LIBOMP_PATH/lib" LIBOMP_INC="$LIBOMP_PATH/include"
+make all LIBOMP_PATH="$LIBOMP_PATH" LIBOMP_OMPT_PATH="$LIBOMP_OMPT_PATH"
 popd
 
 # init the results csv
@@ -112,7 +114,7 @@ while read -r runtime matrix num_blocks; do
     mkdir -p results/$run_id
 
     if [[ $runtime = starpu ]] || [[ $runtime = kstar_starpu ]]; then
-        export STARPU_FXT_PREFIX=results/$run_id
+        export STARPU_FXT_PREFIX=$(readlink -f results/$run_id)/
         LD_LIBRARY_PATH+=:$HDF5_PATH/lib
         LD_LIBRARY_PATH+=:$STARPU_PATH/lib
     elif [[ $runtime = kstar_starpu ]]; then
@@ -123,7 +125,7 @@ while read -r runtime matrix num_blocks; do
         export LD_PRELOAD=$LIBKOMP_PATH/lib/trace-libomp.so
         LD_LIBRARY_PATH+=:$LIBKOMP_PATH/lib
     elif [[ $runtime = libgomp ]]; then
-        export SCOREP_EXPERIMENT_DIRECTORY=results/$run_id
+        export SCOREP_EXPERIMENT_DIRECTORY=$(readlink -f results/$run_id)
     fi
 
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH
@@ -150,6 +152,9 @@ while read -r runtime matrix num_blocks; do
             popd
             mv stat.* results/$run_id
             ;;
+        starpu|kstar_starpu)
+            mv activity.data dag.dot data.rec distrib.data paje.trace tasks.rec trace.html trace.rec results/$run_id
+            ;;
     esac
 
     # add the execution data to the csv
@@ -170,4 +175,4 @@ done < $EXP_DIR/runs.plan${PLAN_SUFFIX:-}
 tar czf $EXP_DIR/data/${EXP_NAME}_data.tar.gz *
 
 popd
-rm -rf $SCRATCH/* $SCRATCH/.installs
+rm -rf $SCRATCH/*
