@@ -13,6 +13,8 @@ cat << EOF
       shows this message and exits
     -d | --dry
       prints what it would do instead of actually doing it
+    -a | --available
+      only use currently available nodes
     -u | --update
       updates the repo before running any commands
     -i | --install[=]path/to/the/installs
@@ -77,6 +79,10 @@ for i in "$@"; do
             OVERWRITE=true
             shift
             ;;
+        --available)
+            AVAILABLE="-t idle"
+            shift
+            ;;
         --split)
             SPLIT=true
             shift
@@ -130,6 +136,9 @@ for i in "$@"; do
                         ;;
                     o)
                         OVERWRITE=true
+                        ;;
+                    a)
+                        AVAILABLE="-t idle"
                         ;;
                     s)
                         SPLIT=true
@@ -226,7 +235,7 @@ for partition in $PARTITIONLIST; do
     echo
 
     # change the gppd-info to sinfo when porting
-    ALLNODES=$(gppd-info --long --Node -S NODELIST -p $partition -h | awk '{print $1}')
+    ALLNODES=$(gppd-info --long --Node -S NODELIST -p $partition -h ${AVAILABLE:-} | awk '{print $1}')
     if [ -z ${NODELIST+x} ]; then
         nodes=$(paste -s -d" " - <<<$ALLNODES)
     else
