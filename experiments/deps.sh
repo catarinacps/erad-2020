@@ -59,7 +59,6 @@ function source_install_spec {
     # install by the provided shell install script
     mkdir -p $prefix
     ${EXP_DIR}/${prefix}.sh $prefix/ $repo
-    rm -rf $repo
 
     [ ! -f installs.log ] && echo "SPECS HERE INSTALLED" > installs.log
     echo >> installs.log

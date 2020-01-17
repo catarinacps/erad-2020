@@ -40,6 +40,7 @@ assignment/paper about QR Factorization analysis.
     - [[#makefile-1][Makefile]]
     - [[#script-1][Script]]
     - [[#post-processing][Post-processing]]
+    - [[#analysis-1][Analysis]]
 - [[#resources][Resources]]
   - [[#archive-1][Archive]]
     - [[#deps-script-backup][Deps script backup]]
@@ -562,7 +563,6 @@ function source_install_spec {
     # install by the provided shell install script
     mkdir -p $prefix
     ${EXP_DIR}/${prefix}.sh $prefix/ $repo
-    rm -rf $repo
 
     [ ! -f installs.log ] && echo "SPECS HERE INSTALLED" > installs.log
     echo >> installs.log
@@ -1949,11 +1949,11 @@ rm -rf .git
  #+name: raw-simu-starvz
  #+header: :var rawPath="./experiments/exp02/results-draco1-wip"
  #+begin_src sh :results output :exports both :cache yes :eval no-export
-export PATH=starvz-src/:$PATH 
+export PATH=starvz-src/:$PATH
 export PATH=~/misc/pajeng/bin:$PATH
 export PATH=`starpu-spack/src/spack/bin/spack location -i starpu`/bin/:$PATH
 
-for file in `find $rawPath -maxdepth 1 -type d -name "*starpu*"`;  do     
+for file in `find $rawPath -maxdepth 1 -type d -name "*starpu*"`;  do
     # starvz
     ./starvz-src/src/phase1-workflow.sh $file qr
 done
@@ -1969,14 +1969,14 @@ library(starvz)
 **** Reading Feather
  #+header: :var rawDirSimulated="./experiments/exp02/results-draco1-wip"
  #+begin_src R :results output :exports both :session Rvz :eval no-export
-blockQrStarpuKstar <- 
-    grep("starpu", list.dirs(path=rawDirSimulated, full.names=TRUE, recursive=FALSE), value=TRUE) %>%   
-    lapply(function(fl){ 
+blockQrStarpuKstar <-
+    grep("starpu", list.dirs(path=rawDirSimulated, full.names=TRUE, recursive=FALSE), value=TRUE) %>%
+    lapply(function(fl){
         print(paste0("Working on ", fl))
         the_fast_reader_function(fl)
     })
 
-names(blockQrStarpuKstar) <- 
+names(blockQrStarpuKstar) <-
     grep("starpu", list.dirs(path=rawDirSimulated, full.names=TRUE, recursive=FALSE), value=TRUE) %>%
     lapply(function(fl){
         nm <- basename(fl) %>% strsplit("-") %>% unlist()
@@ -1997,12 +1997,12 @@ pajer <- config::get(file = "full_config.yaml")
  #+RESULTS:
 
 **** Plots
- #+begin_src R :results output graphics :file img/trace-qr-starpu-kstar-starvz.png :exports both :width 1600 :height 1500 :session Rvz :eval no-export
+#+begin_src R :results output graphics :file img/trace-qr-starpu-kstar-starvz.png :exports both :width 1600 :height 1500 :session Rvz :eval no-export
 state_chart(blockQrStarpuKstar[[1]])
- #+end_src
+#+end_src
 
- #+RESULTS:
- [[file:img/qr-starpu-kstar-starvz.png]]
+#+RESULTS:
+[[file:img/qr-starpu-kstar-starvz.png]]
 
 * Resources
 :PROPERTIES:
