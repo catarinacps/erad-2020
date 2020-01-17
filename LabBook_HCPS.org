@@ -1867,6 +1867,99 @@ done
 wait
 #+end_src
 
+*** Analysis
+**** StarVZ - Starpu & Kstar
+**** Get starvz scritps
+ #+begin_src shell :results output :exports both :eval no-export
+git clone --depth=1 git@github.com:schnorr/starvz.git starvz-src && cd starvz-src
+git rev-parse HEAD
+rm -rf .git
+ #+end_src
+
+ #+RESULTS:
+ : cb2b7a233d895fda057f8561ec4e5a07f1dbb489
+
+**** Get starpu and install it (needed by some starvz scripts)
+ #+begin_src shell :results output :exports both :eval no-export
+git clone --depth=1 http://gitlab+deploy-token-127235:BZMob8RJoRPZAdLtsstX@gitlab.com/viniciusvgp/customSpack.git starpu-spack && cd starpu-spack
+git rev-parse HEAD
+rm -rf .git
+
+./install_spack.sh -smy
+./src/spack/bin/spack install starpu@1.3.1+fxt+poti~examples~mpi+openmp
+ #+end_src
+
+ #+RESULTS:
+ : 50afedcc9e7e061cdb1df610507ef8dbef83f756
+
+
+
+**** Phase 1
+ #+name: raw-simu-starvz
+ #+header: :var rawPath="./experiments/exp02/results-draco1-wip"
+ #+begin_src sh :results output :exports both :cache yes :eval no-export
+export PATH=starvz-src/:$PATH 
+export PATH=~/misc/pajeng/bin:$PATH
+export PATH=`starpu-spack/src/spack/bin/spack location -i starpu`/bin/:$PATH
+
+for file in `find $rawPath -maxdepth 1 -type d -name "*starpu*"`;  do     
+    # starvz
+    ./starvz-src/src/phase1-workflow.sh $file qr
+done
+ #+end_src
+
+
+**** Loading StarVZ
+ #+begin_src R :results output :exports both :session Rvz :eval no-export
+library(starvz)
+ #+end_src
+
+
+**** Reading Feather
+ #+header: :var rawDirSimulated="./experiments/exp02/results-draco1-wip"
+ #+begin_src R :results output :exports both :session Rvz :eval no-export
+blockQrStarpuKstar <- 
+    grep("starpu", list.dirs(path=rawDirSimulated, full.names=TRUE, recursive=FALSE), value=TRUE) %>%   
+    lapply(function(fl){ 
+        print(paste0("Working on ", fl))
+        the_fast_reader_function(fl)
+    })
+
+names(blockQrStarpuKstar) <- 
+    grep("starpu", list.dirs(path=rawDirSimulated, full.names=TRUE, recursive=FALSE), value=TRUE) %>%
+    lapply(function(fl){
+        nm <- basename(fl) %>% strsplit("-") %>% unlist()
+        nm[3]
+    })
+ #+end_src
+
+
+**** Full config
+ #+begin_src shell :results output :exports both :eval no-export
+wget https://raw.githubusercontent.com/schnorr/starvz/master/full_config.yaml
+ #+end_src
+
+ #+begin_src R :results output :exports both :session Rvz :eval no-export
+pajer <- config::get(file = "full_config.yaml")
+ #+end_src
+
+**** Plots
+ #+begin_src R :results output graphics :file qr-starpu-kstar-starvz.png :exports both :width 1600 :height 1500 :session Rvz :eval no-export
+pajer$st$abe$active=TRUE
+
+pajer$lackready$active = TRUE
+
+pajer$pmtool$state$active = TRUE
+pajer$pmtool$state$sched = "dmdas"
+
+pajer$pmtool$kiteration$active = FALSE
+
+pajer$pmtool$bounds$active = TRUE
+pajer$pmtool$bounds$alg = blockQrStarpuKstar[[1]]$Pmtool %>% filter(!is.na(Time)) %>% .$Alg %>% unique
+
+the_master_function(blockQrStarpuKstar[[1]])
+ #+end_src
+
 * Resources
 :PROPERTIES:
 :ATTACH_DIR: resources/
