@@ -22,5 +22,3 @@ make -j
 make -j install
 popd
 popd
-
-rm -rf $REPO_DIR
