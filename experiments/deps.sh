@@ -16,10 +16,10 @@ function spack_install_spec {
     OVER=$3
 
     name_version=${SPEC%%[~|+|^]*}
-    dir_name=$(tr '@' '-' <<<$name_version)
+    dir_name=$PWD/$(tr '@' '-' <<<$name_version)
 
     # if we fall here, we have already installed the package
-    [ -d ${dir_name}/lib ] && [ $OVER = false ] && return 0
+    [ -d $dir_name/lib ] && [ $OVER = false ] && return 0
 
     flags="--keep-stage -y"
 
@@ -46,11 +46,11 @@ function source_install_spec {
     OVER=$3
 
     name_version=${SPEC%%[~|+|^]*}
-    prefix=$(tr '@' '-' <<<$name_version)
-    repo=${prefix}/repo
+    prefix=$PWD/$(tr '@' '-' <<<$name_version)
+    repo=$prefix/repo
 
     # if we fall here, we have already installed the package
-    [ -d ${prefix}/lib ] && [ $OVER = false ] && exit 0
+    [ -d $prefix/lib ] && [ $OVER = false ] && exit 0
 
     [ $OVER = true ] && rm -rf $prefix
 
@@ -58,7 +58,7 @@ function source_install_spec {
 
     # install by the provided shell install script
     mkdir -p $prefix
-    ${EXP_DIR}/${prefix}.sh $prefix $repo
+    ${EXP_DIR}/${prefix}.sh $prefix/ $repo
     rm -rf $repo
 
     [ ! -f installs.log ] && echo "SPECS HERE INSTALLED" > installs.log

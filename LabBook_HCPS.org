@@ -519,10 +519,10 @@ function spack_install_spec {
     OVER=$3
 
     name_version=${SPEC%%[~|+|^]*}
-    dir_name=$(tr '@' '-' <<<$name_version)
+    dir_name=$PWD/$(tr '@' '-' <<<$name_version)
 
     # if we fall here, we have already installed the package
-    [ -d ${dir_name}/lib ] && [ $OVER = false ] && return 0
+    [ -d $dir_name/lib ] && [ $OVER = false ] && return 0
 
     flags="--keep-stage -y"
 
@@ -549,11 +549,11 @@ function source_install_spec {
     OVER=$3
 
     name_version=${SPEC%%[~|+|^]*}
-    prefix=$(tr '@' '-' <<<$name_version)
-    repo=${prefix}/repo
+    prefix=$PWD/$(tr '@' '-' <<<$name_version)
+    repo=$prefix/repo
 
     # if we fall here, we have already installed the package
-    [ -d ${prefix}/lib ] && [ $OVER = false ] && exit 0
+    [ -d $prefix/lib ] && [ $OVER = false ] && exit 0
 
     [ $OVER = true ] && rm -rf $prefix
 
@@ -561,7 +561,7 @@ function source_install_spec {
 
     # install by the provided shell install script
     mkdir -p $prefix
-    ${EXP_DIR}/${prefix}.sh $prefix $repo
+    ${EXP_DIR}/${prefix}.sh $prefix/ $repo
     rm -rf $repo
 
     [ ! -f installs.log ] && echo "SPECS HERE INSTALLED" > installs.log
@@ -1712,10 +1712,11 @@ while read -r runtime matrix num_blocks; do
 
     LD_LIBRARY_PATH=$(readlink -f code/lib):$LAPACK_PATH/lib
 
-    mkdir -p results/$run_id
+    trace_dir=$PWD/results/$run_id
+    mkdir -p $trace_dir
 
     if [[ $runtime = starpu ]] || [[ $runtime = kstar_starpu ]]; then
-        export STARPU_FXT_PREFIX=$(readlink -f results/$run_id)/
+        export STARPU_FXT_PREFIX=$trace_dir/
         LD_LIBRARY_PATH+=:$HDF5_PATH/lib
         LD_LIBRARY_PATH+=:$STARPU_PATH/lib
     elif [[ $runtime = kstar_starpu ]]; then
@@ -1726,7 +1727,7 @@ while read -r runtime matrix num_blocks; do
         export LD_PRELOAD=$LIBKOMP_PATH/lib/trace-libomp.so
         LD_LIBRARY_PATH+=:$LIBKOMP_PATH/lib
     elif [[ $runtime = libgomp ]]; then
-        export SCOREP_EXPERIMENT_DIRECTORY=$(readlink -f results/$run_id)
+        export SCOREP_EXPERIMENT_DIRECTORY=$trace_dir
     fi
 
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH
@@ -1744,17 +1745,17 @@ while read -r runtime matrix num_blocks; do
 
     case $runtime in
         ompt)
-            mv events.out results/$run_id
+            mv events.out $trace_dir
             ;;
         libkomp_gcc|libkomp_clang)
-            mv /tmp/events.*.evt results/$run_id
-            pushd results/$run_id
+            mv /tmp/events.*.evt $trace_dir
+            pushd $trace_dir
             katracereader --csv events.*
             popd
-            mv stat.* results/$run_id
+            mv stat.* $trace_dir
             ;;
         starpu|kstar_starpu)
-            mv activity.data dag.dot data.rec distrib.data paje.trace tasks.rec trace.html trace.rec results/$run_id
+            mv activity.data dag.dot data.rec distrib.data paje.trace tasks.rec trace.html trace.rec $trace_dir
             ;;
     esac
 

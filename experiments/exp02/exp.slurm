@@ -111,10 +111,11 @@ while read -r runtime matrix num_blocks; do
 
     LD_LIBRARY_PATH=$(readlink -f code/lib):$LAPACK_PATH/lib
 
-    mkdir -p results/$run_id
+    trace_dir=$PWD/results/$run_id
+    mkdir -p $trace_dir
 
     if [[ $runtime = starpu ]] || [[ $runtime = kstar_starpu ]]; then
-        export STARPU_FXT_PREFIX=$(readlink -f results/$run_id)/
+        export STARPU_FXT_PREFIX=$trace_dir/
         LD_LIBRARY_PATH+=:$HDF5_PATH/lib
         LD_LIBRARY_PATH+=:$STARPU_PATH/lib
     elif [[ $runtime = kstar_starpu ]]; then
@@ -125,7 +126,7 @@ while read -r runtime matrix num_blocks; do
         export LD_PRELOAD=$LIBKOMP_PATH/lib/trace-libomp.so
         LD_LIBRARY_PATH+=:$LIBKOMP_PATH/lib
     elif [[ $runtime = libgomp ]]; then
-        export SCOREP_EXPERIMENT_DIRECTORY=$(readlink -f results/$run_id)
+        export SCOREP_EXPERIMENT_DIRECTORY=$trace_dir
     fi
 
     export LD_LIBRARY_PATH=$LD_LIBRARY_PATH
@@ -143,17 +144,17 @@ while read -r runtime matrix num_blocks; do
 
     case $runtime in
         ompt)
-            mv events.out results/$run_id
+            mv events.out $trace_dir
             ;;
         libkomp_gcc|libkomp_clang)
-            mv /tmp/events.*.evt results/$run_id
-            pushd results/$run_id
+            mv /tmp/events.*.evt $trace_dir
+            pushd $trace_dir
             katracereader --csv events.*
             popd
-            mv stat.* results/$run_id
+            mv stat.* $trace_dir
             ;;
         starpu|kstar_starpu)
-            mv activity.data dag.dot data.rec distrib.data paje.trace tasks.rec trace.html trace.rec results/$run_id
+            mv activity.data dag.dot data.rec distrib.data paje.trace tasks.rec trace.html trace.rec $trace_dir
             ;;
     esac
 
