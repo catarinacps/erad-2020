@@ -1289,7 +1289,7 @@ fig_1 %>%
 
 there is inter-node variability...
 
-#+begin_src R :session :results output graphics :file (org-babel-temp-file "figure" ".png") :exports both :width 500 :height 450
+#+begin_src R :session :results output graphics :file img/makespan-all.png :exports both :width 800 :height 600
 suppressMessages(library(gtools))
 
 fig_1 %>%
@@ -1319,11 +1319,7 @@ fig_1 %>%
 #+end_src
 
 #+RESULTS:
-:
-: Scale for 'y' is already present. Adding another scale for 'y', which will replace the existing scale.
-: Warning messages:
-: 1: Removed 13 rows containing missing values (geom_point).
-: 2: Removed 16 rows containing missing values (geom_errorbar).
+[[file:img/makespan-all.png]]
 
 ** STARTED 2 - Tracing
 - State "STARTED"    from              [2020-01-09 qui 15:22]
