@@ -1315,8 +1315,7 @@ fig_1 %>%
   ylim(0, NA) +
   theme_bw() +
   theme(text = element_text(family = "Palatino", size = 16),
-        legend.position = "top",
-        axis.text.x = element_text(angle = 45, hjust = 1))
+        legend.position = "top")
 #+end_src
 
 #+RESULTS:
