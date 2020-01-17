@@ -2027,6 +2027,30 @@ the_master_function(blockQrStarpuKstar[[1]])
  #+RESULTS:
  [[file:img/qr-starpu-kstar-starvz.png]]
 
+**** All Plots StarPU & Kstar
+***** Generating ORG blocks                                        :noexport:
+#+name: starpukstarnames      
+#+begin_src R :results output :session Rvz :exports none :eval no-export
+blockQrStarpuKstar %>% names
+#+end_src
+
+#+RESULTS: starpukstarnames
+: [1] "kstar-starpu" "starpu"
+
+#+header: :var lista=starpukstarnames
+#+begin_src shell :results value raw :exports results :eval no-export 
+echo " "
+echo "***** Full View Chart"
+for r in $lista; do
+    echo "****** Repetition $r"
+    echo "#+header: :var dep1=customConfig"
+    echo "#+begin_src R :results output graphics :file img/trace-qr-$r-starvz.png :exports both :width 1400 :height 500 :session Rvz :eval no-export "
+    echo "  the_master_function(blockQrStarpuKstar[[$r]])"
+    echo "#+end_src"      
+    echo ""
+done;
+ #+end_src
+
 * Resources
 :PROPERTIES:
 :ATTACH_DIR: resources/
