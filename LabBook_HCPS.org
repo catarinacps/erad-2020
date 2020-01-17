@@ -1613,6 +1613,7 @@ real_core_count=$((${SLURM_CPUS_ON_NODE} / ${threads_per_core:-1}))
 
 export STARPU_NCPU=$real_core_count
 export STARPU_FXT_TRACE=1
+export STARPU_GENERATE_TRACE=1
 
 export OMP_NUM_THREADS=$real_core_count
 export OMP_PLACES=cores
@@ -1702,6 +1703,9 @@ while read -r runtime matrix num_blocks; do
             popd
             mv stat.* results/$run_id
             ;;
+	starpu|kstar_starpu)
+	    mv activity.data dag.dot data.rec distrib.data paje.trace tasks.rec trace.html trace.rec results/$run_id
+	    ;;
     esac
 
     # add the execution data to the csv
