@@ -2001,7 +2001,7 @@ state_chart(blockQrStarpuKstar[[1]])
  #+end_src
 
  #+RESULTS:
- [[file:img/qr-starpu-kstar-starvz.png]]
+ [[file:img/trace-qr-starpu-kstar-starvz.png]]
 
 * Resources
 :PROPERTIES:
