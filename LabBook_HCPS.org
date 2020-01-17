@@ -1979,8 +1979,8 @@ blockQrStarpuKstar <-
 names(blockQrStarpuKstar) <- 
     grep("starpu", list.dirs(path=rawDirSimulated, full.names=TRUE, recursive=FALSE), value=TRUE) %>%
     lapply(function(fl){
-        nm <- basename(fl) %>% strsplit("-") %>% unlist()
-        nm[3]
+        nm <- basename(fl) %>% strsplit("_") %>% unlist()
+        nm[0:(length(nm)-2)] %>% paste(collapse ='-') 
     })
  #+end_src
 
