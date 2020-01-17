@@ -1920,7 +1920,7 @@ wait
 
 *** Analysis
 **** StarVZ - Starpu & Kstar
-**** Get starvz scritps
+***** Get starvz scritps
  #+begin_src shell :results output :exports both :eval no-export
 git clone --depth=1 git@github.com:schnorr/starvz.git starvz-src && cd starvz-src
 git rev-parse HEAD
@@ -1930,7 +1930,7 @@ rm -rf .git
  #+RESULTS:
  : cb2b7a233d895fda057f8561ec4e5a07f1dbb489
 
-**** Get starpu and install it (needed by some starvz scripts)
+***** Get starpu and install it (needed by some starvz scripts)
  #+begin_src shell :results output :exports both :eval no-export
 git clone --depth=1 http://gitlab+deploy-token-127235:BZMob8RJoRPZAdLtsstX@gitlab.com/viniciusvgp/customSpack.git starpu-spack && cd starpu-spack
 git rev-parse HEAD
@@ -1945,7 +1945,7 @@ rm -rf .git
 
 
 
-**** Phase 1
+***** Phase 1
  #+name: raw-simu-starvz
  #+header: :var rawPath="./experiments/exp02/results-draco1-wip"
  #+begin_src sh :results output :exports both :cache yes :eval no-export
@@ -1960,13 +1960,13 @@ done
  #+end_src
 
 
-**** Loading StarVZ
+***** Loading StarVZ
  #+begin_src R :results output :exports both :session Rvz :eval no-export
 library(starvz)
  #+end_src
 
 
-**** Reading Feather
+***** Reading Feather
  #+header: :var rawDirSimulated="./experiments/exp02/results-draco1-wip"
  #+begin_src R :results output :exports both :session Rvz :eval no-export
 blockQrStarpuKstar <- 
@@ -1985,7 +1985,7 @@ names(blockQrStarpuKstar) <-
  #+end_src
 
 
-**** Full config
+***** Full config
 #+name: getFullConfig
  #+begin_src shell :results output :exports both :eval no-export :cache yes
 wget https://raw.githubusercontent.com/schnorr/starvz/master/full_config.yaml
@@ -1999,7 +1999,7 @@ wget https://raw.githubusercontent.com/schnorr/starvz/master/full_config.yaml
 pajer <- config::get(file = "full_config.yaml")
  #+end_src
 
-**** Custom config
+***** Custom config
 #+name: customConfig
 #+header: :var dep1=fullConfig
 #+begin_src R :results output :session Rvz :exports both
@@ -2016,7 +2016,7 @@ pajer$st$alpha = 0.8
 
  #+RESULTS:
 
-**** Plots
+***** Plots
 #+header: :var dep1=customConfig
  #+begin_src R :results output graphics :file img/trace-qr-starpu-kstar-starvz.png :exports both :width 1350 :height 2000 :session Rvz :eval no-export
 
@@ -2027,8 +2027,8 @@ the_master_function(blockQrStarpuKstar[[1]])
  #+RESULTS:
  [[file:img/qr-starpu-kstar-starvz.png]]
 
-**** All Plots StarPU & Kstar
-***** Generating ORG blocks                                        :noexport:
+***** All Plots StarPU & Kstar
+****** Generating ORG blocks                                       :noexport:
 #+name: starpukstarnames      
 #+begin_src R :results output :session Rvz :exports none :eval no-export
 blockQrStarpuKstar %>% names
@@ -2040,9 +2040,9 @@ blockQrStarpuKstar %>% names
 #+header: :var lista=starpukstarnames
 #+begin_src shell :results value raw :exports results :eval no-export 
 echo " "
-echo "***** Full View Chart"
+echo "****** Full View Chart"
 for r in $lista; do
-    echo "****** Repetition $r"
+    echo "******* Repetition $r"
     echo "#+header: :var dep1=customConfig"
     echo "#+begin_src R :results output graphics :file img/trace-qr-$r-starvz.png :exports both :width 1400 :height 500 :session Rvz :eval no-export "
     echo "  the_master_function(blockQrStarpuKstar[[$r]])"
