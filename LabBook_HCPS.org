@@ -256,6 +256,8 @@ cat << EOF
       install all packages locally in each machine
       WARNING: probably won't work because of timeouts in spack
     -o | --overwrite
+      overwrite the install of all packages listed as a dependency
+    -O | --strong-overwrite
       force the reinstall of all packages listed as a dependency
 
   WHERE [REPO_DIRECTORY] is the *full* path to the repository
@@ -298,6 +300,10 @@ for i in "$@"; do
             ;;
         --overwrite)
             OVERWRITE=true
+            shift
+            ;;
+        --strong-overwrite)
+            OVERWRITE=strong
             shift
             ;;
         --available)
@@ -357,6 +363,9 @@ for i in "$@"; do
                         ;;
                     o)
                         OVERWRITE=true
+                        ;;
+                    O)
+                        OVERWRITE=strong
                         ;;
                     a)
                         AVAILABLE="-t idle"
@@ -537,10 +546,12 @@ function spack_install_spec {
     flags="--keep-stage -y"
 
     echo "${name_version} not yet installed!"
-    if [ $OVER = true ]; then
+    if [ $OVER != false ]; then
         rm -rf $dir_name
         flags+=" --overwrite"
     fi
+
+    [ $OVER = strong ] && spack uninstall -fy $SPEC arch=$ARCH
 
     mkdir -p $dir_name
     spack install $flags $SPEC arch=$ARCH
@@ -565,7 +576,7 @@ function source_install_spec {
     # if we fall here, we have already installed the package
     [ -d $prefix/lib ] && [ $OVER = false ] && exit 0
 
-    [ $OVER = true ] && rm -rf $prefix
+    [ $OVER != false ] && rm -rf $prefix
 
     echo "${name_version} not yet installed!"
 
@@ -1730,12 +1741,12 @@ while read -r runtime matrix num_blocks; do
         LD_LIBRARY_PATH+=:$STARPU_PATH/lib
     elif [[ $runtime = kstar_starpu ]]; then
         LD_LIBRARY_PATH+=:$KSTAR_PATH/lib
-    elif [[ $runtime = openmp ]]; then
-        LD_LIBRARY_PATH+=:$LIBOMP_PATH/lib
+    elif [[ $runtime = ompt ]]; then
+        LD_LIBRARY_PATH+=:$LIBOMP_OMPT_PATH/lib
     elif [[ $runtime = libkomp_gcc ]] || [[ $runtime = libkomp_clang ]]; then
         export LD_PRELOAD=$LIBKOMP_PATH/lib/trace-libomp.so
         LD_LIBRARY_PATH+=:$LIBKOMP_PATH/lib
-    elif [[ $runtime = libgomp ]]; then
+    elif [[ $runtime = scorep ]]; then
         export SCOREP_EXPERIMENT_DIRECTORY=$trace_dir
     fi
 
@@ -1989,7 +2000,7 @@ names(blockQrStarpuKstar) <-
     grep("starpu", list.dirs(path=rawDirExp, full.names=TRUE, recursive=FALSE), value=TRUE) %>%
     lapply(function(fl){
         nm <- basename(fl) %>% strsplit("_") %>% unlist()
-        nm[0:(length(nm)-2)] %>% paste(collapse ='-') 
+        nm[0:(length(nm)-2)] %>% paste(collapse ='-')
     })
  #+end_src
 
@@ -2004,7 +2015,7 @@ wget https://raw.githubusercontent.com/schnorr/starvz/master/full_config.yaml
 
 #+name: fullConfig
 #+header: :var dep1=getFullConfig
- #+begin_src R :results output :exports both :session Rvz :eval no-export :cache yes 
+ #+begin_src R :results output :exports both :session Rvz :eval no-export :cache yes
 pajer <- config::get(file = "full_config.yaml")
  #+end_src
 
@@ -2020,7 +2031,7 @@ pajer$computingnodes$active = FALSE
 pajer$kiteration$active = FALSE
 pajer$lackready$active=TRUE
 pajer$lackready$aggregation = 500
-pajer$st$alpha = 0.8    
+pajer$st$alpha = 0.8
      #+end_src
 
  #+RESULTS:
@@ -2038,7 +2049,7 @@ the_master_function(blockQrStarpuKstar[[1]])
 
 ***** All Plots StarPU & Kstar
 ****** Generating ORG blocks                                       :noexport:
-#+name: starpukstarnames      
+#+name: starpukstarnames
 #+begin_src R :results output :session Rvz :exports none :eval no-export
 blockQrStarpuKstar %>% names
 #+end_src
@@ -2047,7 +2058,7 @@ blockQrStarpuKstar %>% names
 : [1] "kstar-starpu" "starpu"
 
 #+header: :var lista=starpukstarnames
-#+begin_src shell :results value raw :exports results :eval no-export 
+#+begin_src shell :results value raw :exports results :eval no-export
 echo " "
 echo "****** Full View Chart"
 for r in $lista; do
@@ -2056,7 +2067,7 @@ for r in $lista; do
     r2=$(echo $r | sed "s/\"//g")
     echo "#+begin_src R :results output graphics :file img/trace-qr-$r2-starvz.png :exports both :width 1400 :height 800 :session Rvz :eval no-export "
     echo "  the_master_function(blockQrStarpuKstar[[$r]])"
-    echo "#+end_src"      
+    echo "#+end_src"
     echo ""
 done;
  #+end_src
@@ -2064,7 +2075,7 @@ done;
 ****** Full View Chart
 ******* Execution "kstar-starpu"
   #+header: :var dep1=customConfig
-  #+begin_src R :results output graphics :file img/trace-qr-kstar-starpu-starvz.png :exports both :width 1400 :height 800 :session Rvz :eval no-export 
+  #+begin_src R :results output graphics :file img/trace-qr-kstar-starpu-starvz.png :exports both :width 1400 :height 800 :session Rvz :eval no-export
     the_master_function(blockQrStarpuKstar[["kstar-starpu"]])
   #+end_src
 
@@ -2073,12 +2084,13 @@ done;
 
 ******* Execution "starpu"
   #+header: :var dep1=customConfig
-  #+begin_src R :results output graphics :file img/trace-qr-starpu-starvz.png :exports both :width 1400 :height 800 :session Rvz :eval no-export 
+  #+begin_src R :results output graphics :file img/trace-qr-starpu-starvz.png :exports both :width 1400 :height 800 :session Rvz :eval no-export
     the_master_function(blockQrStarpuKstar[["starpu"]])
   #+end_src
 
   #+RESULTS:
   [[file:img/trace-qr-starpu-starvz.png]]
+
 
 
 **** Libkomp - Clang & Gcc

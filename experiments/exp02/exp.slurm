@@ -120,12 +120,12 @@ while read -r runtime matrix num_blocks; do
         LD_LIBRARY_PATH+=:$STARPU_PATH/lib
     elif [[ $runtime = kstar_starpu ]]; then
         LD_LIBRARY_PATH+=:$KSTAR_PATH/lib
-    elif [[ $runtime = openmp ]]; then
-        LD_LIBRARY_PATH+=:$LIBOMP_PATH/lib
+    elif [[ $runtime = ompt ]]; then
+        LD_LIBRARY_PATH+=:$LIBOMP_OMPT_PATH/lib
     elif [[ $runtime = libkomp_gcc ]] || [[ $runtime = libkomp_clang ]]; then
         export LD_PRELOAD=$LIBKOMP_PATH/lib/trace-libomp.so
         LD_LIBRARY_PATH+=:$LIBKOMP_PATH/lib
-    elif [[ $runtime = libgomp ]]; then
+    elif [[ $runtime = scorep ]]; then
         export SCOREP_EXPERIMENT_DIRECTORY=$trace_dir
     fi
 

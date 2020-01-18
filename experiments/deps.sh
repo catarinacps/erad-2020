@@ -24,10 +24,12 @@ function spack_install_spec {
     flags="--keep-stage -y"
 
     echo "${name_version} not yet installed!"
-    if [ $OVER = true ]; then
+    if [ $OVER != false ]; then
         rm -rf $dir_name
         flags+=" --overwrite"
     fi
+
+    [ $OVER = strong ] && spack uninstall -fy $SPEC arch=$ARCH
 
     mkdir -p $dir_name
     spack install $flags $SPEC arch=$ARCH
@@ -52,7 +54,7 @@ function source_install_spec {
     # if we fall here, we have already installed the package
     [ -d $prefix/lib ] && [ $OVER = false ] && exit 0
 
-    [ $OVER = true ] && rm -rf $prefix
+    [ $OVER != false ] && rm -rf $prefix
 
     echo "${name_version} not yet installed!"
 
