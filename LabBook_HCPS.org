@@ -1976,17 +1976,17 @@ library(starvz)
 
 
 ***** Reading Feather
- #+header: :var rawDirSimulated="./experiments/exp02/results-draco1-wip"
+ #+header: :var rawDirExp="./experiments/exp02/results-draco1-wip"
  #+begin_src R :results output :exports both :session Rvz :eval no-export
 blockQrStarpuKstar <-
-    grep("starpu", list.dirs(path=rawDirSimulated, full.names=TRUE, recursive=FALSE), value=TRUE) %>%
+    grep("starpu", list.dirs(path=rawDirExp, full.names=TRUE, recursive=FALSE), value=TRUE) %>%
     lapply(function(fl){
         print(paste0("Working on ", fl))
         the_fast_reader_function(fl)
     })
 
 names(blockQrStarpuKstar) <-
-    grep("starpu", list.dirs(path=rawDirSimulated, full.names=TRUE, recursive=FALSE), value=TRUE) %>%
+    grep("starpu", list.dirs(path=rawDirExp, full.names=TRUE, recursive=FALSE), value=TRUE) %>%
     lapply(function(fl){
         nm <- basename(fl) %>% strsplit("_") %>% unlist()
         nm[0:(length(nm)-2)] %>% paste(collapse ='-') 
