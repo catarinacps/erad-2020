@@ -2081,6 +2081,71 @@ done;
   [[file:img/trace-qr-starpu-starvz.png]]
 
 
+**** Libkomp - Clang & Gcc
+***** Functions in R
+ #+name: rLibkomp
+ #+begin_src R :results output :exports both :session R
+library(ggplot2)
+library(dplyr)
+
+# helper: convert s to the date
+date<-function(d) { as.POSIXct(d, origin="1970-01-01"); }
+
+
+readtrace <- function (filename)
+{
+   df <- read.csv(filename, header=TRUE, sep=",", strip.white=TRUE);
+   df <- df %>% filter((Explicit==1)) %>% as.data.frame();
+   df$Start <- df$Start*1e-9; # Convert ns to second
+   df$End <- df$End*1e-9;
+   df$Duration <- df$Duration*1e-9;
+   df;
+}
+ #+end_src
+
+ #+RESULTS: rLibkomp
+ #+begin_example
+
+ Attaching package: ‘dplyr’
+
+ The following objects are masked from ‘package:stats’:
+
+     filter, lag
+
+ The following objects are masked from ‘package:base’:
+
+     intersect, setdiff, setequal, union
+ #+end_example
+
+***** Reading Data
+#+header: :var rawDirExp="./experiments/exp02/results-draco1-wip"
+#+header: :var fdep=rLibkomp
+#+begin_src R :results output :exports both :session R :eval no-export
+
+blockQrLibkomp <-
+    grep("libkomp", list.dirs(path=rawDirExp, full.names=TRUE, recursive=FALSE), value=TRUE) %>%
+    lapply(function(fl){
+        print(paste0("Working on ", fl))
+        readtrace(paste(fl, "tasks.csv", sep="/"))
+    })
+
+names(blockQrLibkomp) <-
+    grep("libkomp", list.dirs(path=rawDirExp, full.names=TRUE, recursive=FALSE), value=TRUE) %>%
+    lapply(function(fl){
+        nm <- basename(fl) %>% strsplit("_") %>% unlist()
+        nm[0:(length(nm)-2)] %>% paste(collapse ='-') 
+    })
+
+#+end_src
+
+  #+RESULTS:
+  : [1] "Working on ./experiments/exp02/results-draco1-wip/libkomp_clang_8192_256"
+  : [1] "Working on ./experiments/exp02/results-draco1-wip/libkomp_gcc_8192_256"
+
+
+We should recompile this with -g option to include at least filenames
+and row numbers...
+
 * Resources
 :PROPERTIES:
 :ATTACH_DIR: resources/
