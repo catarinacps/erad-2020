@@ -40,6 +40,7 @@ assignment/paper about QR Factorization analysis.
     - [[#makefile-1][Makefile]]
     - [[#script-1][Script]]
     - [[#post-processing][Post-processing]]
+    - [[#analysis-1][Analysis]]
 - [[#resources][Resources]]
   - [[#archive-1][Archive]]
     - [[#deps-script-backup][Deps script backup]]
@@ -233,6 +234,8 @@ cat << EOF
       shows this message and exits
     -d | --dry
       prints what it would do instead of actually doing it
+    -a | --available
+      only use currently available nodes
     -u | --update
       updates the repo before running any commands
     -i | --install[=]path/to/the/installs
@@ -297,6 +300,10 @@ for i in "$@"; do
             OVERWRITE=true
             shift
             ;;
+        --available)
+            AVAILABLE="-t idle"
+            shift
+            ;;
         --split)
             SPLIT=true
             shift
@@ -350,6 +357,9 @@ for i in "$@"; do
                         ;;
                     o)
                         OVERWRITE=true
+                        ;;
+                    a)
+                        AVAILABLE="-t idle"
                         ;;
                     s)
                         SPLIT=true
@@ -446,7 +456,7 @@ for partition in $PARTITIONLIST; do
     echo
 
     # change the gppd-info to sinfo when porting
-    ALLNODES=$(gppd-info --long --Node -S NODELIST -p $partition -h | awk '{print $1}')
+    ALLNODES=$(gppd-info --long --Node -S NODELIST -p $partition -h ${AVAILABLE:-} | awk '{print $1}')
     if [ -z ${NODELIST+x} ]; then
         nodes=$(paste -s -d" " - <<<$ALLNODES)
     else
@@ -548,8 +558,8 @@ function source_install_spec {
     EXP_DIR=$2
     OVER=$3
 
-    name_version=${SPEC%%[~|+|^]*}
-    prefix=$PWD/$(tr '@' '-' <<<$name_version)
+    name_version=$(tr '@' '-' <<<${SPEC%%[~|+|^]*})
+    prefix=$PWD/$name_version
     repo=$prefix/repo
 
     # if we fall here, we have already installed the package
@@ -561,8 +571,7 @@ function source_install_spec {
 
     # install by the provided shell install script
     mkdir -p $prefix
-    ${EXP_DIR}/${prefix}.sh $prefix/ $repo
-    rm -rf $repo
+    ${EXP_DIR}/${name_version}.sh $prefix/ $repo
 
     [ ! -f installs.log ] && echo "SPECS HERE INSTALLED" > installs.log
     echo >> installs.log
@@ -1949,11 +1958,11 @@ rm -rf .git
  #+name: raw-simu-starvz
  #+header: :var rawPath="./experiments/exp02/results-draco1-wip"
  #+begin_src sh :results output :exports both :cache yes :eval no-export
-export PATH=starvz-src/:$PATH 
+export PATH=starvz-src/:$PATH
 export PATH=~/misc/pajeng/bin:$PATH
 export PATH=`starpu-spack/src/spack/bin/spack location -i starpu`/bin/:$PATH
 
-for file in `find $rawPath -maxdepth 1 -type d -name "*starpu*"`;  do     
+for file in `find $rawPath -maxdepth 1 -type d -name "*starpu*"`;  do
     # starvz
     ./starvz-src/src/phase1-workflow.sh $file qr
 done
@@ -1969,14 +1978,14 @@ library(starvz)
 ***** Reading Feather
  #+header: :var rawDirSimulated="./experiments/exp02/results-draco1-wip"
  #+begin_src R :results output :exports both :session Rvz :eval no-export
-blockQrStarpuKstar <- 
-    grep("starpu", list.dirs(path=rawDirSimulated, full.names=TRUE, recursive=FALSE), value=TRUE) %>%   
-    lapply(function(fl){ 
+blockQrStarpuKstar <-
+    grep("starpu", list.dirs(path=rawDirSimulated, full.names=TRUE, recursive=FALSE), value=TRUE) %>%
+    lapply(function(fl){
         print(paste0("Working on ", fl))
         the_fast_reader_function(fl)
     })
 
-names(blockQrStarpuKstar) <- 
+names(blockQrStarpuKstar) <-
     grep("starpu", list.dirs(path=rawDirSimulated, full.names=TRUE, recursive=FALSE), value=TRUE) %>%
     lapply(function(fl){
         nm <- basename(fl) %>% strsplit("_") %>% unlist()
@@ -2024,8 +2033,8 @@ pajer$st$alpha = 0.8
 the_master_function(blockQrStarpuKstar[[1]])
  #+end_src
 
- #+RESULTS:
- [[file:img/qr-starpu-kstar-starvz.png]]
+#+RESULTS:
+[[file:img/qr-starpu-kstar-starvz.png]]
 
 ***** All Plots StarPU & Kstar
 ****** Generating ORG blocks                                       :noexport:
