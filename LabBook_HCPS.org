@@ -2044,7 +2044,8 @@ echo "****** Full View Chart"
 for r in $lista; do
     echo "******* Repetition $r"
     echo "#+header: :var dep1=customConfig"
-    echo "#+begin_src R :results output graphics :file img/trace-qr-$r-starvz.png :exports both :width 1400 :height 500 :session Rvz :eval no-export "
+    r2=$(echo $r | sed "s/\"//g")
+    echo "#+begin_src R :results output graphics :file img/trace-qr-$r2-starvz.png :exports both :width 1400 :height 800 :session Rvz :eval no-export "
     echo "  the_master_function(blockQrStarpuKstar[[$r]])"
     echo "#+end_src"      
     echo ""
