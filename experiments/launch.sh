@@ -35,6 +35,8 @@ cat << EOF
       install all packages locally in each machine
       WARNING: probably won't work because of timeouts in spack
     -o | --overwrite
+      overwrite the install of all packages listed as a dependency
+    -O | --strong-overwrite
       force the reinstall of all packages listed as a dependency
 
   WHERE [REPO_DIRECTORY] is the *full* path to the repository
@@ -77,6 +79,10 @@ for i in "$@"; do
             ;;
         --overwrite)
             OVERWRITE=true
+            shift
+            ;;
+        --strong-overwrite)
+            OVERWRITE=strong
             shift
             ;;
         --available)
@@ -136,6 +142,9 @@ for i in "$@"; do
                         ;;
                     o)
                         OVERWRITE=true
+                        ;;
+                    O)
+                        OVERWRITE=strong
                         ;;
                     a)
                         AVAILABLE="-t idle"
