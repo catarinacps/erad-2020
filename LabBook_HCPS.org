@@ -2052,6 +2052,26 @@ for r in $lista; do
 done;
  #+end_src
 
+****** Full View Chart
+******* Repetition "kstar-starpu"
+  #+header: :var dep1=customConfig
+  #+begin_src R :results output graphics :file img/trace-qr-kstar-starpu-starvz.png :exports both :width 1400 :height 800 :session Rvz :eval no-export 
+    the_master_function(blockQrStarpuKstar[["kstar-starpu"]])
+  #+end_src
+
+  #+RESULTS:
+  [[file:img/trace-qr-kstar-starpu-starvz.png]]
+
+******* Repetition "starpu"
+  #+header: :var dep1=customConfig
+  #+begin_src R :results output graphics :file img/trace-qr-starpu-starvz.png :exports both :width 1400 :height 800 :session Rvz :eval no-export 
+    the_master_function(blockQrStarpuKstar[["starpu"]])
+  #+end_src
+
+  #+RESULTS:
+  [[file:img/trace-qr-starpu-starvz.png]]
+
+
 * Resources
 :PROPERTIES:
 :ATTACH_DIR: resources/
