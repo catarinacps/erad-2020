@@ -2051,7 +2051,7 @@ blockQrStarpuKstar %>% names
 echo " "
 echo "****** Full View Chart"
 for r in $lista; do
-    echo "******* Repetition $r"
+    echo "******* Execution $r"
     echo "#+header: :var dep1=customConfig"
     r2=$(echo $r | sed "s/\"//g")
     echo "#+begin_src R :results output graphics :file img/trace-qr-$r2-starvz.png :exports both :width 1400 :height 800 :session Rvz :eval no-export "
@@ -2062,7 +2062,7 @@ done;
  #+end_src
 
 ****** Full View Chart
-******* Repetition "kstar-starpu"
+******* Execution "kstar-starpu"
   #+header: :var dep1=customConfig
   #+begin_src R :results output graphics :file img/trace-qr-kstar-starpu-starvz.png :exports both :width 1400 :height 800 :session Rvz :eval no-export 
     the_master_function(blockQrStarpuKstar[["kstar-starpu"]])
@@ -2071,7 +2071,7 @@ done;
   #+RESULTS:
   [[file:img/trace-qr-kstar-starpu-starvz.png]]
 
-******* Repetition "starpu"
+******* Execution "starpu"
   #+header: :var dep1=customConfig
   #+begin_src R :results output graphics :file img/trace-qr-starpu-starvz.png :exports both :width 1400 :height 800 :session Rvz :eval no-export 
     the_master_function(blockQrStarpuKstar[["starpu"]])
