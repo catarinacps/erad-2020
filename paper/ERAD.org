@@ -109,15 +109,15 @@ resultando, assim, em cinco níveis, enquanto o tamanho da matriz foi fixado em
 $8192$. Essa variedade de combinações foi o suficiente para que nós
 observássemos acuradamente o impacto do número das tarefas geradas pela a
 aplicação. Cada combinação foi repetida 5 vezes para cada experimento em cada
-nó.
+nó para a avaliação do /makespan/ e 1 vez para a coleta do traço das execuções.
 
 ** Manipulação de dados com ferramentas modernas de /data science/
 
 A manipulação e análise de dados foi realizada utilizando a linguagem de
 programação =R= em conjunto com o pacote de bibliotecas =tidyverse= através de
-blocos de códigos embutidos em arquivos =org=. Tal abordagem oferece fácil
-reprodutibilidade e posterior verificação dos resultados obtidos, além de uma
-plataforma robusta para a posterior visualização desses resultados.
+blocos de códigos embutidos em arquivos =org=. Tal abordagem nos permitiu
+alcançar fácil reprodutibilidade e posterior verificação dos resultados obtidos,
+além de uma plataforma robusta para a posterior visualização desses resultados.
 
 #+begin_comment
 Estou cansado já, mas essa parte precisa de uma séria atenção.
@@ -164,31 +164,49 @@ Figura que a gente conversou
 Tangle this file with C-c C-v t
 
 #+begin_src bibtex :tangle refs.bib
-@InProceedings{10.1007/978-3-642-30961-8_8,
-author="Broquedis, Fran{\c{c}}ois
-and Gautier, Thierry
-and Danjean, Vincent",
-editor="Chapman, Barbara M.
-and Massaioli, Federico
-and M{\"u}ller, Matthias S.
-and Rorro, Marco",
-title="libKOMP, an Efficient OpenMP Runtime System for Both Fork-Join and Data Flow Paradigms",
-booktitle="OpenMP in a Heterogeneous World",
-year="2012",
-publisher="Springer Berlin Heidelberg",
-address="Berlin, Heidelberg",
-pages="102--115",
-isbn="978-3-642-30961-8"
+% Only BIBTEX entries here
+
+@inproceedings{yoo2003slurm,
+ author = {Yoo, Andy B. and Jette, Morris A. and Grondona, Mark},
+ title = {SLURM: Simple Linux Utility for Resource Management},
+ booktitle = {Job Scheduling Strategies for Parallel Processing},
+ year = {2003},
+ publisher = {Springer Berlin Heidelberg},
+ address = {Berlin, Heidelberg},
+ pages = {44--60},
+ isbn = {978-3-540-39727-4}
 }
 
-@inproceedings{wscadMarcelo,
+@inproceedings{broquedis2012libkomp,
+ author = {Broquedis, Fran{\c{c}}ois and Gautier, Thierry and Danjean, Vincent},
+ editor = {Chapman, Barbara M. and Massaioli, Federico and M{\"u}ller, Matthias S. and Rorro, Marco},
+ title = {libKOMP, an Efficient OpenMP Runtime System for Both Fork-Join and Data Flow Paradigms},
+ booktitle = {OpenMP in a Heterogeneous World},
+ year = {2012},
+ publisher = {Springer Berlin Heidelberg},
+ address = {Berlin, Heidelberg},
+ pages = {102--115},
+ isbn = {978-3-642-30961-8}
+}
+
+@inproceedings{nesi2019pcad,
+ author = {Lucas Leandro Nesi and Matheus S. Serpa and Lucas Mello Schnorr and Philippe Olivier Alexandre Navaux},
+ title = {HPC Resources Management Infraestruture Description and 10-month Statistics},
+ booktitle = {Anais do XVII Workshop de Processamento Paralelo e Distribuído},
+ location = {Porto Alegre},
+ year = {2019},
+ keywords = {},
+ pages = {21--24},
+ url = {https://www.inf.ufrgs.br/gppd/wsppd/2019/papers/proceedings/WSPPDProceedings.pdf}
+}
+
+@inproceedings{miletto2019abrest,
  author = {Marcelo Miletto and Lucas Schnorr},
  title = {OpenMP and StarPU Abreast: the Impact of Runtime in Task-Based Block QR Factorization Performance},
  booktitle = {Anais do XX Simpósio em Sistemas Computacionais de Alto Desempenho},
  location = {Campo Grande},
  year = {2019},
  keywords = {},
- issn = {0000-0000},
  pages = {25--36},
  publisher = {SBC},
  address = {Porto Alegre, RS, Brasil},
@@ -196,33 +214,104 @@ isbn="978-3-642-30961-8"
  url = {https://sol.sbc.org.br/index.php/wscad/article/view/8654}
 }
 
-@article{doi:10.1002/cpe.4472,
-author = {Garcia Pinto, Vinícius and Mello Schnorr, Lucas and Stanisic, Luka and Legrand, Arnaud and Thibault, Samuel and Danjean, Vincent},
-title = {A visual performance analysis framework for task-based parallel applications running on hybrid clusters},
-journal = {Concurrency and Computation: Practice and Experience},
-volume = {30},
-number = {18},
-pages = {e4472},
-keywords = {Cholesky, heterogeneous platforms, high-performance computing, task-based applications, trace visualization},
-doi = {10.1002/cpe.4472},
-url = {https://onlinelibrary.wiley.com/doi/abs/10.1002/cpe.4472},
-eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1002/cpe.4472},
-note = {e4472 cpe.4472},
-year = {2018}
+@article{pinto2018ccpe,
+ author = {Garcia Pinto, Vinícius and Mello Schnorr, Lucas and Stanisic, Luka and Legrand, Arnaud and Thibault, Samuel and Danjean, Vincent},
+ title = {A visual performance analysis framework for task-based parallel applications running on hybrid clusters},
+ journal = {Concurrency and Computation: Practice and Experience},
+ volume = {30},
+ number = {18},
+ pages = {e4472},
+ keywords = {Cholesky, heterogeneous platforms, high-performance computing, task-based applications, trace visualization},
+ doi = {10.1002/cpe.4472},
+ url = {https://onlinelibrary.wiley.com/doi/abs/10.1002/cpe.4472},
+ eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1002/cpe.4472},
+ note = {e4472 cpe.4472},
+ year = {2018}
 }
 
-@article{doi:10.1002/cpe.1631,
-author = {Augonnet, Cédric and Thibault, Samuel and Namyst, Raymond and Wacrenier, Pierre-André},
-title = {StarPU: a unified platform for task scheduling on heterogeneous multicore architectures},
-journal = {Concurrency and Computation: Practice and Experience},
-volume = {23},
-number = {2},
-pages = {187-198},
-keywords = {GPU, multicore, accelerator, scheduling, runtime system},
-doi = {10.1002/cpe.1631},
-url = {https://onlinelibrary.wiley.com/doi/abs/10.1002/cpe.1631},
-eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1002/cpe.1631},
-year = {2011}
+@article{augonnet2011starpu,
+ author = {Augonnet, Cédric and Thibault, Samuel and Namyst, Raymond and Wacrenier, Pierre-André},
+ title = {StarPU: a unified platform for task scheduling on heterogeneous multicore architectures},
+ journal = {Concurrency and Computation: Practice and Experience},
+ volume = {23},
+ number = {2},
+ pages = {187-198},
+ keywords = {GPU, multicore, accelerator, scheduling, runtime system},
+ doi = {10.1002/cpe.1631},
+ url = {https://onlinelibrary.wiley.com/doi/abs/10.1002/cpe.1631},
+ eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1002/cpe.1631},
+ year = {2011}
+}
+
+@article{stanisic2015workflow,
+ author = {Stanisic, Luka and Legrand, Arnaud and Danjean, Vincent},
+ title = {An Effective Git And Org-Mode Based Workflow For Reproducible Research},
+ journal = {SIGOPS Oper. Syst. Rev.},
+ issue_date = {January 2015},
+ volume = {49},
+ number = {1},
+ month = jan,
+ year = {2015},
+ issn = {0163-5980},
+ pages = {61--70},
+ numpages = {10},
+ url = {http://doi.acm.org/10.1145/2723872.2723881},
+ doi = {10.1145/2723872.2723881},
+ acmid = {2723881},
+ publisher = {ACM},
+ address = {New York, NY, USA},
+}
+
+@article{knuth1984literate,
+ author = {Knuth, D. E.},
+ doi = {10.1093/comjnl/27.2.97},
+ issn = {0010-4620},
+ journal = {The Computer Journal},
+ month = 2,
+ number = 2,
+ pages = {97--111},
+ publisher = {Oxford University Press},
+ title = {{Literate Programming}},
+ volume = 27,
+ year = 1984
+}
+
+@book{dominik2010orgmode,
+ author = {Dominik, Carsten},
+ title = {The Org Mode 7 Reference Manual - Organize Your Life with GNU Emacs},
+ year = {2010},
+ isbn = {1906966087, 9781906966089},
+ publisher = {Network Theory Ltd.},
+}
+
+@book{stallman2017emacs,
+ address = {Boston, USA},
+ author = {Richard Stallman and others},
+ edition = 17,
+ pages = 635,
+ publisher = {Free Software Foundation},
+ title = {{GNU Emacs Manual}},
+ url = {https://www.gnu.org/software/emacs/manual/pdf/emacs.pdf},
+ urldate = {2017-12-04},
+ year = 2017
+}
+
+@manual{rteam2018manual,
+ title = {R: A Language and Environment for Statistical Computing},
+ author = {{R Core Team}},
+ organization = {R Foundation for Statistical Computing},
+ address = {Vienna, Austria},
+ year = {2018},
+ url = {https://www.R-project.org/},
+}
+
+@inproceedings{gamblin2015spack,
+ title = {The Spack package manager: Bringing order to HPC software chaos},
+ author = {Gamblin, Todd and LeGendre, Matthew and Collette, Michael R and Lee, Gregory L and Moody, Adam and de Supinski, Bronis R and Futral, Scott},
+ booktitle = {High Performance Computing, Networking, Storage and Analysis, 2015 SC-International Conference for},
+ pages = {1--12},
+ year = {2015},
+ organization = {IEEE}
 }
 #+end_src
 
