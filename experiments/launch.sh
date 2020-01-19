@@ -229,8 +229,9 @@ pushd $REPO_DIR
 
 for partition in $PARTITIONLIST; do
     # lets install all needed dependencies first
-    echo "-> Launching dependency installing job for partition $partition!"
     if [ $LOCAL = false ]; then
+        echo "-> Launching dependency installing job for partition $partition!"
+
         INSTALL_DIR+=/$partition # as we are not running locally
         ${DRY:-} sbatch \
             -p ${partition} \
@@ -238,9 +239,8 @@ for partition in $PARTITIONLIST; do
             -J dependencies_${EXPERIMENT_ID}_${partition} \
             -W \
             $(dirname $EXP_DIR)/deps.sh $INSTALL_DIR $EXP_DIR $SPACK_DIR $OVERWRITE
-        echo
+        echo "... and done!"
     fi
-    echo "... and done!"
     echo
 
     # change the gppd-info to sinfo when porting
@@ -260,6 +260,8 @@ for partition in $PARTITIONLIST; do
 
     # counter to access the correct plan
     plan_part=${num_nodes:+0}
+
+    echo "-> Launching jobs for partition $partition!"
 
     for node in $nodes; do
         # if we are in local mode, install dependencies for this node
