@@ -94,7 +94,6 @@ como o ferramental de /software/ utilizado para a análise dos dados
 coletados. Além disso, abordaremos o /workflow/ adotado a fim de aprimorar a
 reprodutibilidade dos resultados aqui apresentados.
 
-
 ** Projeto Experimental
 
 A fim de analisar o impacto dos diferentes /runtimes/ aqui avaliados, definimos
@@ -149,7 +148,21 @@ código de análise dos dados em R entrelaçados com notas sobre esses. Uma
 abordagem similar é a dos /Jupyter Notebooks/, que porém acaba mais restrita
 pelo versionamento mais restrito dos arquivos em /rich text/.
 
+# essa última frase está especialmente fraca
+
+#+latex: \noindent
+*Visualização e Concepção do Artigo*: Após análise das observações, a
+visualizações dessas constavam também nos mesmos blocos de código de análise,
+isto é, também embutidos no /labbook/.
+
+# acredito que é possível perceber que eu não sei mais o que falar sobre o
+# workflow.
+
 * Resultados Experimentais e Observações
+
+Nessa seção discorreremos sobre os fenômenos observados a partir da
+experimentação e sobre as visualizações a partir desses concebidas. Além disso,
+detalharemos as plataformas nas quais os experimentos foram realizados.
 
 ** Configuração Experimental
 
@@ -162,9 +175,10 @@ pelo versionamento mais restrito dos arquivos em /rich text/.
   - Starpu/LWS
 #+end_comment
 
-Para a execução da aplicação, utilizamos as plataformas descritas na [[tab:plataformas][Tabela
-1]].Listamos em cada uma dessas o seu identificador, o(s) processador(es), a
-quantidade e níveis de memória /cache/ e quantidade de memória /RAM/.
+Para a execução da aplicação, utilizamos as plataformas descritas na
+[[tab:plataformas][Tabela 1]]. Listamos em cada uma dessas o seu identificador, o(s)
+processador(es), a quantidade e níveis de memória /cache/ e quantidade de
+memória /RAM/.
 
 #+name: tab:plataformas
 #+attr_latex: :float t :placement [!htb] :font \small
@@ -177,6 +191,26 @@ quantidade e níveis de memória /cache/ e quantidade de memória /RAM/.
 | =cei=   | $7$ | $2 \times 12$ Xeon Silver 4116 2.1GHz | 32KB/1024KB/16.5MB | 93GB DDR4  |
 | =hype=  | $4$ | $2 \times 10$ Xeon E5 2650 v3 2.3GHz  | 32KB/256KB/25MB    | 128GB DDR4 |
 |---------+-----+---------------------------------------+--------------------+------------|
+
+Todas as plataformas detalhadas executam a versão do /kernel/ Linux =4.19.0-6=
+da distribuição Debian[fn:1]. A versão da distribuição corresponde ao lançamento
+da segunda atualização da décima distribuição estável =10.2=, de codinome
+Buster.
+
+#+latex: \noindent
+*Versão das Bibliotecas e Binários*: A ferramenta utilizada para a compilação de
+todos os binários foi o /frontend/ C do sistema de compiladores GCC, versão
+=8.3.0= \cite{gnu2018manual}. As bibliotecas padrão utilizadas foram, portanto,
+as distribuídas com esse /release/ do compilador. O /runtime/ de OpenMP
+utilizado do projeto LLVM foi a versão distribuída com o lançamento =6.0.0= do
+/frontend/ Clang \cite{llvm2018manual}. Todas os /runtimes/ de OpenMP utilizados
+seguem a especificação =4.5= \cite{openmp2015spec}. A versão da biblioteca
+StarPU utilizada foi a versão estável =1.3.1=. Para todos os binários gerados,
+utilizamos a biblioteca LAPACK \cite{lapack1999guide} de versão =3.8.0= do
+pacote Netlib[fn:2].
+
+[fn:1] O link para o /website/ da distribuição é: https://www.debian.org/
+[fn:2] O link para o /website/ do Netlib é: https://www.netlib.org/
 
 ** Comparação do Escalonamento entre os três /runtimes/
 
