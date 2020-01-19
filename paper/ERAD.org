@@ -158,8 +158,7 @@ Figura que a gente conversou
 #+latex: \bibliographystyle{sbc}
 #+latex: \bibliography{refs}
 
-* Miscs                                                            :noexport:
-** Bib file                                                       :noexport:
+* Bibtex                                                           :noexport:
 
 Tangle this file with C-c C-v t
 
@@ -373,11 +372,3 @@ Tangle this file with C-c C-v t
  url = {https://gcc.gnu.org/onlinedocs/gcc-8.3.0/gcc/},
 }
 #+end_src
-
-** Emacs setup                                                    :noexport:
-# Local Variables:
-# eval: (add-to-list 'load-path ".")
-# eval: (require 'ox-extra)
-# eval: (require 'org-inlinetask)
-# eval: (ox-extras-activate '(ignore-headlines))
-# End:
