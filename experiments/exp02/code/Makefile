@@ -83,20 +83,17 @@ $(OUT_DIR)/block_qr_ompt: $(SRC_DIR)/block_qr_ompt.c $(OBJ_DIR)/mutils.o
 #
 # Kstar with starpu runtime
 #
-$(OBJ_DIR)/block_qr_kstar_starpu.o: $(SRC_DIR)/block_qr_openmp.c
-	$(KSTAR) -c -o $@ $^ $(INC) $(OMP) $(LIBOMP) $(CFLAGS)
-
-$(OUT_DIR)/block_qr_kstar_starpu: $(OBJ_DIR)/block_qr_kstar_starpu.o $(OBJ_DIR)/mutils_kstar.o
-	$(KSTAR) -o $@ $^ $(shell pkg-config starpu-1.3 hwloc fxt poti --libs) $(LIB) $(OMP) $(LIBOMP)
+$(OUT_DIR)/block_qr_kstar_starpu: $(SRC_DIR)/block_qr_openmp.c $(OBJ_DIR)/mutils_kstar.o
+	$(KSTAR) -o $@ $^ $(shell pkg-config starpu-1.3 hwloc fxt poti --libs) $(INC) $(LIB) $(OMP) $(CFLAGS)
 
 #
 # Libkomp
 #
 $(OUT_DIR)/block_qr_libkomp_clang: $(SRC_DIR)/block_qr_openmp.c $(OBJ_DIR)/mutils.o
-	$(CC) -o $@ $^ $(INC) $(LIB) $(CFLAGS) $(OMP) $(LIBOMP)
+	$(CC) -o $@ $^ $(INC) $(LIB) $(CFLAGS) $(OMP) $(LIBOMP) -g
 
 $(OUT_DIR)/block_qr_libkomp_gcc: $(SRC_DIR)/block_qr_openmp.c $(OBJ_DIR)/mutils.o
-	$(CC) -o $@ $^ $(INC) $(OMP) $(CFLAGS) $(LIB)
+	$(CC) -o $@ $^ $(INC) $(OMP) $(CFLAGS) $(LIB) -g
 
 #
 # Matrix Generator
