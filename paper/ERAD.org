@@ -19,7 +19,7 @@
 \address{
   Instituto de Informática -- Universidade Federal do Rio Grande do Sul (UFRGS)\\
   Porto Alegre -- RS -- Brasil
-  \email{\{hcpsilva,mcmiletto,vgpinto,schnorr\}@inf.ufrgs.br}
+  \email{\{hcpsilva,marcelo.miletto,vgpinto,schnorr\}@inf.ufrgs.br}
 }
 
 \maketitle
@@ -55,6 +55,7 @@
 #+latex_header: \usepackage[caption=false]{subfig}
 #+latex_header: \usepackage{booktabs}
 #+latex_header: \usepackage{hyphenat}
+#+latex_header: \usepackage{breakcites}
 #+latex_header: \hyphenation{e-la-bo-ra-ção re-pre-sen-tar}
 
 # You need at least Org 9 and Emacs 24 to make this work.
@@ -98,24 +99,53 @@ reprodutibilidade dos resultados aqui apresentados.
 
 A fim de analisar o impacto dos diferentes /runtimes/ aqui avaliados, definimos
 como fatores do projeto experimentar o tamanho da *matriz* e o tamanho do
-*bloco*. O tamanho do bloco varia em fatores de $2$ entre $[32, 512]$,
-resultando, assim, em cinco níveis, enquanto o tamanho da matriz foi fixado em
-$8192$. Essa variedade de combinações foi o suficiente para que nós
-observássemos acuradamente o impacto do número das tarefas geradas pela a
-aplicação. Cada combinação foi repetida 5 vezes para cada experimento em cada
-nó para a avaliação do /makespan/ e 1 vez para a coleta do traço das execuções.
+*bloco* de cada tarefa. O tamanho do bloco varia em fatores de potências de $2$
+entre $[32, 512]$, resultando, assim, em cinco níveis, enquanto o tamanho da
+matriz foi fixado em $8192$. Através da combinação fatorial completa de todos
+esses parâmetros de execução \cite{jain1991art}, obtivemos a acurácia necessária
+para que nós observássemos o impacto do número das tarefas geradas pela a
+aplicação. Cada combinação foi repetida 5 vezes para cada experimento em cada nó
+para a avaliação do /makespan/ e 1 vez para a coleta do traço das execuções.
 
 ** Manipulação de dados com ferramentas modernas de /data science/
 
-A manipulação e análise de dados foi realizada utilizando a linguagem de
-programação =R= em conjunto com o pacote de bibliotecas =tidyverse= através de
-blocos de códigos embutidos em arquivos =org=. Tal abordagem nos permitiu
-alcançar a reprodutibilidade e a verificação dos resultados obtidos, além de uma
-plataforma robusta para a posterior visualização desses resultados.
+É essencial possuir um conjunto de ferramentas atualizado e apropriado para
+garantir a qualidade de quaisquer análises em qualquer estudo. Sendo assim,
+compreendemos essas garantias ao empregar a linguagem de programação R
+\cite{rteam2018manual} em conjunto com o pacote de bibliotecas tidyverse
+\cite{wickham2019tidyverse} através de blocos de códigos embutidos em arquivos
+Org \cite{dominik2010orgmode} versionados na ferramenta =git=. Com tal abordagem
+construímos um caderno de laboratório (/labbook/) que centralizou o processo
+exploratório científico, as anotações decorrentes e todos os experimentos
+realizados, desde o projeto desses até o código de análise dos dados
+coletados. Acreditamos que dessa maneira pode-se assegurar a reprodutibilidade e
+a verificação dos resultados obtidos \cite{stanisic2015workflow} sem perder a
+flexibilidade necessária para que processos de desenvolvimento e de verificação
+ocorressem paralelamente.
 
-#+begin_comment
-Estou cansado já, mas essa parte precisa de uma séria atenção.
-#+end_comment
+# O que eu quis dizer com isso exatamente? "flexibilidade dos processos de
+# desenvolvimento e de verificação"?
+# O que eu queria dizer era que essa abordagem não enrigeceu o workflow a ponto
+# do paralelismo de contribuições paralelas do git fosse perdido. Se é que isso
+# faz sentido.
+
+# sobre assegurar a reprodutibilidade: tenho alguma ideia de que é um processo
+# muito mais complexo, mas me faltou palavras para afirmar que nossa segurança
+# sobre a reprodutibilidade aumentou sem utilizar palavras tão fortes.
+
+#+latex: \noindent
+*Execução e Coleta dos Dados*: A automação dessas foi materializada por
+/scripts/ Shell executados pela ferramenta Slurm \cite{yoo2003slurm} em cada nó
+de computação detalhado na [[tab:plataformas][Tabela 1]]. Dada inevitável complexidade de
+dependências dos /runtimes/ aqui abordados, também desenvolvemos um /script/ que
+abstrai detalhes pertinentes a plataforma do /cluster/ de computação gerenciado
+pelo Slurm e permite a fácil reprodução de um experimento numa só linha de
+comando.
+
+#+latex: \noindent
+*Exploração e Análise dos Dados*: A integração das ferramentas previamente
+citadas no editor Emacs \cite{stallman2017emacs} permitiu o uso quase natural de
+blocos de código de análise dos dados em R entrelaçados com notas sobre esses.
 
 * Resultados Experimentais e Observações
 
@@ -130,22 +160,21 @@ Estou cansado já, mas essa parte precisa de uma séria atenção.
   - Starpu/LWS
 #+end_comment
 
-#+latex: \noindent
 Para a execução da aplicação, utilizamos as plataformas descritas na [[tab:plataformas][Tabela
-1]]. Listamos em cada uma dessas o seu identificador, o(s) processador(es), a
+1]].Listamos em cada uma dessas o seu identificador, o(s) processador(es), a
 quantidade e níveis de memória /cache/ e quantidade de memória /RAM/.
 
 #+name: tab:plataformas
 #+attr_latex: :float t :placement [!htb] :font \small
 #+caption: Configuração das plataformas utilizadas nos experimentos.
-|---------+----------------------------------------+---------+--------------------+-------------|
-| <l>     | <l>                                    | <l>     | <l>                | <l>         |
-| *Nome*  | *CPU*                                  | *Nodos* | *L1/L2/LLC*        | *RAM*       |
-|---------+----------------------------------------+---------+--------------------+-------------|
-| =draco= | $2 \times 8$ Xeon E5 2640 v2 2.5 GHz   | $7$     | 32KB/256KB/20MB    | 64 GB DDR3  |
-| =cei=   | $2 \times 12$ Xeon Silver 4116 2.1 GHz | $8$     | 32KB/1024KB/16.5MB | 93 GB DDR4  |
-| =hype=  | $2 \times 10$ Xeon E5 2650 v3 2.3 GHz  | $5$     | 32KB/256KB/25MB    | 128 GB DDR4 |
-|---------+----------------------------------------+---------+--------------------+-------------|
+|---------+-----+---------------------------------------+--------------------+------------|
+| <l>     | <l> | <l>                                   | <l>                | <l>        |
+| *Nome*  | =#= | *CPU*                                 | *L1/L2/LLC*        | *RAM*      |
+|---------+-----+---------------------------------------+--------------------+------------|
+| =draco= | $5$ | $2 \times 8$ Xeon E5 2640 v2 2.5GHz   | 32KB/256KB/20MB    | 64GB DDR3  |
+| =cei=   | $7$ | $2 \times 12$ Xeon Silver 4116 2.1GHz | 32KB/1024KB/16.5MB | 93GB DDR4  |
+| =hype=  | $4$ | $2 \times 10$ Xeon E5 2650 v3 2.3GHz  | 32KB/256KB/25MB    | 128GB DDR4 |
+|---------+-----+---------------------------------------+--------------------+------------|
 
 ** Comparação do Escalonamento entre os três /runtimes/
 
@@ -286,6 +315,20 @@ Tangle this file with C-c C-v t
  year = 1984
 }
 
+@book{jain1991art,
+ location = {New York},
+ edition = {1st},
+ title = {The Art of Computer Systems Performance Analysis: Techniques for Experimental Design, Measurement, Simulation, and Modeling},
+ isbn = {978-0-471-50336-1},
+ shorttitle = {The Art of Computer Systems Performance Analysis},
+ abstract = {The Art of Computer Systems Performance Analysis "At last, a welcome and needed text for computer professionals who require practical, ready-to-apply techniques for performance analysis. Highly recommended!" -Dr. Leonard Kleinrock University of California, Los Angeles "An entirely refreshing text which has just the right mixture of theory and real world practice. The book is ideal for both classroom instruction and self-study." -Dr. Raymond L. Pickholtz President, {IEEE} Communications Society "An extraordinarily comprehensive treatment of both theoretical and practical issues." -Dr. Jeffrey P. Buzen Internationally recognized performance analysis expert ". it is the most thorough book available to date" -Dr. Erol Gelenbe Université René Descartes, Paris ". an extraordinary book.. A worthy addition to the bookshelf of any practicing computer or communications engineer" -Dr. Vinton G. Cer??? Chairman, {ACM} {SIGCOMM} "This is an unusual object, a textbook that one wants to sit down and peruse. The prose is clear and fluent, but more important, it is witty." -Allison Mankin The Mitre Washington Networking Center Newsletter},
+ pagetotal = {685},
+ publisher = {Wiley},
+ author = {Jain, Raj},
+ year = {1991},
+ date = {1991-04}
+}
+
 @book{dominik2010orgmode,
  author = {Dominik, Carsten},
  title = {The Org Mode 7 Reference Manual - Organize Your Life with GNU Emacs},
@@ -313,6 +356,17 @@ Tangle this file with C-c C-v t
  address = {Vienna, Austria},
  year = {2018},
  url = {https://www.R-project.org/},
+}
+
+@article{wickham2019tidyverse,
+ title = {Welcome to the {tidyverse}},
+ author = {Hadley Wickham and Mara Averick and Jennifer Bryan and Winston Chang and Lucy D'Agostino McGowan and Romain François and Garrett Grolemund and Alex Hayes and Lionel Henry and Jim Hester and Max Kuhn and Thomas Lin Pedersen and Evan Miller and Stephan Milton Bache and Kirill Müller and Jeroen Ooms and David Robinson and Dana Paige Seidel and Vitalie Spinu and Kohske Takahashi and Davis Vaughan and Claus Wilke and Kara Woo and Hiroaki Yutani},
+ year = {2019},
+ journal = {Journal of Open Source Software},
+ volume = {4},
+ number = {43},
+ pages = {1686},
+ doi = {10.21105/joss.01686},
 }
 
 @inproceedings{gamblin2015spack,
