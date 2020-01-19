@@ -199,15 +199,17 @@ Buster.
 
 #+latex: \noindent
 *Versão das Bibliotecas e Binários*: A ferramenta utilizada para a compilação de
-todos os binários foi o /frontend/ C do sistema de compiladores GCC, versão
-=8.3.0= \cite{gnu2018manual}. As bibliotecas padrão utilizadas foram, portanto,
-as distribuídas com esse /release/ do compilador. O /runtime/ de OpenMP
-utilizado do projeto LLVM foi a versão distribuída com o lançamento =6.0.0= do
-/frontend/ Clang \cite{llvm2018manual}. Todas os /runtimes/ de OpenMP utilizados
-seguem a especificação =4.5= \cite{openmp2015spec}. A versão da biblioteca
-StarPU utilizada foi a versão estável =1.3.1=. Para todos os binários gerados,
-utilizamos a biblioteca LAPACK \cite{lapack1999guide} de versão =3.8.0= do
-pacote Netlib[fn:2].
+todos os binários foi o /frontend/ para a linguagem C do sistema de compiladores
+GCC, versão =8.3.0= \cite{gnu2018manual}. As bibliotecas padrão utilizadas
+foram, portanto, as distribuídas com esse /release/ do compilador. O /runtime/
+de OpenMP utilizado do projeto LLVM foi a versão distribuída com o lançamento
+=6.0.0= do /frontend/ Clang \cite{llvm2018manual}. Todas os /runtimes/ de OpenMP
+utilizados seguem a especificação =4.5= \cite{openmp2015spec}. A versão da
+biblioteca StarPU utilizada foi a versão estável =1.3.1=. Para todos os binários
+gerados, utilizamos a biblioteca LAPACK \cite{lapack1999guide} de versão =3.8.0=
+do pacote Netlib[fn:2].
+
+# falta info sobre libkomp e kstar, que não possuem versões estáveis. como citar?
 
 [fn:1] O link para o /website/ da distribuição é: https://www.debian.org/
 [fn:2] O link para o /website/ do Netlib é: https://www.netlib.org/
