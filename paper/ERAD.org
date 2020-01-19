@@ -144,8 +144,10 @@ comando.
 
 #+latex: \noindent
 *Exploração e Análise dos Dados*: A integração das ferramentas previamente
-citadas no editor Emacs \cite{stallman2017emacs} permitiu o uso quase natural de
-blocos de código de análise dos dados em R entrelaçados com notas sobre esses.
+citadas no editor Emacs \cite{stallman2017emacs} permitiu o uso de blocos de
+código de análise dos dados em R entrelaçados com notas sobre esses. Uma
+abordagem similar é a dos /Jupyter Notebooks/, que porém acaba mais restrita
+pelo versionamento mais restrito dos arquivos em /rich text/.
 
 * Resultados Experimentais e Observações
 
