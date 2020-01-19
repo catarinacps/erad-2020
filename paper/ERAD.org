@@ -82,23 +82,6 @@ como o ferramental de /software/ utilizado para a análise dos dados
 coletados. Além disso, abordaremos o /workflow/ adotado a fim de aprimorar a
 reprodutibilidade dos resultados aqui apresentados.
 
-#+latex: \noindent
-*Configuração do Ambiente de Testes*: Para a execução da aplicação, utilizamos
-as plataformas descritas na [[tab:plataformas][Tabela 1]]. Listamos em cada uma dessas o seu
-identificador, o(s) processador(es), a quantidade e níveis de memória /cache/ e
-quantidade de memória /RAM/.
-
-#+name: tab:plataformas
-#+attr_latex: :float t :placement [!htb] :font \small
-#+caption: Configuração das plataformas utilizadas nos experimentos.
-|---------+----------------------------------------+---------+--------------------+-------------|
-| <l>     | <l>                                    | <l>     | <l>                | <l>         |
-| *Nome*  | *CPU*                                  | *Nodos* | *L1/L2/LLC*        | *RAM*       |
-|---------+----------------------------------------+---------+--------------------+-------------|
-| =draco= | $2 \times 8$ Xeon E5 2640 v2 2.5 GHz   | $7$     | 32KB/256KB/20MB    | 64 GB DDR3  |
-| =cei=   | $2 \times 12$ Xeon Silver 4116 2.1 GHz | $8$     | 32KB/1024KB/16.5MB | 93 GB DDR4  |
-| =hype=  | $2 \times 10$ Xeon E5 2650 v3 2.3 GHz  | $5$     | 32KB/256KB/25MB    | 128 GB DDR4 |
-|---------+----------------------------------------+---------+--------------------+-------------|
 
 ** Projeto Experimental
 
@@ -135,6 +118,23 @@ Estou cansado já, mas essa parte precisa de uma séria atenção.
 - SW
   - Starpu/LWS
 #+end_comment
+
+#+latex: \noindent
+Para a execução da aplicação, utilizamos as plataformas descritas na [[tab:plataformas][Tabela
+1]]. Listamos em cada uma dessas o seu identificador, o(s) processador(es), a
+quantidade e níveis de memória /cache/ e quantidade de memória /RAM/.
+
+#+name: tab:plataformas
+#+attr_latex: :float t :placement [!htb] :font \small
+#+caption: Configuração das plataformas utilizadas nos experimentos.
+|---------+----------------------------------------+---------+--------------------+-------------|
+| <l>     | <l>                                    | <l>     | <l>                | <l>         |
+| *Nome*  | *CPU*                                  | *Nodos* | *L1/L2/LLC*        | *RAM*       |
+|---------+----------------------------------------+---------+--------------------+-------------|
+| =draco= | $2 \times 8$ Xeon E5 2640 v2 2.5 GHz   | $7$     | 32KB/256KB/20MB    | 64 GB DDR3  |
+| =cei=   | $2 \times 12$ Xeon Silver 4116 2.1 GHz | $8$     | 32KB/1024KB/16.5MB | 93 GB DDR4  |
+| =hype=  | $2 \times 10$ Xeon E5 2650 v3 2.3 GHz  | $5$     | 32KB/256KB/25MB    | 128 GB DDR4 |
+|---------+----------------------------------------+---------+--------------------+-------------|
 
 ** Comparação do Escalonamento entre os três /runtimes/
 
@@ -312,6 +312,65 @@ Tangle this file with C-c C-v t
  pages = {1--12},
  year = {2015},
  organization = {IEEE}
+}
+
+@inproceedings{knupfer2012scorep,
+ author = {Kn{\"u}pfer, Andreas and R{\"o}ssel, Christian and Mey, Dieter an and Biersdorff, Scott and Diethelm, Kai and Eschweiler, Dominic and Geimer, Markus and Gerndt, Michael and Lorenz, Daniel and Malony, Allen and Nagel, Wolfgang E. and Oleynik, Yury and Philippen, Peter and Saviankou, Pavel and Schmidl, Dirk and Shende, Sameer and Tsch{\"u}ter, Ronny and Wagner, Michael and Wesarg, Bert and Wolf, Felix},
+ editor = {Brunst, Holger and M{\"u}ller, Matthias S. and Nagel, Wolfgang E. and Resch, Michael M.},
+ title = {Score-P: A Joint Performance Measurement Run-Time Infrastructure for Periscope,Scalasca, TAU, and Vampir},
+ booktitle = {Tools for High Performance Computing 2011},
+ year = {2012},
+ publisher = {Springer Berlin Heidelberg},
+ address = {Berlin, Heidelberg},
+ pages = {79--91},
+ isbn = {978-3-642-31476-6}
+}
+
+@book{lapack1999guide,
+ author = {Anderson, E. and Bai, Z. and Bischof, C. and Blackford, S. and Demmel, J. and Dongarra, J. and Du Croz, J. and Greenbaum, A. and Hammarling, S. and McKenney, A. and Sorensen, D.},
+ title = {{LAPACK} Users' Guide},
+ edition = {Third},
+ publisher = {Society for Industrial and Applied Mathematics},
+ year = {1999},
+ address = {Philadelphia, PA},
+ isbn = {0-89871-447-8 (paperback)}
+}
+
+@article{dagum1998openmp,
+ author = {Dagum, Leonardo and Menon, Ramesh},
+ journal = {Computational Science \& Engineering, IEEE},
+ number = {1},
+ pages = {46--55},
+ publisher = {IEEE},
+ title = {OpenMP: an industry standard API for shared-memory programming},
+ volume = {5},
+ year = {1998}
+}
+
+@misc{openmp2015spec,
+ author = {{OpenMP Architecture Review Board}},
+ title = {{OpenMP} Application Program Interface Version 4.5},
+ month = {November},
+ year = {2015},
+ url = {https://www.openmp.org/wp-content/uploads/openmp-4.5.pdf}
+}
+
+@manual{llvm2018manual,
+ title = {Clang: a C language family frontend for LLVM Version 6.0.0},
+ author = {{LLVM Developer Team}},
+ organization = {LLVM Foundation},
+ address = {California, United States of America},
+ year = {2018},
+ url = {https://releases.llvm.org/6.0.0/tools/clang/docs/UsersManual.html},
+}
+
+@manual{gnu2018manual,
+ title = {GCC, the GNU Compiler Collection Version 8.3.0},
+ author = {{GCC Team}},
+ organization = {Free Software Foundation},
+ address = {Massachusetts, United States of America},
+ year = {2018},
+ url = {https://gcc.gnu.org/onlinedocs/gcc-8.3.0/gcc/},
 }
 #+end_src
 
