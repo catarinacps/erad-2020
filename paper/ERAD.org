@@ -4,6 +4,38 @@
 
 #+title: Paper for ERAD 2020
 #+author: Henrique Silva
+#+author: Marcelo Cogo Milletto
+#+author: Vinicius Garcia Pinto
+#+author: Lucas Mello Schnorr
+
+#+begin_export latex
+\author{
+   Henrique Corrêa Pereira da Silva\and%\inst{1},
+   Marcelo Cogo Milletto\and
+   Vinicius Garcia Pinto\and \\
+   Lucas Mello Schnorr
+}
+
+\address{
+  Instituto de Informática -- Universidade Federal do Rio Grande do Sul (UFRGS)\\
+  Porto Alegre -- RS -- Brasil
+  \email{\{hcpsilva,mcmiletto,vgpinto,schnorr\}@inf.ufrgs.br}
+}
+
+\maketitle
+#+end_export
+
+#+begin_resumo
+
+#+end_resumo
+
+* Configuração                                            :noexport:
+
+# Local Variables:
+# eval: (require 'ox-extra)
+# eval: (require 'org-inlinetask)
+# eval: (ox-extras-activate '(ignore-headlines))
+# End:
 
 #+startup: overview indent
 #+language: pt-br
@@ -27,27 +59,6 @@
 
 # You need at least Org 9 and Emacs 24 to make this work.
 # If you do, just type make (thanks Luka Stanisic for this).
-
-#+begin_export latex
-\author{
-   Henrique Corrêa Pereira da Silva\and%\inst{1},
-   Marcelo Cogo Milletto\and
-   Vinicius Garcia Pinto\and \\
-   Lucas Mello Schnorr
-}
-
-\address{
-  Instituto de Informática -- Universidade Federal do Rio Grande do Sul (UFRGS)\\
-  Porto Alegre -- RS -- Brasil
-  \email{\{hcpsilva,mcmiletto,vgpinto,schnorr\}@inf.ufrgs.br}
-}
-#+end_export
-
-\maketitle
-
-#+begin_resumo
-
-#+end_resumo
 
 * Introdução, Objetivos e Trabalhos Relacionados
 
@@ -99,8 +110,8 @@ nó para a avaliação do /makespan/ e 1 vez para a coleta do traço das execuç
 A manipulação e análise de dados foi realizada utilizando a linguagem de
 programação =R= em conjunto com o pacote de bibliotecas =tidyverse= através de
 blocos de códigos embutidos em arquivos =org=. Tal abordagem nos permitiu
-alcançar fácil reprodutibilidade e posterior verificação dos resultados obtidos,
-além de uma plataforma robusta para a posterior visualização desses resultados.
+alcançar a reprodutibilidade e a verificação dos resultados obtidos, além de uma
+plataforma robusta para a posterior visualização desses resultados.
 
 #+begin_comment
 Estou cansado já, mas essa parte precisa de uma séria atenção.
