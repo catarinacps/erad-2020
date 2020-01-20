@@ -1999,8 +1999,9 @@ blockQrStarpuKstar <-
 names(blockQrStarpuKstar) <-
     grep("starpu", list.dirs(path=rawDirExp, full.names=TRUE, recursive=FALSE), value=TRUE) %>%
     lapply(function(fl){
-        nm <- basename(fl) %>% strsplit("_") %>% unlist()
-        nm[0:(length(nm)-2)] %>% paste(collapse ='-')
+        #nm <- basename(fl) %>% strsplit("_") %>% unlist()
+        #nm[0:(length(nm)-2)] %>% paste(collapse ='-')
+        nm <- basename(fl) %>% str_replace_all("_", "-") 
     })
  #+end_src
 
@@ -2163,8 +2164,9 @@ blockQrLibkomp <-
 names(blockQrLibkomp) <-
     grep("libkomp", list.dirs(path=rawDirExp, full.names=TRUE, recursive=FALSE), value=TRUE) %>%
     lapply(function(fl){
-        nm <- basename(fl) %>% strsplit("_") %>% unlist()
-        nm[0:(length(nm)-2)] %>% paste(collapse ='-')
+        #nm <- basename(fl) %>% strsplit("_") %>% unlist()
+        #nm[0:(length(nm)-2)] %>% paste(collapse ='-')
+        nm <- basename(fl) %>% str_replace_all("_", "-") 
     })
 
 #+end_src
