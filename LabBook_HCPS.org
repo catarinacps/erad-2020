@@ -1981,14 +1981,14 @@ done
 
 
 ***** Loading StarVZ
- #+begin_src R :results output :exports both :session Rvz :eval no-export
+ #+begin_src R :results output :exports both :session R :eval no-export
 library(starvz)
  #+end_src
 
 
 ***** Reading Feather
  #+header: :var rawDirExp="./experiments/exp02/results-draco1-wip"
- #+begin_src R :results output :exports both :session Rvz :eval no-export
+ #+begin_src R :results output :exports both :session R :eval no-export
 blockQrStarpuKstar <-
     grep("starpu", list.dirs(path=rawDirExp, full.names=TRUE, recursive=FALSE), value=TRUE) %>%
     lapply(function(fl){
@@ -2016,14 +2016,14 @@ wget https://raw.githubusercontent.com/schnorr/starvz/master/full_config.yaml
 
 #+name: fullConfig
 #+header: :var dep1=getFullConfig
- #+begin_src R :results output :exports both :session Rvz :eval no-export :cache yes
+ #+begin_src R :results output :exports both :session R :eval no-export :cache yes
 pajer <- config::get(file = "full_config.yaml")
  #+end_src
 
 ***** Custom config
 #+name: customConfig
 #+header: :var dep1=fullConfig
-#+begin_src R :results output :session Rvz :exports both
+#+begin_src R :results output :session R :exports both
 pajer$st$outliers = FALSE
 pajer$st$cpb = FALSE
 pajer$pmtool$bounds$active = FALSE
@@ -2039,7 +2039,7 @@ pajer$st$alpha = 0.8
 
 ***** Plots
 #+header: :var dep1=customConfig
- #+begin_src R :results output graphics :file img/trace-qr-starpu-kstar-starvz.png :exports both :width 1350 :height 2000 :session Rvz :eval no-export
+ #+begin_src R :results output graphics :file img/trace-qr-starpu-kstar-starvz.png :exports both :width 1350 :height 2000 :session R :eval no-export
 
 #state_chart(blockQrStarpuKstar[[1]])
 the_master_function(blockQrStarpuKstar[[1]])
@@ -2051,7 +2051,7 @@ the_master_function(blockQrStarpuKstar[[1]])
 ***** All Plots StarPU & Kstar
 ****** Generating ORG blocks                                       :noexport:
 #+name: starpukstarnames
-#+begin_src R :results output :session Rvz :exports none :eval no-export
+#+begin_src R :results output :session R :exports none :eval no-export
 blockQrStarpuKstar %>% names
 #+end_src
 
@@ -2066,7 +2066,7 @@ for r in $lista; do
     echo "******* Execution $r"
     echo "#+header: :var dep1=customConfig"
     r2=$(echo $r | sed "s/\"//g")
-    echo "#+begin_src R :results output graphics :file img/trace-qr-$r2-starvz.png :exports both :width 1400 :height 1200 :session Rvz :eval no-export "
+    echo "#+begin_src R :results output graphics :file img/trace-qr-$r2-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export "
     echo "  the_master_function(blockQrStarpuKstar[[$r]])"
     echo "#+end_src"
     echo ""
@@ -2074,23 +2074,19 @@ done;
  #+end_src
 
 ****** Full View Chart
-******* Execution "kstar-starpu"
-  #+header: :var dep1=customConfig
-  #+begin_src R :results output graphics :file img/trace-qr-kstar-starpu-starvz.png :exports both :width 1400 :height 800 :session Rvz :eval no-export
-    the_master_function(blockQrStarpuKstar[["kstar-starpu"]])
-  #+end_src
+******* Execution "kstar-starpu-8192-128"
+ #+header: :var dep1=customConfig
+ #+begin_src R :results output graphics :file img/trace-qr-kstar-starpu-8192-128-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+   the_master_function(blockQrStarpuKstar[["kstar-starpu-8192-128"]])
+ #+end_src
 
-  #+RESULTS:
-  [[file:img/trace-qr-kstar-starpu-starvz.png]]
 
-******* Execution "starpu"
-  #+header: :var dep1=customConfig
-  #+begin_src R :results output graphics :file img/trace-qr-starpu-starvz.png :exports both :width 1400 :height 800 :session Rvz :eval no-export
-    the_master_function(blockQrStarpuKstar[["starpu"]])
-  #+end_src
+******* Execution "starpu-8192-128"
+ #+header: :var dep1=customConfig
+ #+begin_src R :results output graphics :file img/trace-qr-starpu-8192-128-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+   the_master_function(blockQrStarpuKstar[["starpu-8192-128"]])
+ #+end_src
 
-  #+RESULTS:
-  [[file:img/trace-qr-starpu-starvz.png]]
 
 
 
@@ -2222,6 +2218,161 @@ done;
    gantt_libkomp(blockQrLibkomp[["libkomp-clang-8192-256"]])
  #+end_src
 
+
+**** ScoreP (gcc - libgomp) in microseconds
+***** Functions in R
+ #+name: rScorep
+ #+begin_src R :results output :exports both :session R
+library(ggplot2)
+library(dplyr)
+
+# helper: convert s to the date
+
+gantt_scorep <- function (dtx) {
+     
+    # time zero (start of  first task in the DAG)
+    zero <- dtx %>% filter(Kernel == "dgeqrt") %>% .$Start %>% min
+    dtx %>% mutate(Start=Start-zero, End=End-zero) -> dty
+
+    dty %>% mutate(WorkerID=as.factor(WorkerID), Kernel=as.factor(Kernel)) %>% mutate(Kernel=factor(Kernel, levels=mixedsort(levels(Kernel)))) -> dta
+
+    # End of last task
+    makespan = dta %>% filter(Kernel == "dgeqrt") %>% .$End %>% max
+    makespan_y = (dta %>% .$WorkerID %>% unique %>% length) / 2
+
+    dti <- dta %>% group_by(WorkerID) %>% summarize(Idleness = (1-(sum(End-Start)/makespan))*100)
+    
+    ggplot(data=dta, aes(x=date(Start), y=WorkerID)) +
+        geom_rect(aes(fill=Kernel,
+                      xmin=date(Start),
+                      xmax=date(End),
+                      ymin=as.numeric(WorkerID)-.4,
+                      ymax=as.numeric(WorkerID)+.4)) +
+        annotate("text", x = date(makespan), y = makespan_y, label = round(makespan, 2), angle=90) +
+        geom_label(data=dti, aes(x=date(makespan*(-0.05)), y=WorkerID, label=paste(round(Idleness, 2), "%"))) +
+        xlab("Time") +
+        ylab("Application Threads") +
+        theme_bw() +
+        theme (legend.position = "bottom") +
+        scale_fill_manual(values = c("#96e3a2", "#f68285", "#9bb6dd", "#d194d0")) +
+        scale_y_discrete()
+}
+
+ #+end_src
+
+
+***** Processing raw traces
+ #+name: raw-scorep
+ #+header: :var rawPath="./experiments/exp02/results-draco1-wip"
+ #+begin_src sh :results output :exports both :cache yes :eval no-export
+export PATH=`starpu-spack/src/spack/bin/spack location -i otf2`/bin/:$PATH
+export PATH=$HOME/misc/pajeng/bin:$PATH
+
+for file in `find $rawPath -maxdepth 1 -type d -name "*scorep*"`;  do
+    ./scripts/otf2ompprint2paje.pl $file/traces.otf2 2> /dev/null | pj_dump --user-defined | grep ^State | grep -v create > $file/paje.libgomp.csv
+done
+ #+end_src
+
+
+Generated files:
+ #+header: :var rawPath="./experiments/exp02/results-draco1-wip"
+ #+begin_src shell :results output :exports both
+find $rawPath -type f -name paje.libgomp.csv
+  #+end_src
+
+
+Mapping kernel names
+
+#+name: mapping_omp_signature_to_kernel_name_otf2print
+| Value                                  | Kernel         |
+|----------------------------------------+----------------|
+| !$omp create task @block_qr_openmp.c:58  | create.dgeqrt  |
+| !$omp create task @block_qr_openmp.c:77  | create.dlarfb  |
+| !$omp create task @block_qr_openmp.c:97  | create.dtpqrt  |
+| !$omp create task @block_qr_openmp.c:117 | create.dtpmqrt |
+| !$omp task @block_qr_openmp.c:117        | dtpmqrt        |
+| !$omp task @block_qr_openmp.c:97         | dtpqrt         |
+| !$omp task @block_qr_openmp.c:77         | dlarfb         |
+| !$omp task @block_qr_openmp.c:58         | dgeqrt         |
+
+
+***** Reading traces
+#+header: :var mapping=mapping_omp_signature_to_kernel_name_otf2print
+#+begin_src R :results output :session R :exports both
+read_csv("./experiments/exp02/results-draco1-wip/scorep_8192_256/paje.libgomp.csv", col_names=FALSE, col_types=cols()) %>%
+    select(-X1, -X3) %>%
+    rename(Worker = X2,
+           Start = X4,
+           End = X5,
+           Duration = X6,
+           Imbrication = X7,
+           Value = X8,
+           JobId = X9) %>%
+    filter(Imbrication == 3) %>%
+    mutate(Worker = as.factor(Worker)) -> df.post
+
+df.post %>%
+    select(Worker) %>%
+    unique %>%
+    mutate(WorkerID = as.integer(1:n()-1)) -> df.worker
+
+df.post %>%
+    left_join(df.worker, by="Worker") %>%
+    select(-Worker) %>%
+    select(WorkerID, everything()) -> df.post.2
+
+df.post.2 %>%
+    left_join(mapping, by="Value") %>%
+    #select(-Value) %>%
+    mutate(End = End - min(Start)) %>%
+    mutate(Start = Start - min(Start)) -> df.post.3
+
+df.post.3 -> df.libgomp
+#+end_src
+
+
+***** Plot
+      #+begin_src R :results output graphics :file (org-babel-temp-file "figure" ".png") :exports both :width 1350 :height 400 :session R
+gantt_scorep(df.libgomp)
+      #+end_src
+
+
+**** All - Comparing Task Duration
+***** Code
+      #+begin_src R :results output :session R :exports both
+      plot_duration <- function(dta){
+          dta %>% filter(Task %in% c("dgeqrt", "dtpqrt", "dlarfb", "dtpmqrt")) %>% group_by(Task, Runtime) %>% summarize(Mean=mean(Duration), Median=median(Duration), Sd=sd(Duration)) %>% 
+              ggplot(aes(x=Runtime, y=Mean, fill=Runtime)) +
+              geom_bar(stat="identity") +
+              geom_errorbar(aes(ymin=Mean-Sd, ymax=Mean+Sd)) + 
+              facet_wrap(~Task) + 
+              theme_bw() + 
+              theme (legend.position = "bottom")
+      }
+      #+end_src
+
+      #+RESULTS:
+
+***** Merge all
+      #+begin_src R :results output :session R :exports both
+      bind_rows(
+          lapply(blockQrStarpuKstar %>% names, function(x){
+              nm <- x %>% strsplit("-") %>% unlist()
+              blockQrStarpuKstar[[x]]$State %>% select(Value, ResourceId, Duration) %>% rename(Task=Value, Resource=ResourceId) %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[3], Block=nm[4]) %>% mutate(Task=str_replace(Task, "lapack_", ""))
+          }),
+          lapply(blockQrLibkomp %>% names, function(x){
+              nm <- x %>% strsplit("-") %>% unlist()
+              blockQrLibkomp[[x]] %>% select(Name, Resource, Duration) %>% rename(Task=Name) %>% mutate(Resource=as.character(Resource)) %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[3], Block=nm[4])
+          })
+      ) -> dt_duration
+      #+end_src
+
+      #+RESULTS:
+
+***** Plot
+      #+begin_src R :results output graphics :file (org-babel-temp-file "figure" ".png") :exports both :width 600 :height 400 :session R
+plot_duration(dt_duration)
+      #+end_src
 
 
 * Resources
