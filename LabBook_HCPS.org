@@ -2158,7 +2158,13 @@ blockQrLibkomp <-
     grep("libkomp", list.dirs(path=rawDirExp, full.names=TRUE, recursive=FALSE), value=TRUE) %>%
     lapply(function(fl){
         print(paste0("Working on ", fl))
-        readtrace(paste(fl, "tasks.csv", sep="/"))
+        ret <- readtrace(paste(fl, "tasks.csv", sep="/"))
+        ret$Name = recode(ret$Name, 
+                          ";src/block_qr_openmp.c;main;54;9;;" = "dgeqrt",
+                          ";src/block_qr_openmp.c;main;93;9;;" = "dtpqrt",
+                          ";src/block_qr_openmp.c;main;73;9;;" = "dlarfb",
+                          ";src/block_qr_openmp.c;main;113;9;;" = "dtpmqrt")
+        ret
     })
 
 names(blockQrLibkomp) <-
