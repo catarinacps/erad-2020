@@ -107,16 +107,16 @@ aceleradores do sistema). O StarPU e o OmpSs foram projetados especificamente
 com esse conceito em mente e, na versão =3.0= de sua especificação, esse
 conceito foi introduzido na /API/ de OpenMP.
 
-Avaliaremos o desempenho e comportamento de uma aplicação que
-implementa uma fatoração QR de uma matriz densa de implementações
-utilizando diretamente as diretivas de tarefas do OpenMP com os
-/runtimes/ nativos de ambos GCC e LLVM e também utilizando o /runtime/ da
-biblioteca LIBKOMP baseado em X-Kaapi, de uma implementação pura em
-StarPU, de uma transpilação da implementação em diretivas OpenMP para
-StarPU pela biblioteca Kstar. Logo, nossos objetivos nesse trabalho
-são comparar o *escalonamento* de tarefas, observar a *ociosidade* dos
-trabalhadores de cada /runtime/ e identificar *anomalias* em quaisquer das
-bibliotecas testadas.
+Avaliaremos, assim, o desempenho e comportamento de uma aplicação que implementa
+uma fatoração QR de uma matriz densa de implementações utilizando diretamente as
+diretivas de tarefas do OpenMP e de uma implementação nativa em StarPU. Essa
+primeira utilizará ambos os /runtimes/ nativos da ABI do GCC e do LLVM como
+também a /runtime/ da biblioteca LIBKOMP baseado em X-Kaapi. A implementação em
+StarPU, por fim, será executada nativamente e também através de uma transpilação
+da implementação em diretivas OpenMP para StarPU pela biblioteca Kstar. Sendo
+assim, nossos objetivos nesse trabalho são comparar o *escalonamento* de
+tarefas, observar a *ociosidade* dos trabalhadores de cada /runtime/ e
+identificar *anomalias* em quaisquer das bibliotecas testadas.
 
 # ...
 # <insira paragrafo sobre related work aqui>
