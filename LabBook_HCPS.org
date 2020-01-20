@@ -2126,8 +2126,6 @@ gantt_libkomp <- function (dtx) {
     makespan = dta %>% filter(Name == "dgeqrt") %>% .$End %>% max
     makespan_y = (dta %>% .$Resource %>% unique %>% length) / 2
 
-    # blockQrLibkomp[[1]] %>% filter(Name == "dgeqrt") %>% summarize(Min=min(Start), Max=max(Start)) %>% mutate(Total=Max-Min) %>% mutate(Max=Max-Min) %>% mutate(Min=0)
-
     dti <- dta %>% group_by(Resource) %>% summarize(Idleness = (1-(sum(End-Start)/makespan))*100)
     
     ggplot(data=dta, aes(x=date(Start), y=Resource)) +
