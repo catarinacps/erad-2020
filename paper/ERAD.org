@@ -240,18 +240,18 @@ décima distribuição estável =10.2=, de codinome Buster.
 #+name: tab:versoes
 #+attr_latex: :float t :placement [!htb] :font \small
 #+caption: Características das versões executadas da aplicação.
-|-----------------+-----------+-------------------------+------------------------------------------------|
-| <l>             | <l>       | <l>                     |                                                |
-| *Identificador* | *Fonte*   | *ABI/API Utilizada*     | *Versão*                                       |
-|-----------------+-----------+-------------------------+------------------------------------------------|
-| libgomp_GCC     |           | OpenMP/GCC              | =8.3.0=                                        |
-| libomp_LLVM     |           | OpenMP/LLVM             | =6.0.0=                                        |
-| KStar_StarPU    | Diretivas | StarPU  (LWS scheduler) | @@latex:\texttt{master}$_{bf6af54e57bad130}$@@ |
-| LIBKOMP_libgomp |           | OpenMP/LIBKOMP-LLVM     | @@latex:\texttt{master}$_{32781b6dab10b1b5}$@@ |
-| LIBKOMP_libomp  |           | OpenMP/LIBKOMP-GCC      | @@latex:\texttt{master}$_{32781b6dab10b1b5}$@@ |
-|-----------------+-----------+-------------------------+------------------------------------------------|
-| StarPU          | Nativo    | StarPU (LWS scheduler)  | =1.3.1=                                        |
-|-----------------+-----------+-------------------------+------------------------------------------------|
+|-----------------+-----------+-------------------------+-------------------------------------|
+| <l>             | <l>       | <l>                     |                                     |
+| *Identificador* | *Fonte*   | *ABI/API Utilizada*     | *Versão*                            |
+|-----------------+-----------+-------------------------+-------------------------------------|
+| libgomp_GCC     |           | OpenMP/GCC              | =8.3.0=                             |
+| libomp_LLVM     |           | OpenMP/LLVM             | =6.0.0=                             |
+| KStar_StarPU    | Diretivas | StarPU  (LWS scheduler) | =master=\xfeff$_{bf6af54e57bad130}$ |
+| LIBKOMP_libgomp |           | OpenMP/LIBKOMP-LLVM     | =master=\xfeff$_{32781b6dab10b1b5}$ |
+| LIBKOMP_libomp  |           | OpenMP/LIBKOMP-GCC      | =master=\xfeff$_{32781b6dab10b1b5}$ |
+|-----------------+-----------+-------------------------+-------------------------------------|
+| StarPU          | Nativo    | StarPU (LWS scheduler)  | =1.3.1=                             |
+|-----------------+-----------+-------------------------+-------------------------------------|
 
 #+begin_comment
 #+latex: \noindent
