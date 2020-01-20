@@ -2219,6 +2219,124 @@ done;
  #+end_src
 
 
+**** ScoreP (gcc - libgomp) in microseconds
+***** Functions in R
+ #+name: rScorep
+ #+begin_src R :results output :exports both :session R
+library(ggplot2)
+library(dplyr)
+
+# helper: convert s to the date
+
+gantt_scorep <- function (dtx) {
+     
+    # time zero (start of  first task in the DAG)
+    zero <- dtx %>% filter(Kernel == "dgeqrt") %>% .$Start %>% min
+    dtx %>% mutate(Start=Start-zero, End=End-zero) -> dty
+
+    dty %>% mutate(WorkerID=as.factor(WorkerID), Kernel=as.factor(Kernel)) %>% mutate(Kernel=factor(Kernel, levels=mixedsort(levels(Kernel)))) -> dta
+
+    # End of last task
+    makespan = dta %>% filter(Kernel == "dgeqrt") %>% .$End %>% max
+    makespan_y = (dta %>% .$WorkerID %>% unique %>% length) / 2
+
+    dti <- dta %>% group_by(WorkerID) %>% summarize(Idleness = (1-(sum(End-Start)/makespan))*100)
+    
+    ggplot(data=dta, aes(x=date(Start), y=WorkerID)) +
+        geom_rect(aes(fill=Kernel,
+                      xmin=date(Start),
+                      xmax=date(End),
+                      ymin=as.numeric(WorkerID)-.4,
+                      ymax=as.numeric(WorkerID)+.4)) +
+        annotate("text", x = date(makespan), y = makespan_y, label = round(makespan, 2), angle=90) +
+        geom_label(data=dti, aes(x=date(makespan*(-0.05)), y=WorkerID, label=paste(round(Idleness, 2), "%"))) +
+        xlab("Time") +
+        ylab("Application Threads") +
+        theme_bw() +
+        theme (legend.position = "bottom") +
+        scale_fill_manual(values = c("#96e3a2", "#f68285", "#9bb6dd", "#d194d0")) +
+        scale_y_discrete()
+}
+
+ #+end_src
+
+
+***** Processing raw traces
+ #+name: raw-scorep
+ #+header: :var rawPath="./experiments/exp02/results-draco1-wip"
+ #+begin_src sh :results output :exports both :cache yes :eval no-export
+export PATH=`starpu-spack/src/spack/bin/spack location -i otf2`/bin/:$PATH
+export PATH=$HOME/misc/pajeng/bin:$PATH
+
+for file in `find $rawPath -maxdepth 1 -type d -name "*scorep*"`;  do
+    ./scripts/otf2ompprint2paje.pl $file/traces.otf2 2> /dev/null | pj_dump --user-defined | grep ^State | grep -v create > $file/paje.libgomp.csv
+done
+ #+end_src
+
+
+Generated files:
+ #+header: :var rawPath="./experiments/exp02/results-draco1-wip"
+ #+begin_src shell :results output :exports both
+find $rawPath -type f -name paje.libgomp.csv
+  #+end_src
+
+
+Mapping kernel names
+
+#+name: mapping_omp_signature_to_kernel_name_otf2print
+| Value                                  | Kernel         |
+|----------------------------------------+----------------|
+| !$omp create task @block_qr_openmp.c:58  | create.dgeqrt  |
+| !$omp create task @block_qr_openmp.c:77  | create.dlarfb  |
+| !$omp create task @block_qr_openmp.c:97  | create.dtpqrt  |
+| !$omp create task @block_qr_openmp.c:117 | create.dtpmqrt |
+| !$omp task @block_qr_openmp.c:117        | dtpmqrt        |
+| !$omp task @block_qr_openmp.c:97         | dtpqrt         |
+| !$omp task @block_qr_openmp.c:77         | dlarfb         |
+| !$omp task @block_qr_openmp.c:58         | dgeqrt         |
+
+
+***** Reading traces
+#+header: :var mapping=mapping_omp_signature_to_kernel_name_otf2print
+#+begin_src R :results output :session R :exports both
+read_csv("./experiments/exp02/results-draco1-wip/scorep_8192_256/paje.libgomp.csv", col_names=FALSE, col_types=cols()) %>%
+    select(-X1, -X3) %>%
+    rename(Worker = X2,
+           Start = X4,
+           End = X5,
+           Duration = X6,
+           Imbrication = X7,
+           Value = X8,
+           JobId = X9) %>%
+    filter(Imbrication == 3) %>%
+    mutate(Worker = as.factor(Worker)) -> df.post
+
+df.post %>%
+    select(Worker) %>%
+    unique %>%
+    mutate(WorkerID = as.integer(1:n()-1)) -> df.worker
+
+df.post %>%
+    left_join(df.worker, by="Worker") %>%
+    select(-Worker) %>%
+    select(WorkerID, everything()) -> df.post.2
+
+df.post.2 %>%
+    left_join(mapping, by="Value") %>%
+    #select(-Value) %>%
+    mutate(End = End - min(Start)) %>%
+    mutate(Start = Start - min(Start)) -> df.post.3
+
+df.post.3 -> df.libgomp
+#+end_src
+
+
+***** Plot
+      #+begin_src R :results output graphics :file (org-babel-temp-file "figure" ".png") :exports both :width 1350 :height 400 :session R
+gantt_scorep(df.libgomp)
+      #+end_src
+
+
 **** All - Comparing Task Duration
 ***** Code
       #+begin_src R :results output :session R :exports both
