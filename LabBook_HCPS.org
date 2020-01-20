@@ -2136,7 +2136,7 @@ gantt_libkomp <- function (dtx) {
         ylab("Application Threads") +
         theme_bw() +
         theme (legend.position = "bottom") +
-        scale_fill_manual(values = c("#9bb6dd", "#96e3a2", "#f68285", "#d194d0")) +
+        scale_fill_manual(values = c("#96e3a2", "#f68285", "#9bb6dd", "#d194d0")) +
         scale_y_discrete()
 }
 
