@@ -2179,9 +2179,50 @@ names(blockQrLibkomp) <-
   : [1] "Working on ./experiments/exp02/results-draco1-wip/libkomp_clang_8192_256"
   : [1] "Working on ./experiments/exp02/results-draco1-wip/libkomp_gcc_8192_256"
 
+***** Plot
+      #+begin_src R :results output graphics :file (org-babel-temp-file "figure" ".png") :exports both :width 1350 :height 400 :session R
+      gantt_libkomp(blockQrLibkomp[[1]])
+      #+end_src
 
-We should recompile this with -g option to include at least filenames
-and row numbers...
+***** All Plots Libkomp - Clang & GCC
+****** Generating ORG blocks                                       :noexport:
+#+name: libkompnames
+#+begin_src R :results output :session R :exports none :eval no-export
+blockQrLibkomp %>% names
+#+end_src
+
+#+RESULTS: libkompnames
+: [1] "libkomp-clang" "libkomp-clang"
+
+#+header: :var lista=libkompnames
+#+begin_src shell :results value raw :exports results :eval no-export
+echo " "
+echo "****** Full View Chart"
+for r in $lista; do
+    echo "******* Execution $r"
+    r2=$(echo $r | sed "s/\"//g")
+    echo "#+begin_src R :results output graphics :file img/trace-qr-$r2-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export "
+    echo "  gantt_libkomp(blockQrLibkomp[[$r]])"
+    echo "#+end_src"
+    echo ""
+done;
+ #+end_src
+
+ #+RESULTS:
+
+****** Full View Chart
+******* Execution "libkomp-clang-8192-128"
+ #+begin_src R :results output graphics :file img/trace-qr-libkomp-clang-8192-128-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export 
+   gantt_libkomp(blockQrLibkomp[["libkomp-clang-8192-128"]])
+ #+end_src
+
+
+******* Execution "libkomp-clang-8192-256"
+ #+begin_src R :results output graphics :file img/trace-qr-libkomp-clang-8192-256-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export 
+   gantt_libkomp(blockQrLibkomp[["libkomp-clang-8192-256"]])
+ #+end_src
+
+
 
 * Resources
 :PROPERTIES:
