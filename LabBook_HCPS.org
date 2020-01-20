@@ -1804,29 +1804,22 @@ rm -rf $SCRATCH/*
 
 Now we gotta do some post-processing in order to manipulate all collected data.
 
-#+begin_src bash :exports both :results output
+#+begin_src bash :exports both :results output :dir experiments/exp02/data
 set -euo pipefail
 
-DATA_DIR=experiments/exp02/data
-
-for tar_file in $DATA_DIR/*.tar.gz; do
+for tar_file in *.tar.gz; do
     echo "Extracting ${tar_file}..."
-    mkdir ${tar_file%.tar.gz}
-    tar xzf $tar_file -C ${tar_file%.tar.gz}
+    mkdir -p ${tar_file%.tar.gz}
+    # tar xzf $tar_file -C ${tar_file%.tar.gz}
 done
 
 echo "Done extracting the files!"
 #+end_src
 
 #+RESULTS:
-: Extracting experiments/exp04/data/exp04_cei1_48_data.tar.gz...
-: Extracting experiments/exp04/data/exp04_cei2_48_data.tar.gz...
-: Extracting experiments/exp04/data/exp04_cei3_48_data.tar.gz...
-: Extracting experiments/exp04/data/exp04_cei4_48_data.tar.gz...
-: Extracting experiments/exp04/data/exp04_cei5_48_data.tar.gz...
-: Extracting experiments/exp04/data/exp04_cei6_48_data.tar.gz...
-: Extracting experiments/exp04/data/exp04_cei7_48_data.tar.gz...
-: Extracting experiments/exp04/data/exp04_cei8_48_data.tar.gz...
+: Extracting exp02_cei2_48_data.tar.gz...
+: Extracting exp02_draco3_32_data.tar.gz...
+: Extracting exp02_hype2_40_data.tar.gz...
 : Done extracting the files!
 
 With all files extracted, lets collect the traces and transform them into
@@ -2001,7 +1994,7 @@ names(blockQrStarpuKstar) <-
     lapply(function(fl){
         #nm <- basename(fl) %>% strsplit("_") %>% unlist()
         #nm[0:(length(nm)-2)] %>% paste(collapse ='-')
-        nm <- basename(fl) %>% str_replace_all("_", "-") 
+        nm <- basename(fl) %>% str_replace_all("_", "-")
     })
  #+end_src
 
@@ -2076,14 +2069,14 @@ done;
 ****** Full View Chart
 ******* Execution "kstar-starpu-8192-128"
  #+header: :var dep1=customConfig
- #+begin_src R :results output graphics :file img/trace-qr-kstar-starpu-8192-128-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-kstar-starpu-8192-128-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export
    the_master_function(blockQrStarpuKstar[["kstar-starpu-8192-128"]])
  #+end_src
 
 
 ******* Execution "starpu-8192-128"
  #+header: :var dep1=customConfig
- #+begin_src R :results output graphics :file img/trace-qr-starpu-8192-128-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-starpu-8192-128-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export
    the_master_function(blockQrStarpuKstar[["starpu-8192-128"]])
  #+end_src
 
@@ -2111,7 +2104,7 @@ readtrace <- function (filename) {
 }
 
 gantt_libkomp <- function (dtx) {
-     
+
     # time zero (start of  first task in the DAG)
     zero <- dtx %>% filter(Name == "dgeqrt") %>% .$Start %>% min
     dtx %>% mutate(Start=Start-zero, End=End-zero) -> dty
@@ -2123,7 +2116,7 @@ gantt_libkomp <- function (dtx) {
     makespan_y = (dta %>% .$Resource %>% unique %>% length) / 2
 
     dti <- dta %>% group_by(Resource) %>% summarize(Idleness = (1-(sum(End-Start)/makespan))*100)
-    
+
     ggplot(data=dta, aes(x=date(Start), y=Resource)) +
         geom_rect(aes(fill=Name,
                       xmin=date(Start),
@@ -2153,7 +2146,7 @@ blockQrLibkomp <-
     lapply(function(fl){
         print(paste0("Working on ", fl))
         ret <- readtrace(paste(fl, "tasks.csv", sep="/"))
-        ret$Name = recode(ret$Name, 
+        ret$Name = recode(ret$Name,
                           ";src/block_qr_openmp.c;main;54;9;;" = "dgeqrt",
                           ";src/block_qr_openmp.c;main;93;9;;" = "dtpqrt",
                           ";src/block_qr_openmp.c;main;73;9;;" = "dlarfb",
@@ -2166,7 +2159,7 @@ names(blockQrLibkomp) <-
     lapply(function(fl){
         #nm <- basename(fl) %>% strsplit("_") %>% unlist()
         #nm[0:(length(nm)-2)] %>% paste(collapse ='-')
-        nm <- basename(fl) %>% str_replace_all("_", "-") 
+        nm <- basename(fl) %>% str_replace_all("_", "-")
     })
 
 #+end_src
@@ -2208,13 +2201,13 @@ done;
 
 ****** Full View Chart
 ******* Execution "libkomp-clang-8192-128"
- #+begin_src R :results output graphics :file img/trace-qr-libkomp-clang-8192-128-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-libkomp-clang-8192-128-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_libkomp(blockQrLibkomp[["libkomp-clang-8192-128"]])
  #+end_src
 
 
 ******* Execution "libkomp-clang-8192-256"
- #+begin_src R :results output graphics :file img/trace-qr-libkomp-clang-8192-256-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-libkomp-clang-8192-256-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_libkomp(blockQrLibkomp[["libkomp-clang-8192-256"]])
  #+end_src
 
@@ -2229,7 +2222,7 @@ library(dplyr)
 # helper: convert s to the date
 
 gantt_scorep <- function (dtx) {
-     
+
     # time zero (start of  first task in the DAG)
     zero <- dtx %>% filter(Kernel == "dgeqrt") %>% .$Start %>% min
     dtx %>% mutate(Start=Start-zero, End=End-zero) -> dty
@@ -2241,7 +2234,7 @@ gantt_scorep <- function (dtx) {
     makespan_y = (dta %>% .$WorkerID %>% unique %>% length) / 2
 
     dti <- dta %>% group_by(WorkerID) %>% summarize(Idleness = (1-(sum(End-Start)/makespan))*100)
-    
+
     ggplot(data=dta, aes(x=date(Start), y=WorkerID)) +
         geom_rect(aes(fill=Kernel,
                       xmin=date(Start),
@@ -2341,12 +2334,12 @@ gantt_scorep(df.libgomp)
 ***** Code
       #+begin_src R :results output :session R :exports both
       plot_duration <- function(dta){
-          dta %>% filter(Task %in% c("dgeqrt", "dtpqrt", "dlarfb", "dtpmqrt")) %>% group_by(Task, Runtime) %>% summarize(Mean=mean(Duration), Median=median(Duration), Sd=sd(Duration)) %>% 
+          dta %>% filter(Task %in% c("dgeqrt", "dtpqrt", "dlarfb", "dtpmqrt")) %>% group_by(Task, Runtime) %>% summarize(Mean=mean(Duration), Median=median(Duration), Sd=sd(Duration)) %>%
               ggplot(aes(x=Runtime, y=Mean, fill=Runtime)) +
               geom_bar(stat="identity") +
-              geom_errorbar(aes(ymin=Mean-Sd, ymax=Mean+Sd)) + 
-              facet_wrap(~Task) + 
-              theme_bw() + 
+              geom_errorbar(aes(ymin=Mean-Sd, ymax=Mean+Sd)) +
+              facet_wrap(~Task) +
+              theme_bw() +
               theme (legend.position = "bottom")
       }
       #+end_src
