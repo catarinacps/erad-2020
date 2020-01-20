@@ -182,7 +182,7 @@ Slurm e permite a fácil reprodução de um experimento numa só linha de comand
 *Exploração e Análise dos Dados*: A integração das ferramentas previamente
 citadas no editor Emacs permitiu o uso de blocos de código de análise dos dados
 em R entrelaçados com notas sobre esses. Uma abordagem similar é a dos /Jupyter
-Notebooks/, que porém acaba mais restrita pelo versionamento mais restrito dos
+Notebooks/, que porém acaba mais restrita pelo versionamento mais limitado dos
 arquivos em /rich text/.
 
 # essa última frase está especialmente fraca
