@@ -81,8 +81,8 @@ tecnologia exigem contato ubíquo e imperceptível com a informação ao alcance
 suas mãos. Embora de sutil presença, a demanda à sistemas de alto desempenho
 cresce exponencialmente e, para alcançar essas exigências, o paralelismo se
 firma como único método confiável para prover o grau de performance desejado
-nesses sistemas. Após décadas trabalhando em sistemas e num ferramental a par da
-tarefa mencionada, nos encontramos num período no qual o desenvolvedor desses
+nesses sistemas. Após décadas trabalhando em sistemas e num ferramental a par
+dessa tarefa, nos encontramos num período no qual o desenvolvedor desses
 sistemas tem diversas escolhas de bibliotecas, de /runtimes/ e de /Application
 Programming Interfaces/ (APIs) para utilizar a fim de utilizar efetivamente o
 paralelismo oferecido no /hardware/ desses sistemas. Entretanto, a diferença
@@ -95,18 +95,17 @@ mais performática e, sobretudo, por que ela é.
 # outra realização: não tem tanto espaço assim na verdade, e ainda falta muita
 # coisa!
 
-Podemos citar OpenMP \cite{dagum1998openmp}, StarPU \cite{augonnet2011starpu},
-TBB \cite{pheatt2008tbb} e OmpSs \cite{duran2011ompss} como algumas dessas
-bibliotecas e /runtimes/ de programação paralela. Essas implementações suportam
-modelos mais sofisticados de programação paralela, como a programação baseada em
-tarefas, que divide a lógica de um programa em tarefas e declara o paralelismo
-implicitamente baseado nas dependências de dados entre cada uma dessas tarefas,
-o que pode se traduzir visualmente num grafo direcionado acíclico
-(/DAG/). Através dessa abordagem, o /runtime/ em questão se assegura de
-escalonar e distribuir essas tarefas dentre seus /workers/ (os processadores e
-aceleradores do sistema). O StarPU e o OmpSs foram projetados especificamente
+Podemos citar OpenMP \cite{dagum1998openmp} e StarPU \cite{augonnet2011starpu}
+como algumas dessas bibliotecas e /runtimes/ de programação paralela. Essas
+implementações suportam modelos mais sofisticados de paralelismo, como a
+programação baseada em tarefas, que divide a lógica de um programa em tarefas e
+declara o paralelismo implicitamente baseado nas dependências de dados entre
+cada uma dessas tarefas, o que pode se traduzir visualmente num grafo
+direcionado acíclico (/DAG/). Através dessa abordagem, o /runtime/ em questão se
+assegura de escalonar e distribuir essas tarefas dentre seus /workers/ (os
+processadores e aceleradores do sistema). O StarPU foi projetado especificamente
 com esse conceito em mente e, na versão =3.0= de sua especificação, esse
-conceito foi introduzido na /API/ de OpenMP.
+conceito foi introduzido na especificação do OpenMP.
 
 Avaliaremos, assim, o desempenho e comportamento de uma aplicação que implementa
 uma fatoração QR de uma matriz densa de implementações utilizando diretamente as
@@ -141,25 +140,25 @@ como fatores do projeto experimentar o tamanho da *matriz* e o tamanho do
 entre $[32, 512]$, resultando, assim, em cinco níveis, enquanto o tamanho da
 matriz foi fixado em $8192$. Através da combinação fatorial completa de todos
 esses parâmetros de execução \cite{jain1991art}, obtivemos a acurácia necessária
-para que nós observássemos o impacto do número das tarefas geradas pela a
-aplicação. Cada combinação foi repetida 5 vezes para cada experimento em cada nó
-para a avaliação do /makespan/ e 1 vez para a coleta do traço das execuções.
+para que nós observássemos a tendência do impacto do número das tarefas geradas
+pela a aplicação. Cada combinação foi repetida 5 vezes para cada experimento em
+cada nó para a avaliação do /makespan/ e 1 vez para a coleta do traço das
+execuções.
 
 ** Manipulação de dados com ferramentas modernas de /data science/
 
 É essencial possuir um conjunto de ferramentas atualizado e apropriado para
 garantir a qualidade de quaisquer análises em qualquer estudo. Sendo assim,
 compreendemos essas garantias ao empregar a linguagem de programação R
-\cite{rteam2018manual} em conjunto com o pacote de bibliotecas tidyverse
-\cite{wickham2019tidyverse} através de blocos de códigos embutidos em arquivos
-Org \cite{dominik2010orgmode} versionados na ferramenta =git=. Com tal abordagem
-construímos um caderno de laboratório (/labbook/) que centralizou o processo
-exploratório científico, as anotações decorrentes e todos os experimentos
-realizados, desde o projeto desses até o código de análise dos dados
-coletados. Acreditamos que dessa maneira pode-se assegurar a reprodutibilidade e
-a verificação dos resultados obtidos \cite{stanisic2015workflow} sem perder a
-flexibilidade necessária para que processos de desenvolvimento e de verificação
-ocorressem paralelamente.
+\cite{rteam2018manual} em conjunto com o pacote tidyverse através de blocos de
+códigos embutidos em arquivos Org \cite{dominik2010orgmode} versionados na
+ferramenta =git=. Com tal abordagem construímos um caderno de laboratório
+(/labbook/) que centralizou o processo exploratório científico, as anotações
+decorrentes e todos os experimentos realizados, desde o projeto desses até o
+código de análise dos dados coletados. Acreditamos que dessa maneira pode-se
+assegurar a reprodutibilidade e a verificação dos resultados obtidos
+\cite{stanisic2015workflow} sem perder a flexibilidade necessária para que
+processos de desenvolvimento e de verificação ocorressem paralelamente.
 
 # O que eu quis dizer com isso exatamente? "flexibilidade dos processos de
 # desenvolvimento e de verificação"?
@@ -173,26 +172,27 @@ ocorressem paralelamente.
 
 #+latex: \noindent
 *Execução e Coleta dos Dados*: A automação dessas foi materializada por
-/scripts/ Shell executados pela ferramenta Slurm \cite{yoo2003slurm} em cada nó
-de computação detalhado na [[tab:plataformas][Tabela 1]]. Dada inevitável complexidade de
-dependências dos /runtimes/ aqui abordados, também desenvolvemos um /script/ que
-abstrai detalhes pertinentes a plataforma do /cluster/ de computação gerenciado
-pelo Slurm e permite a fácil reprodução de um experimento numa só linha de
-comando.
+/scripts/ Shell executados pelo gerenciador de /jobs/ Slurm em cada nó de
+computação detalhado na [[tab:plataformas][Tabela 1]]. Dada inevitável complexidade de dependências
+dos /runtimes/ aqui abordados, também desenvolvemos um /script/ que abstrai
+detalhes pertinentes a plataforma do /cluster/ de computação gerenciado pelo
+Slurm e permite a fácil reprodução de um experimento numa só linha de comando.
 
 #+latex: \noindent
 *Exploração e Análise dos Dados*: A integração das ferramentas previamente
-citadas no editor Emacs \cite{stallman2017emacs} permitiu o uso de blocos de
-código de análise dos dados em R entrelaçados com notas sobre esses. Uma
-abordagem similar é a dos /Jupyter Notebooks/, que porém acaba mais restrita
-pelo versionamento mais restrito dos arquivos em /rich text/.
+citadas no editor Emacs permitiu o uso de blocos de código de análise dos dados
+em R entrelaçados com notas sobre esses. Uma abordagem similar é a dos /Jupyter
+Notebooks/, que porém acaba mais restrita pelo versionamento mais limitado dos
+arquivos em /rich text/.
 
 # essa última frase está especialmente fraca
 
 #+latex: \noindent
 *Visualização e Concepção do Artigo*: Após análise das observações, a
 visualizações dessas constavam também nos mesmos blocos de código de análise,
-isto é, também embutidos no /labbook/.
+isto é, também embutidos no /labbook/. Com a criação das visualizações,
+utilizamos um arquivo Org secundário para escrever o artigo e exportá-lo para
+LaTeX através do sistema de exportação da ferramenta.
 
 # acredito que é possível perceber que eu não sei mais o que falar sobre o
 # workflow.
@@ -214,11 +214,19 @@ detalharemos as plataformas nas quais os experimentos foram realizados.
   - Starpu/LWS
 #+end_comment
 
-Para a execução da aplicação, utilizamos as plataformas descritas na [[tab:plataformas][Tabela
-1]]. Listamos em cada uma dessas o seu identificador, a quantidade de nós
+Para a execução da aplicação, utilizamos as plataformas descritas na [[tab:plataformas][Tabela 1]].
+Todas executam /kernel/ Linux =4.19.0-6= da distribuição Debian (=10.2=). A
+[[tab:versoes][Tabela 2]] apresenta as versões das ferramentas utilizadas.
+
+#+begin_comment
+Listamos em cada uma dessas o seu identificador, a quantidade de nós
 utilizados na coleta do /makespan/ e do rastreamento, o(s) processador(es), a
 quantidade e níveis de memória /cache/ e quantidade de memória /RAM/,
 respectivamente.
+
+A versão da distribuição corresponde ao lançamento da segunda atualização da
+décima distribuição estável =10.2=, de codinome Buster.
+#+end_comment
 
 #+name: tab:plataformas
 #+attr_latex: :float t :placement [!htb] :font \small
@@ -232,25 +240,23 @@ respectivamente.
 | =hype=  | $4, 1$    | $2 \times 10$ Xeon E5 2650 v3 2.3GHz  | 32KB/256KB/25MB    | 128GB DDR4 |
 |---------+-----------+---------------------------------------+--------------------+------------|
 
-Conforme descrito na [[Introdução, Objetivos e Trabalhos Relacionados][Seção 1]], executaremos seis versões das aplicações e as
-identificaremos conforme a [[tab:versoes][Tabela 2]].
-
 #+name: tab:versoes
 #+attr_latex: :float t :placement [!htb] :font \small
 #+caption: Características das versões executadas da aplicação.
-|-----------------+------------------+---------------------|
-| <l>             | <l>              | <l>                 |
-| *Identificador* | *Código Fonte*   | *ABI Utilizada*     |
-|-----------------+------------------+---------------------|
-| libgomp_GCC     |                  | OpenMP/GCC          |
-| libomp_LLVM     |                  | OpenMP/LLVM         |
-| KStar_StarPU    | Diretivas OpenMP | StarPU              |
-| LIBKOMP_libgomp |                  | OpenMP/LIBKOMP-LLVM |
-| LIBKOMP_libomp  |                  | OpenMP/LIBKOMP-GCC  |
-|-----------------+------------------+---------------------|
-| StarPU          | Nativo StarPU    | StarPU              |
-|-----------------+------------------+---------------------|
+|-----------------+-----------+-------------------------+-------------------------------------|
+| <l>             | <l>       | <l>                     |                                     |
+| *Identificador* | *Fonte*   | *ABI/API Utilizada*     | *Versão*                            |
+|-----------------+-----------+-------------------------+-------------------------------------|
+| libgomp_GCC     |           | OpenMP/GCC              | =8.3.0=                             |
+| libomp_LLVM     |           | OpenMP/LLVM             | =6.0.0=                             |
+| KStar_StarPU    | Diretivas | StarPU  (LWS scheduler) | =master=\xfeff_{=bf6af54e57bad130=} |
+| LIBKOMP_libgomp |           | OpenMP/LIBKOMP-LLVM     | =master=\xfeff_{=32781b6dab10b1b5=} |
+| LIBKOMP_libomp  |           | OpenMP/LIBKOMP-GCC      | =master=\xfeff_{=32781b6dab10b1b5=} |
+|-----------------+-----------+-------------------------+-------------------------------------|
+| StarPU          | Nativo    | StarPU (LWS scheduler)  | =1.3.1=                             |
+|-----------------+-----------+-------------------------+-------------------------------------|
 
+#+begin_comment
 #+latex: \noindent
 *Versão das Bibliotecas e Binários*: A ferramenta utilizada para a compilação de
 todos os binários foi o /frontend/ para a linguagem C do sistema de compiladores
@@ -267,19 +273,15 @@ gerados, utilizamos a biblioteca LAPACK \cite{lapack1999guide} de versão
 versões em desenvolvimento das /branches/ =libkomp= (/commit hash/
 =32781b6dab10b1b5=) e =master= (/commit hash/ =bf6af54e57bad130=)
 respectivamente.
+#+end_comment
 
-Todas as plataformas detalhadas executam a versão do /kernel/ Linux =4.19.0-6=
-da distribuição Debian[fn:1]. A versão da distribuição corresponde ao lançamento
-da segunda atualização da décima distribuição estável =10.2=, de codinome
-Buster.
-
-O rastreamento da aplicação utilizando a biblioteca GCC/libgomp foi realizado
-utilizando a ferramente ScoreP versão =6.0= e, quando utilizando a biblioteca
-LLVM/libomp, rastreamos a aplicação com uma biblioteca própria utilizando
-chamadas conforme a especificação OMPT versão =4.5=. O rastreamento das
-biblioteca e compilador StarPU e KStar foi realizado nativamente através da
-biblioteca FxT versão =0.3.5= e o rastreamento das versões utilizando LIBKOMP
-foi realizado pelo próprio /runtime/, que implementa chamadas à /API/ OMPT.
+O rastreamento da aplicação utilizando a biblioteca libgomp_GCC foi realizado
+utilizando a ferramente ScoreP =6.0= e, quando utilizando a biblioteca
+libomp_LLVM, rastreamos a aplicação com uma biblioteca própria utilizando
+chamadas conforme a especificação OMPT =4.5=. O rastreamento das biblioteca e
+compilador StarPU e KStar_StarPU foi realizado através da biblioteca FxT =0.3.5=
+e o rastreamento das versões utilizando LIBKOMP foi realizado pelo próprio
+/runtime/, que implementa chamadas à /API/ OMPT.
 
 [fn:1] O link para o /website/ da distribuição é: https://www.debian.org/
 [fn:2] O link para o /website/ do Netlib é: https://www.netlib.org/
@@ -292,6 +294,8 @@ experimento, onde nas colunas observamos os diferentes tamanhos de bloco de cada
 tarefa e na linha observamos as diferentes máquinas utilizadas no
 experimento. Apresentamos ambas média das 5 observações e o erro médio (?)
 dessa média.
+
+# é erro médio ou só erro que se diz?
 
 #+name: fig:makespan
 #+attr_latex: :float t :placement [!htb]
@@ -539,7 +543,7 @@ Tangle this file with C-c C-v t
  number = {1},
  pages = {46--55},
  publisher = {IEEE},
- title = {OpenMP: an industry standard API for shared-memory programming},
+ title = {{OpenMP}: an industry standard API for shared-memory programming},
  volume = {5},
  year = {1998}
 }
