@@ -2219,6 +2219,38 @@ done;
  #+end_src
 
 
+**** All - Comparing Task Duration
+***** Code
+      #+begin_src R :results output :session R :exports both
+      plot_duration <- function(dta){
+          dta %>% filter(Task %in% c("dgeqrt", "dtpqrt", "dlarfb", "dtpmqrt")) %>% group_by(Task, Runtime) %>% summarize(Mean=mean(Duration), Median=median(Duration), Sd=sd(Duration)) %>% 
+              ggplot(aes(x=Runtime, y=Mean, fill=Runtime)) +
+              geom_bar(stat="identity") +
+              geom_errorbar(aes(ymin=Mean-Sd, ymax=Mean+Sd)) + 
+              facet_wrap(~Task) + 
+              theme_bw() + 
+              theme (legend.position = "bottom")
+      }
+      #+end_src
+
+      #+RESULTS:
+
+***** Merge all
+      #+begin_src R :results output :session R :exports both
+      bind_rows(
+          blockQrStarpuKstar[[1]]$State %>% select(Value, ResourceId, Duration) %>% rename(Task=Value, Resource=ResourceId) %>% mutate(Runtime="KStar-StarPU"),
+          blockQrStarpuKstar[[2]]$State %>% select(Value, ResourceId, Duration) %>% rename(Task=Value, Resource=ResourceId) %>% mutate(Runtime="StarPU") %>% mutate(Task=str_replace(Task, "lapack_", "")),
+          #blockQrLibkomp[[1]] %>% select(Name, Resource, Duration) %>% rename(Task=Name) %>% mutate(Resource=as.character(Resource), Runtime="Libkomp-Clang")
+      ) -> dt_duration
+      #+end_src
+
+      #+RESULTS:
+
+***** Plot
+      #+begin_src R :results output graphics :file (org-babel-temp-file "figure" ".png") :exports both :width 600 :height 400 :session R
+plot_duration(dt_duration)
+      #+end_src
+
 
 * Resources
 :PROPERTIES:
