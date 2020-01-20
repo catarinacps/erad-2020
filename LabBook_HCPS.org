@@ -1515,6 +1515,7 @@ DEBUG :=
 #	- Compilation flags:
 #	Compiler and language version
 CC := gcc
+CLANG := clang
 KSTAR := kstar --runtime starpu
 PRELINK := scorep
 DEBUGF := $(if $(DEBUG),-g -fsanitize=address)
@@ -1596,7 +1597,7 @@ $(OUT_DIR)/block_qr_kstar_starpu: $(SRC_DIR)/block_qr_openmp.c $(OBJ_DIR)/mutils
 # Libkomp
 #
 $(OUT_DIR)/block_qr_libkomp_clang: $(SRC_DIR)/block_qr_openmp.c $(OBJ_DIR)/mutils.o
-	$(CC) -o $@ $^ $(INC) $(LIB) $(CFLAGS) $(OMP) $(LIBOMP) -g
+	$(CLANG) -o $@ $^ $(INC) $(LIB) $(CFLAGS) $(OMP) $(LIBOMP) -g
 
 $(OUT_DIR)/block_qr_libkomp_gcc: $(SRC_DIR)/block_qr_openmp.c $(OBJ_DIR)/mutils.o
 	$(CC) -o $@ $^ $(INC) $(OMP) $(CFLAGS) $(LIB) -g
