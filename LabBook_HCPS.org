@@ -2104,8 +2104,7 @@ library(dplyr)
 date<-function(d) { as.POSIXct(d, origin="1970-01-01"); }
 
 
-readtrace <- function (filename)
-{
+readtrace <- function (filename) {
    df <- read.csv(filename, header=TRUE, sep=",", strip.white=TRUE);
    df <- df %>% filter((Explicit==1)) %>% as.data.frame();
    df$Start <- df$Start*1e-9; # Convert ns to second
