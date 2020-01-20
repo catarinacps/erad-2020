@@ -3,19 +3,12 @@
 # -*- mode: org -*-
 
 #+title: Paper for ERAD 2020
-#+author: Henrique Silva
-#+author: Marcelo Cogo Milletto
-#+author: Vinicius Garcia Pinto
+#+author: Henrique Corrêa Pereira da Silva@@latex:\and@@
+#+author: Marcelo Cogo Milletto@@latex:\and@@
+#+author: Vinicius Garcia Pinto@@latex:\and\\@@
 #+author: Lucas Mello Schnorr
 
 #+begin_export latex
-\author{
-   Henrique Corrêa Pereira da Silva\and%\inst{1},
-   Marcelo Cogo Milletto\and
-   Vinicius Garcia Pinto\and \\
-   Lucas Mello Schnorr
-}
-
 \address{
   Instituto de Informática -- Universidade Federal do Rio Grande do Sul (UFRGS)\\
   Porto Alegre -- RS -- Brasil
@@ -39,8 +32,7 @@
 
 #+startup: overview indent
 #+language: pt-br
-#+options: H:3 creator:nil timestamp:nil skip:nil toc:nil num:t ^:nil ~:~
-#+options: author:nil title:nil date:nil
+#+options: H:3 creator:nil timestamp:nil skip:nil toc:nil num:t ^:nil ~:~ date:nil title:nil
 #+tags: noexport(n) deprecated(d) ignore(i)
 #+export_select_tags: export
 #+export_exclude_tags: noexport
@@ -232,7 +224,7 @@ memória /RAM/.
 #+caption: Configuração das plataformas utilizadas nos experimentos.
 |---------+-----+---------------------------------------+--------------------+------------|
 | <l>     | <l> | <l>                                   | <l>                | <l>        |
-| *Nome*  | =#= | *CPU*                                 | *L1/L2/LLC*        | *RAM*      |
+| *Nome*  | *#* | *CPU*                                 | *L1/L2/LLC*        | *RAM*      |
 |---------+-----+---------------------------------------+--------------------+------------|
 | =draco= | $5$ | $2 \times 8$ Xeon E5 2640 v2 2.5GHz   | 32KB/256KB/20MB    | 64GB DDR3  |
 | =cei=   | $7$ | $2 \times 12$ Xeon Silver 4116 2.1GHz | 32KB/1024KB/16.5MB | 93GB DDR4  |
