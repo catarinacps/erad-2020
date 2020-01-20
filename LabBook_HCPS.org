@@ -1981,14 +1981,14 @@ done
 
 
 ***** Loading StarVZ
- #+begin_src R :results output :exports both :session Rvz :eval no-export
+ #+begin_src R :results output :exports both :session R :eval no-export
 library(starvz)
  #+end_src
 
 
 ***** Reading Feather
  #+header: :var rawDirExp="./experiments/exp02/results-draco1-wip"
- #+begin_src R :results output :exports both :session Rvz :eval no-export
+ #+begin_src R :results output :exports both :session R :eval no-export
 blockQrStarpuKstar <-
     grep("starpu", list.dirs(path=rawDirExp, full.names=TRUE, recursive=FALSE), value=TRUE) %>%
     lapply(function(fl){
@@ -2016,14 +2016,14 @@ wget https://raw.githubusercontent.com/schnorr/starvz/master/full_config.yaml
 
 #+name: fullConfig
 #+header: :var dep1=getFullConfig
- #+begin_src R :results output :exports both :session Rvz :eval no-export :cache yes
+ #+begin_src R :results output :exports both :session R :eval no-export :cache yes
 pajer <- config::get(file = "full_config.yaml")
  #+end_src
 
 ***** Custom config
 #+name: customConfig
 #+header: :var dep1=fullConfig
-#+begin_src R :results output :session Rvz :exports both
+#+begin_src R :results output :session R :exports both
 pajer$st$outliers = FALSE
 pajer$st$cpb = FALSE
 pajer$pmtool$bounds$active = FALSE
@@ -2039,7 +2039,7 @@ pajer$st$alpha = 0.8
 
 ***** Plots
 #+header: :var dep1=customConfig
- #+begin_src R :results output graphics :file img/trace-qr-starpu-kstar-starvz.png :exports both :width 1350 :height 2000 :session Rvz :eval no-export
+ #+begin_src R :results output graphics :file img/trace-qr-starpu-kstar-starvz.png :exports both :width 1350 :height 2000 :session R :eval no-export
 
 #state_chart(blockQrStarpuKstar[[1]])
 the_master_function(blockQrStarpuKstar[[1]])
@@ -2051,7 +2051,7 @@ the_master_function(blockQrStarpuKstar[[1]])
 ***** All Plots StarPU & Kstar
 ****** Generating ORG blocks                                       :noexport:
 #+name: starpukstarnames
-#+begin_src R :results output :session Rvz :exports none :eval no-export
+#+begin_src R :results output :session R :exports none :eval no-export
 blockQrStarpuKstar %>% names
 #+end_src
 
@@ -2066,7 +2066,7 @@ for r in $lista; do
     echo "******* Execution $r"
     echo "#+header: :var dep1=customConfig"
     r2=$(echo $r | sed "s/\"//g")
-    echo "#+begin_src R :results output graphics :file img/trace-qr-$r2-starvz.png :exports both :width 1400 :height 1200 :session Rvz :eval no-export "
+    echo "#+begin_src R :results output graphics :file img/trace-qr-$r2-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export "
     echo "  the_master_function(blockQrStarpuKstar[[$r]])"
     echo "#+end_src"
     echo ""
@@ -2074,23 +2074,19 @@ done;
  #+end_src
 
 ****** Full View Chart
-******* Execution "kstar-starpu"
-  #+header: :var dep1=customConfig
-  #+begin_src R :results output graphics :file img/trace-qr-kstar-starpu-starvz.png :exports both :width 1400 :height 800 :session Rvz :eval no-export
-    the_master_function(blockQrStarpuKstar[["kstar-starpu"]])
-  #+end_src
+******* Execution "kstar-starpu-8192-128"
+ #+header: :var dep1=customConfig
+ #+begin_src R :results output graphics :file img/trace-qr-kstar-starpu-8192-128-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+   the_master_function(blockQrStarpuKstar[["kstar-starpu-8192-128"]])
+ #+end_src
 
-  #+RESULTS:
-  [[file:img/trace-qr-kstar-starpu-starvz.png]]
 
-******* Execution "starpu"
-  #+header: :var dep1=customConfig
-  #+begin_src R :results output graphics :file img/trace-qr-starpu-starvz.png :exports both :width 1400 :height 800 :session Rvz :eval no-export
-    the_master_function(blockQrStarpuKstar[["starpu"]])
-  #+end_src
+******* Execution "starpu-8192-128"
+ #+header: :var dep1=customConfig
+ #+begin_src R :results output graphics :file img/trace-qr-starpu-8192-128-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+   the_master_function(blockQrStarpuKstar[["starpu-8192-128"]])
+ #+end_src
 
-  #+RESULTS:
-  [[file:img/trace-qr-starpu-starvz.png]]
 
 
 
