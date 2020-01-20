@@ -2066,7 +2066,7 @@ for r in $lista; do
     echo "******* Execution $r"
     echo "#+header: :var dep1=customConfig"
     r2=$(echo $r | sed "s/\"//g")
-    echo "#+begin_src R :results output graphics :file img/trace-qr-$r2-starvz.png :exports both :width 1400 :height 800 :session Rvz :eval no-export "
+    echo "#+begin_src R :results output graphics :file img/trace-qr-$r2-starvz.png :exports both :width 1400 :height 1200 :session Rvz :eval no-export "
     echo "  the_master_function(blockQrStarpuKstar[[$r]])"
     echo "#+end_src"
     echo ""
