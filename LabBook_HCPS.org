@@ -1804,13 +1804,13 @@ rm -rf $SCRATCH/*
 
 Now we gotta do some post-processing in order to manipulate all collected data.
 
-#+begin_src bash :exports both :results output :dir experiments/exp02/data
+#+begin_src bash :exports both :results output :dir experiments/exp02/data :async
 set -euo pipefail
 
 for tar_file in *.tar.gz; do
     echo "Extracting ${tar_file}..."
     mkdir -p ${tar_file%.tar.gz}
-    # tar xzf $tar_file -C ${tar_file%.tar.gz}
+    tar xzf $tar_file -C ${tar_file%.tar.gz}
 done
 
 echo "Done extracting the files!"
