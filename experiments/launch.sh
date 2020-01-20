@@ -13,6 +13,8 @@ cat << EOF
       shows this message and exits
     -d | --dry
       prints what it would do instead of actually doing it
+    -a | --available
+      only use currently available nodes
     -u | --update
       updates the repo before running any commands
     -i | --install[=]path/to/the/installs
@@ -33,6 +35,8 @@ cat << EOF
       install all packages locally in each machine
       WARNING: probably won't work because of timeouts in spack
     -o | --overwrite
+      overwrite the install of all packages listed as a dependency
+    -O | --strong-overwrite
       force the reinstall of all packages listed as a dependency
 
   WHERE [REPO_DIRECTORY] is the *full* path to the repository
@@ -75,6 +79,14 @@ for i in "$@"; do
             ;;
         --overwrite)
             OVERWRITE=true
+            shift
+            ;;
+        --strong-overwrite)
+            OVERWRITE=strong
+            shift
+            ;;
+        --available)
+            AVAILABLE="-t idle"
             shift
             ;;
         --split)
@@ -130,6 +142,12 @@ for i in "$@"; do
                         ;;
                     o)
                         OVERWRITE=true
+                        ;;
+                    O)
+                        OVERWRITE=strong
+                        ;;
+                    a)
+                        AVAILABLE="-t idle"
                         ;;
                     s)
                         SPLIT=true
@@ -211,8 +229,9 @@ pushd $REPO_DIR
 
 for partition in $PARTITIONLIST; do
     # lets install all needed dependencies first
-    echo "-> Launching dependency installing job for partition $partition!"
     if [ $LOCAL = false ]; then
+        echo "-> Launching dependency installing job for partition $partition!"
+
         INSTALL_DIR+=/$partition # as we are not running locally
         ${DRY:-} sbatch \
             -p ${partition} \
@@ -220,13 +239,12 @@ for partition in $PARTITIONLIST; do
             -J dependencies_${EXPERIMENT_ID}_${partition} \
             -W \
             $(dirname $EXP_DIR)/deps.sh $INSTALL_DIR $EXP_DIR $SPACK_DIR $OVERWRITE
-        echo
+        echo "... and done!"
     fi
-    echo "... and done!"
     echo
 
     # change the gppd-info to sinfo when porting
-    ALLNODES=$(gppd-info --long --Node -S NODELIST -p $partition -h | awk '{print $1}')
+    ALLNODES=$(gppd-info --long --Node -S NODELIST -p $partition -h ${AVAILABLE:-} | awk '{print $1}')
     if [ -z ${NODELIST+x} ]; then
         nodes=$(paste -s -d" " - <<<$ALLNODES)
     else
@@ -242,6 +260,8 @@ for partition in $PARTITIONLIST; do
 
     # counter to access the correct plan
     plan_part=${num_nodes:+0}
+
+    echo "-> Launching jobs for partition $partition!"
 
     for node in $nodes; do
         # if we are in local mode, install dependencies for this node

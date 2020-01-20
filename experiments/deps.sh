@@ -16,18 +16,20 @@ function spack_install_spec {
     OVER=$3
 
     name_version=${SPEC%%[~|+|^]*}
-    dir_name=$(tr '@' '-' <<<$name_version)
+    dir_name=$PWD/$(tr '@' '-' <<<$name_version)
 
     # if we fall here, we have already installed the package
-    [ -d ${dir_name}/lib ] && [ $OVER = false ] && return 0
+    [ -d $dir_name/lib ] && [ $OVER = false ] && return 0
 
     flags="--keep-stage -y"
 
     echo "${name_version} not yet installed!"
-    if [ $OVER = true ]; then
+    if [ $OVER != false ]; then
         rm -rf $dir_name
         flags+=" --overwrite"
     fi
+
+    [ $OVER = strong ] && spack uninstall -fy $SPEC arch=$ARCH
 
     mkdir -p $dir_name
     spack install $flags $SPEC arch=$ARCH
@@ -45,21 +47,20 @@ function source_install_spec {
     EXP_DIR=$2
     OVER=$3
 
-    name_version=${SPEC%%[~|+|^]*}
-    prefix=$(tr '@' '-' <<<$name_version)
-    repo=${prefix}/repo
+    name_version=$(tr '@' '-' <<<${SPEC%%[~|+|^]*})
+    prefix=$PWD/$name_version
+    repo=$prefix/repo
 
     # if we fall here, we have already installed the package
-    [ -d ${prefix}/lib ] && [ $OVER = false ] && exit 0
+    [ -d $prefix/lib ] && [ $OVER = false ] && exit 0
 
-    [ $OVER = true ] && rm -rf $prefix
+    [ $OVER != false ] && rm -rf $prefix
 
     echo "${name_version} not yet installed!"
 
     # install by the provided shell install script
     mkdir -p $prefix
-    ${EXP_DIR}/${prefix}.sh $prefix $repo
-    rm -rf $repo
+    ${EXP_DIR}/${name_version}.sh $prefix/ $repo
 
     [ ! -f installs.log ] && echo "SPECS HERE INSTALLED" > installs.log
     echo >> installs.log

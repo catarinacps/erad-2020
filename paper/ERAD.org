@@ -3,12 +3,36 @@
 # -*- mode: org -*-
 
 #+title: Paper for ERAD 2020
-#+author: Henrique Silva
+#+author: Henrique Corrêa Pereira da Silva@@latex:\and@@
+#+author: Marcelo Cogo Milletto@@latex:\and@@
+#+author: Vinicius Garcia Pinto@@latex:\and\\@@
+#+author: Lucas Mello Schnorr
+
+#+begin_export latex
+\address{
+  Instituto de Informática -- Universidade Federal do Rio Grande do Sul (UFRGS)\\
+  Porto Alegre -- RS -- Brasil
+  \email{\{hcpsilva,marcelo.miletto,vgpinto,schnorr\}@inf.ufrgs.br}
+}
+
+\maketitle
+#+end_export
+
+#+begin_resumo
+
+#+end_resumo
+
+* Configuração                                            :noexport:
+
+# Local Variables:
+# eval: (require 'ox-extra)
+# eval: (require 'org-inlinetask)
+# eval: (ox-extras-activate '(ignore-headlines))
+# End:
 
 #+startup: overview indent
 #+language: pt-br
-#+options: H:3 creator:nil timestamp:nil skip:nil toc:nil num:t ^:nil ~:~
-#+options: author:nil title:nil date:nil
+#+options: H:3 creator:nil timestamp:nil skip:nil toc:nil num:t ^:nil ~:~ date:nil title:nil
 #+tags: noexport(n) deprecated(d) ignore(i)
 #+export_select_tags: export
 #+export_exclude_tags: noexport
@@ -23,31 +47,11 @@
 #+latex_header: \usepackage[caption=false]{subfig}
 #+latex_header: \usepackage{booktabs}
 #+latex_header: \usepackage{hyphenat}
+#+latex_header: \usepackage{breakcites}
 #+latex_header: \hyphenation{e-la-bo-ra-ção re-pre-sen-tar}
 
 # You need at least Org 9 and Emacs 24 to make this work.
 # If you do, just type make (thanks Luka Stanisic for this).
-
-#+begin_export latex
-\author{
-   Henrique Corrêa Pereira da Silva\and%\inst{1},
-   Marcelo Cogo Milletto\and
-   Vinicius Garcia Pinto\and \\
-   Lucas Mello Schnorr
-}
-
-\address{
-  Instituto de Informática -- Universidade Federal do Rio Grande do Sul (UFRGS)\\
-  Porto Alegre -- RS -- Brasil
-  \email{\{hcpsilva,mcmiletto,vgpinto,schnorr\}@inf.ufrgs.br}
-}
-#+end_export
-
-\maketitle
-
-#+begin_resumo
-
-#+end_resumo
 
 * Introdução, Objetivos e Trabalhos Relacionados
 
@@ -70,6 +74,53 @@
 - Estrutura do artigo
 #+end_comment
 
+Computação de alto desempenho e grandes agregados de computadores são, hoje em
+dia, jogadores majoritariamente invisíveis num mundo cujos usuários de
+tecnologia exigem contato ubíquo e imperceptível com a informação ao alcance de
+suas mãos. Embora de sutil presença, a demanda à sistemas de alto desempenho
+cresce exponencialmente e, para alcançar essas exigências, o paralelismo se
+firma como único método confiável para prover o grau de performance desejado
+nesses sistemas. Após décadas trabalhando em sistemas e num ferramental a par da
+tarefa mencionada, nos encontramos num período no qual o desenvolvedor desses
+sistemas tem diversas escolhas de bibliotecas, de /runtimes/ e de /Application
+Programming Interfaces/ (APIs) para utilizar a fim de utilizar efetivamente o
+paralelismo oferecido no /hardware/ desses sistemas. Entretanto, a diferença
+entre elas é tal que não se trata mais da qualidade da implementação ditar a
+performance desses sistemas, mas sim a escolha de biblioteca utilizada pelo
+programador. Com isso, surge a questão de definir qual dessas implementações é a
+mais performática e, sobretudo, por que ela é.
+
+# achei sketchy até aqui
+# outra realização: não tem tanto espaço assim na verdade, e ainda falta muita
+# coisa!
+
+Podemos citar OpenMP \cite{dagum1998openmp}, StarPU \cite{augonnet2011starpu},
+TBB \cite{pheatt2008tbb} e OmpSs \cite{duran2011ompss} como algumas dessas
+bibliotecas e /runtimes/ de programação paralelas. Essas implementações suportam
+modelos mais sofisticados de programação paralela, como a programação baseada em
+tarefas, que divide a lógica de um programa em tarefas e declara o paralelismo
+implicitamente baseado nas dependências de dados entre cada uma dessas tarefas,
+o que pode se traduzir visualmente num grafo direcionado acíclico
+(/DAG/). Através dessa abordagem, o /runtime/ em questão se assegura de
+escalonar e distribuir essas tarefas dentre seus /workers/ (os processadores e
+aceleradores do sistema). O StarPU e o OmpSs foram projetados especificamente
+com esse conceito em mente e, na versão =3.0= de sua especificação, esse
+conceito foi introduzido na /API/ de OpenMP.
+
+Avaliaremos o desempenho e comportamento de uma aplicação que implementa uma
+fatoração QR de uma matriz densa de implementações utilizando diretamente as
+diretivas de tarefas do OpenMP com os /runtimes/ nativos de ambos GCC e LLVM e
+também utilizando o /runtime/ da biblioteca LIBKOMP baseado em StarPU, de uma
+implementação em StarPU, de uma transpilação da implementação em diretivas
+OpenMP para StarPU pela biblioteca Kstar. Logo, nossos objetivos nesse trabalho
+são comparar o *escalonamento* de tarefas, observar a *ociosidade* dos
+trabalhadores de cada /runtime/ e identificar *anomalias* em quaisquer das
+bibliotecas testadas.
+
+# ...
+# <insira paragrafo sobre related work aqui>
+# ...
+
 * Metodologia de Coleta e Análise de Dados
 
 #+begin_comment
@@ -82,48 +133,75 @@ como o ferramental de /software/ utilizado para a análise dos dados
 coletados. Além disso, abordaremos o /workflow/ adotado a fim de aprimorar a
 reprodutibilidade dos resultados aqui apresentados.
 
-#+latex: \noindent
-*Configuração do Ambiente de Testes*: Para a execução da aplicação, utilizamos
-as plataformas descritas na [[tab:plataformas][Tabela 1]]. Listamos em cada uma dessas o seu
-identificador, o(s) processador(es), a quantidade e níveis de memória /cache/ e
-quantidade de memória /RAM/.
-
-#+name: tab:plataformas
-#+attr_latex: :float t :placement [!htb] :font \small
-#+caption: Configuração das plataformas utilizadas nos experimentos.
-|---------+----------------------------------------+---------+--------------------+-------------|
-| <l>     | <l>                                    | <l>     | <l>                | <l>         |
-| *Nome*  | *CPU*                                  | *Nodos* | *L1/L2/LLC*        | *RAM*       |
-|---------+----------------------------------------+---------+--------------------+-------------|
-| =draco= | $2 \times 8$ Xeon E5 2640 v2 2.5 GHz   | $7$     | 32KB/256KB/20MB    | 64 GB DDR3  |
-| =cei=   | $2 \times 12$ Xeon Silver 4116 2.1 GHz | $8$     | 32KB/1024KB/16.5MB | 93 GB DDR4  |
-| =hype=  | $2 \times 10$ Xeon E5 2650 v3 2.3 GHz  | $5$     | 32KB/256KB/25MB    | 128 GB DDR4 |
-|---------+----------------------------------------+---------+--------------------+-------------|
-
 ** Projeto Experimental
 
 A fim de analisar o impacto dos diferentes /runtimes/ aqui avaliados, definimos
 como fatores do projeto experimentar o tamanho da *matriz* e o tamanho do
-*bloco*. O tamanho do bloco varia em fatores de $2$ entre $[32, 512]$,
-resultando, assim, em cinco níveis, enquanto o tamanho da matriz foi fixado em
-$8192$. Essa variedade de combinações foi o suficiente para que nós
-observássemos acuradamente o impacto do número das tarefas geradas pela a
-aplicação. Cada combinação foi repetida 5 vezes para cada experimento em cada
-nó.
+*bloco* de cada tarefa. O tamanho do bloco varia em fatores de potências de $2$
+entre $[32, 512]$, resultando, assim, em cinco níveis, enquanto o tamanho da
+matriz foi fixado em $8192$. Através da combinação fatorial completa de todos
+esses parâmetros de execução \cite{jain1991art}, obtivemos a acurácia necessária
+para que nós observássemos o impacto do número das tarefas geradas pela a
+aplicação. Cada combinação foi repetida 5 vezes para cada experimento em cada nó
+para a avaliação do /makespan/ e 1 vez para a coleta do traço das execuções.
 
 ** Manipulação de dados com ferramentas modernas de /data science/
 
-A manipulação e análise de dados foi realizada utilizando a linguagem de
-programação =R= em conjunto com o pacote de bibliotecas =tidyverse= através de
-blocos de códigos embutidos em arquivos =org=. Tal abordagem oferece fácil
-reprodutibilidade e posterior verificação dos resultados obtidos, além de uma
-plataforma robusta para a posterior visualização desses resultados.
+É essencial possuir um conjunto de ferramentas atualizado e apropriado para
+garantir a qualidade de quaisquer análises em qualquer estudo. Sendo assim,
+compreendemos essas garantias ao empregar a linguagem de programação R
+\cite{rteam2018manual} em conjunto com o pacote de bibliotecas tidyverse
+\cite{wickham2019tidyverse} através de blocos de códigos embutidos em arquivos
+Org \cite{dominik2010orgmode} versionados na ferramenta =git=. Com tal abordagem
+construímos um caderno de laboratório (/labbook/) que centralizou o processo
+exploratório científico, as anotações decorrentes e todos os experimentos
+realizados, desde o projeto desses até o código de análise dos dados
+coletados. Acreditamos que dessa maneira pode-se assegurar a reprodutibilidade e
+a verificação dos resultados obtidos \cite{stanisic2015workflow} sem perder a
+flexibilidade necessária para que processos de desenvolvimento e de verificação
+ocorressem paralelamente.
 
-#+begin_comment
-Estou cansado já, mas essa parte precisa de uma séria atenção.
-#+end_comment
+# O que eu quis dizer com isso exatamente? "flexibilidade dos processos de
+# desenvolvimento e de verificação"?
+# O que eu queria dizer era que essa abordagem não enrigeceu o workflow a ponto
+# do paralelismo de contribuições paralelas do git fosse perdido. Se é que isso
+# faz sentido.
+
+# sobre assegurar a reprodutibilidade: tenho alguma ideia de que é um processo
+# muito mais complexo, mas me faltou palavras para afirmar que nossa segurança
+# sobre a reprodutibilidade aumentou sem utilizar palavras tão fortes.
+
+#+latex: \noindent
+*Execução e Coleta dos Dados*: A automação dessas foi materializada por
+/scripts/ Shell executados pela ferramenta Slurm \cite{yoo2003slurm} em cada nó
+de computação detalhado na [[tab:plataformas][Tabela 1]]. Dada inevitável complexidade de
+dependências dos /runtimes/ aqui abordados, também desenvolvemos um /script/ que
+abstrai detalhes pertinentes a plataforma do /cluster/ de computação gerenciado
+pelo Slurm e permite a fácil reprodução de um experimento numa só linha de
+comando.
+
+#+latex: \noindent
+*Exploração e Análise dos Dados*: A integração das ferramentas previamente
+citadas no editor Emacs \cite{stallman2017emacs} permitiu o uso de blocos de
+código de análise dos dados em R entrelaçados com notas sobre esses. Uma
+abordagem similar é a dos /Jupyter Notebooks/, que porém acaba mais restrita
+pelo versionamento mais restrito dos arquivos em /rich text/.
+
+# essa última frase está especialmente fraca
+
+#+latex: \noindent
+*Visualização e Concepção do Artigo*: Após análise das observações, a
+visualizações dessas constavam também nos mesmos blocos de código de análise,
+isto é, também embutidos no /labbook/.
+
+# acredito que é possível perceber que eu não sei mais o que falar sobre o
+# workflow.
 
 * Resultados Experimentais e Observações
+
+Nessa seção discorreremos sobre os fenômenos observados a partir da
+experimentação e sobre as visualizações a partir desses concebidas. Além disso,
+detalharemos as plataformas nas quais os experimentos foram realizados.
 
 ** Configuração Experimental
 
@@ -135,6 +213,45 @@ Estou cansado já, mas essa parte precisa de uma séria atenção.
 - SW
   - Starpu/LWS
 #+end_comment
+
+Para a execução da aplicação, utilizamos as plataformas descritas na
+[[tab:plataformas][Tabela 1]]. Listamos em cada uma dessas o seu identificador, o(s)
+processador(es), a quantidade e níveis de memória /cache/ e quantidade de
+memória /RAM/.
+
+#+name: tab:plataformas
+#+attr_latex: :float t :placement [!htb] :font \small
+#+caption: Configuração das plataformas utilizadas nos experimentos.
+|---------+-----+---------------------------------------+--------------------+------------|
+| <l>     | <l> | <l>                                   | <l>                | <l>        |
+| *Nome*  | *#* | *CPU*                                 | *L1/L2/LLC*        | *RAM*      |
+|---------+-----+---------------------------------------+--------------------+------------|
+| =draco= | $5$ | $2 \times 8$ Xeon E5 2640 v2 2.5GHz   | 32KB/256KB/20MB    | 64GB DDR3  |
+| =cei=   | $7$ | $2 \times 12$ Xeon Silver 4116 2.1GHz | 32KB/1024KB/16.5MB | 93GB DDR4  |
+| =hype=  | $4$ | $2 \times 10$ Xeon E5 2650 v3 2.3GHz  | 32KB/256KB/25MB    | 128GB DDR4 |
+|---------+-----+---------------------------------------+--------------------+------------|
+
+Todas as plataformas detalhadas executam a versão do /kernel/ Linux =4.19.0-6=
+da distribuição Debian[fn:1]. A versão da distribuição corresponde ao lançamento
+da segunda atualização da décima distribuição estável =10.2=, de codinome
+Buster.
+
+#+latex: \noindent
+*Versão das Bibliotecas e Binários*: A ferramenta utilizada para a compilação de
+todos os binários foi o /frontend/ para a linguagem C do sistema de compiladores
+GCC, versão =8.3.0= \cite{gnu2018manual}. As bibliotecas padrão utilizadas
+foram, portanto, as distribuídas com esse /release/ do compilador. O /runtime/
+de OpenMP utilizado do projeto LLVM foi a versão distribuída com o lançamento
+=6.0.0= do /frontend/ Clang \cite{llvm2018manual}. Todas os /runtimes/ de OpenMP
+utilizados seguem a especificação =4.5= \cite{openmp2015spec}. A versão da
+biblioteca StarPU utilizada foi a versão estável =1.3.1=. Para todos os binários
+gerados, utilizamos a biblioteca LAPACK \cite{lapack1999guide} de versão
+=3.8.0=, distribuída no pacote Netlib[fn:2].
+
+# falta info sobre libkomp e kstar, que não possuem versões estáveis. como citar?
+
+[fn:1] O link para o /website/ da distribuição é: https://www.debian.org/
+[fn:2] O link para o /website/ do Netlib é: https://www.netlib.org/
 
 ** Comparação do Escalonamento entre os três /runtimes/
 
@@ -158,37 +275,54 @@ Figura que a gente conversou
 #+latex: \bibliographystyle{sbc}
 #+latex: \bibliography{refs}
 
-* Miscs                                                            :noexport:
-** Bib file                                                       :noexport:
+* Bibtex                                                           :noexport:
 
 Tangle this file with C-c C-v t
 
 #+begin_src bibtex :tangle refs.bib
-@InProceedings{10.1007/978-3-642-30961-8_8,
-author="Broquedis, Fran{\c{c}}ois
-and Gautier, Thierry
-and Danjean, Vincent",
-editor="Chapman, Barbara M.
-and Massaioli, Federico
-and M{\"u}ller, Matthias S.
-and Rorro, Marco",
-title="libKOMP, an Efficient OpenMP Runtime System for Both Fork-Join and Data Flow Paradigms",
-booktitle="OpenMP in a Heterogeneous World",
-year="2012",
-publisher="Springer Berlin Heidelberg",
-address="Berlin, Heidelberg",
-pages="102--115",
-isbn="978-3-642-30961-8"
+% Only BIBTEX entries here
+
+@inproceedings{yoo2003slurm,
+ author = {Yoo, Andy B. and Jette, Morris A. and Grondona, Mark},
+ title = {SLURM: Simple Linux Utility for Resource Management},
+ booktitle = {Job Scheduling Strategies for Parallel Processing},
+ year = {2003},
+ publisher = {Springer Berlin Heidelberg},
+ address = {Berlin, Heidelberg},
+ pages = {44--60},
+ isbn = {978-3-540-39727-4}
 }
 
-@inproceedings{wscadMarcelo,
+@inproceedings{broquedis2012libkomp,
+ author = {Broquedis, Fran{\c{c}}ois and Gautier, Thierry and Danjean, Vincent},
+ editor = {Chapman, Barbara M. and Massaioli, Federico and M{\"u}ller, Matthias S. and Rorro, Marco},
+ title = {libKOMP, an Efficient OpenMP Runtime System for Both Fork-Join and Data Flow Paradigms},
+ booktitle = {OpenMP in a Heterogeneous World},
+ year = {2012},
+ publisher = {Springer Berlin Heidelberg},
+ address = {Berlin, Heidelberg},
+ pages = {102--115},
+ isbn = {978-3-642-30961-8}
+}
+
+@inproceedings{nesi2019pcad,
+ author = {Lucas Leandro Nesi and Matheus S. Serpa and Lucas Mello Schnorr and Philippe Olivier Alexandre Navaux},
+ title = {HPC Resources Management Infraestruture Description and 10-month Statistics},
+ booktitle = {Anais do XVII Workshop de Processamento Paralelo e Distribuído},
+ location = {Porto Alegre},
+ year = {2019},
+ keywords = {},
+ pages = {21--24},
+ url = {https://www.inf.ufrgs.br/gppd/wsppd/2019/papers/proceedings/WSPPDProceedings.pdf}
+}
+
+@inproceedings{miletto2019abrest,
  author = {Marcelo Miletto and Lucas Schnorr},
  title = {OpenMP and StarPU Abreast: the Impact of Runtime in Task-Based Block QR Factorization Performance},
  booktitle = {Anais do XX Simpósio em Sistemas Computacionais de Alto Desempenho},
  location = {Campo Grande},
  year = {2019},
  keywords = {},
- issn = {0000-0000},
  pages = {25--36},
  publisher = {SBC},
  address = {Porto Alegre, RS, Brasil},
@@ -196,40 +330,233 @@ isbn="978-3-642-30961-8"
  url = {https://sol.sbc.org.br/index.php/wscad/article/view/8654}
 }
 
-@article{doi:10.1002/cpe.4472,
-author = {Garcia Pinto, Vinícius and Mello Schnorr, Lucas and Stanisic, Luka and Legrand, Arnaud and Thibault, Samuel and Danjean, Vincent},
-title = {A visual performance analysis framework for task-based parallel applications running on hybrid clusters},
-journal = {Concurrency and Computation: Practice and Experience},
-volume = {30},
-number = {18},
-pages = {e4472},
-keywords = {Cholesky, heterogeneous platforms, high-performance computing, task-based applications, trace visualization},
-doi = {10.1002/cpe.4472},
-url = {https://onlinelibrary.wiley.com/doi/abs/10.1002/cpe.4472},
-eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1002/cpe.4472},
-note = {e4472 cpe.4472},
-year = {2018}
+@article{pinto2018ccpe,
+ author = {Garcia Pinto, Vinícius and Mello Schnorr, Lucas and Stanisic, Luka and Legrand, Arnaud and Thibault, Samuel and Danjean, Vincent},
+ title = {A visual performance analysis framework for task-based parallel applications running on hybrid clusters},
+ journal = {Concurrency and Computation: Practice and Experience},
+ volume = {30},
+ number = {18},
+ pages = {e4472},
+ keywords = {Cholesky, heterogeneous platforms, high-performance computing, task-based applications, trace visualization},
+ doi = {10.1002/cpe.4472},
+ url = {https://onlinelibrary.wiley.com/doi/abs/10.1002/cpe.4472},
+ eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1002/cpe.4472},
+ note = {e4472 cpe.4472},
+ year = {2018}
 }
 
-@article{doi:10.1002/cpe.1631,
-author = {Augonnet, Cédric and Thibault, Samuel and Namyst, Raymond and Wacrenier, Pierre-André},
-title = {StarPU: a unified platform for task scheduling on heterogeneous multicore architectures},
-journal = {Concurrency and Computation: Practice and Experience},
-volume = {23},
-number = {2},
-pages = {187-198},
-keywords = {GPU, multicore, accelerator, scheduling, runtime system},
-doi = {10.1002/cpe.1631},
-url = {https://onlinelibrary.wiley.com/doi/abs/10.1002/cpe.1631},
-eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1002/cpe.1631},
-year = {2011}
+@article{augonnet2011starpu,
+ author = {Augonnet, Cédric and Thibault, Samuel and Namyst, Raymond and Wacrenier, Pierre-André},
+ title = {StarPU: a unified platform for task scheduling on heterogeneous multicore architectures},
+ journal = {Concurrency and Computation: Practice and Experience},
+ volume = {23},
+ number = {2},
+ pages = {187-198},
+ keywords = {GPU, multicore, accelerator, scheduling, runtime system},
+ doi = {10.1002/cpe.1631},
+ url = {https://onlinelibrary.wiley.com/doi/abs/10.1002/cpe.1631},
+ eprint = {https://onlinelibrary.wiley.com/doi/pdf/10.1002/cpe.1631},
+ year = {2011}
+}
+
+@article{stanisic2015workflow,
+ author = {Stanisic, Luka and Legrand, Arnaud and Danjean, Vincent},
+ title = {An Effective Git And Org-Mode Based Workflow For Reproducible Research},
+ journal = {SIGOPS Oper. Syst. Rev.},
+ issue_date = {January 2015},
+ volume = {49},
+ number = {1},
+ month = jan,
+ year = {2015},
+ issn = {0163-5980},
+ pages = {61--70},
+ numpages = {10},
+ url = {http://doi.acm.org/10.1145/2723872.2723881},
+ doi = {10.1145/2723872.2723881},
+ acmid = {2723881},
+ publisher = {ACM},
+ address = {New York, NY, USA},
+}
+
+@article{knuth1984literate,
+ author = {Knuth, D. E.},
+ doi = {10.1093/comjnl/27.2.97},
+ issn = {0010-4620},
+ journal = {The Computer Journal},
+ month = 2,
+ number = 2,
+ pages = {97--111},
+ publisher = {Oxford University Press},
+ title = {{Literate Programming}},
+ volume = 27,
+ year = 1984
+}
+
+@book{jain1991art,
+ location = {New York},
+ edition = {1st},
+ title = {The Art of Computer Systems Performance Analysis: Techniques for Experimental Design, Measurement, Simulation, and Modeling},
+ isbn = {978-0-471-50336-1},
+ shorttitle = {The Art of Computer Systems Performance Analysis},
+ abstract = {The Art of Computer Systems Performance Analysis "At last, a welcome and needed text for computer professionals who require practical, ready-to-apply techniques for performance analysis. Highly recommended!" -Dr. Leonard Kleinrock University of California, Los Angeles "An entirely refreshing text which has just the right mixture of theory and real world practice. The book is ideal for both classroom instruction and self-study." -Dr. Raymond L. Pickholtz President, {IEEE} Communications Society "An extraordinarily comprehensive treatment of both theoretical and practical issues." -Dr. Jeffrey P. Buzen Internationally recognized performance analysis expert ". it is the most thorough book available to date" -Dr. Erol Gelenbe Université René Descartes, Paris ". an extraordinary book.. A worthy addition to the bookshelf of any practicing computer or communications engineer" -Dr. Vinton G. Cer??? Chairman, {ACM} {SIGCOMM} "This is an unusual object, a textbook that one wants to sit down and peruse. The prose is clear and fluent, but more important, it is witty." -Allison Mankin The Mitre Washington Networking Center Newsletter},
+ pagetotal = {685},
+ publisher = {Wiley},
+ author = {Jain, Raj},
+ year = {1991},
+ date = {1991-04}
+}
+
+@book{dominik2010orgmode,
+ author = {Dominik, Carsten},
+ title = {The Org Mode 7 Reference Manual - Organize Your Life with GNU Emacs},
+ year = {2010},
+ isbn = {1906966087, 9781906966089},
+ publisher = {Network Theory Ltd.},
+}
+
+@book{stallman2017emacs,
+ address = {Boston, USA},
+ author = {Richard Stallman and others},
+ edition = 17,
+ pages = 635,
+ publisher = {Free Software Foundation},
+ title = {{GNU Emacs Manual}},
+ url = {https://www.gnu.org/software/emacs/manual/pdf/emacs.pdf},
+ urldate = {2017-12-04},
+ year = 2017
+}
+
+@manual{rteam2018manual,
+ title = {R: A Language and Environment for Statistical Computing},
+ author = {{R Core Team}},
+ organization = {R Foundation for Statistical Computing},
+ address = {Vienna, Austria},
+ year = {2018},
+ url = {https://www.R-project.org/},
+}
+
+@article{wickham2019tidyverse,
+ title = {Welcome to the {tidyverse}},
+ author = {Hadley Wickham and Mara Averick and Jennifer Bryan and Winston Chang and Lucy D'Agostino McGowan and Romain François and Garrett Grolemund and Alex Hayes and Lionel Henry and Jim Hester and Max Kuhn and Thomas Lin Pedersen and Evan Miller and Stephan Milton Bache and Kirill Müller and Jeroen Ooms and David Robinson and Dana Paige Seidel and Vitalie Spinu and Kohske Takahashi and Davis Vaughan and Claus Wilke and Kara Woo and Hiroaki Yutani},
+ year = {2019},
+ journal = {Journal of Open Source Software},
+ volume = {4},
+ number = {43},
+ pages = {1686},
+ doi = {10.21105/joss.01686},
+}
+
+@inproceedings{gamblin2015spack,
+ title = {The Spack package manager: Bringing order to HPC software chaos},
+ author = {Gamblin, Todd and LeGendre, Matthew and Collette, Michael R and Lee, Gregory L and Moody, Adam and de Supinski, Bronis R and Futral, Scott},
+ booktitle = {High Performance Computing, Networking, Storage and Analysis, 2015 SC-International Conference for},
+ pages = {1--12},
+ year = {2015},
+ organization = {IEEE}
+}
+
+@inproceedings{knupfer2012scorep,
+ author = {Kn{\"u}pfer, Andreas and R{\"o}ssel, Christian and Mey, Dieter an and Biersdorff, Scott and Diethelm, Kai and Eschweiler, Dominic and Geimer, Markus and Gerndt, Michael and Lorenz, Daniel and Malony, Allen and Nagel, Wolfgang E. and Oleynik, Yury and Philippen, Peter and Saviankou, Pavel and Schmidl, Dirk and Shende, Sameer and Tsch{\"u}ter, Ronny and Wagner, Michael and Wesarg, Bert and Wolf, Felix},
+ editor = {Brunst, Holger and M{\"u}ller, Matthias S. and Nagel, Wolfgang E. and Resch, Michael M.},
+ title = {Score-P: A Joint Performance Measurement Run-Time Infrastructure for Periscope,Scalasca, TAU, and Vampir},
+ booktitle = {Tools for High Performance Computing 2011},
+ year = {2012},
+ publisher = {Springer Berlin Heidelberg},
+ address = {Berlin, Heidelberg},
+ pages = {79--91},
+ isbn = {978-3-642-31476-6}
+}
+
+@book{lapack1999guide,
+ author = {Anderson, E. and Bai, Z. and Bischof, C. and Blackford, S. and Demmel, J. and Dongarra, J. and Du Croz, J. and Greenbaum, A. and Hammarling, S. and McKenney, A. and Sorensen, D.},
+ title = {{LAPACK} Users' Guide},
+ edition = {Third},
+ publisher = {Society for Industrial and Applied Mathematics},
+ year = {1999},
+ address = {Philadelphia, PA},
+ isbn = {0-89871-447-8 (paperback)}
+}
+
+@article{dagum1998openmp,
+ author = {Dagum, Leonardo and Menon, Ramesh},
+ journal = {Computational Science \& Engineering, IEEE},
+ number = {1},
+ pages = {46--55},
+ publisher = {IEEE},
+ title = {OpenMP: an industry standard API for shared-memory programming},
+ volume = {5},
+ year = {1998}
+}
+
+@misc{openmp2015spec,
+ author = {{OpenMP Architecture Review Board}},
+ title = {{OpenMP} Application Program Interface Version 4.5},
+ month = {November},
+ year = {2015},
+ url = {https://www.openmp.org/wp-content/uploads/openmp-4.5.pdf}
+}
+
+@manual{llvm2018manual,
+ title = {Clang: a C language family frontend for LLVM Version 6.0.0},
+ author = {{LLVM Developer Team}},
+ organization = {LLVM Foundation},
+ address = {California, United States of America},
+ year = {2018},
+ url = {https://releases.llvm.org/6.0.0/tools/clang/docs/UsersManual.html},
+}
+
+@manual{gnu2018manual,
+ title = {GCC, the GNU Compiler Collection Version 8.3.0},
+ author = {{GCC Team}},
+ organization = {Free Software Foundation},
+ address = {Massachusetts, United States of America},
+ year = {2018},
+ url = {https://gcc.gnu.org/onlinedocs/gcc-8.3.0/gcc/},
+}
+
+@article{blumofe1996cilk,
+ title = {Cilk: An efficient multithreaded runtime system},
+ author = {Blumofe, Robert D and Joerg, Christopher F and Kuszmaul, Bradley C and Leiserson, Charles E and Randall, Keith H and Zhou, Yuli},
+ journal = {Journal of parallel and distributed computing},
+ volume = {37},
+ number = {1},
+ pages = {55--69},
+ year = {1996},
+ publisher = {Elsevier}
+}
+
+@inproceedings{eichenberger2013ompt,
+ title = {OMPT: An OpenMP tools application programming interface for performance analysis},
+ author = {Eichenberger, Alexandre E and Mellor-Crummey, John and Schulz, Martin and Wong, Michael and Copty, Nawal and Dietrich, Robert and Liu, Xu and Loh, Eugene and Lorenz, Daniel},
+ booktitle = {International Workshop on OpenMP},
+ pages = {171--185},
+ year = {2013},
+ organization = {Springer}
+}
+
+@article{pheatt2008tbb,
+ title = {Intel® threading building blocks},
+ volume = {23},
+ issn = {1937-4771},
+ pages = {298},
+ number = {4},
+ journaltitle = {Journal of Computing Sciences in Colleges},
+ shortjournal = {J. Comput. Sci. Coll.},
+ author = {Pheatt, Chuck},
+ date = {2008-04-01},
+ year = {2008}
+}
+
+@article{duran2011ompss,
+ title = {Ompss: a Proposal for Programming Heterogeneous Multi-Core Architectures.},
+ volume = {21},
+ doi = {10.1142/S0129626411000151},
+ shorttitle = {Ompss},
+ pages = {173--193},
+ journaltitle = {Parallel Processing Letters},
+ shortjournal = {Parallel Processing Letters},
+ author = {Duran, Alejandro and Ayguadé, Eduard and Badia, Rosa M. and Labarta, Jesús and Martinell, Luis and Martorell, Xavier and Planas, Judit},
+ date = {2011-06-01},
+ year = {2011}
 }
 #+end_src
-
-** Emacs setup                                                    :noexport:
-# Local Variables:
-# eval: (add-to-list 'load-path ".")
-# eval: (require 'ox-extra)
-# eval: (require 'org-inlinetask)
-# eval: (ox-extras-activate '(ignore-headlines))
-# End:
