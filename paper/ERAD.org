@@ -238,16 +238,21 @@ da segunda atualização da décima distribuição estável =10.2=, de codinome
 Buster.
 
 #+latex: \noindent
-*Versão das Bibliotecas e Binários*: A ferramenta utilizada para a compilação de
-todos os binários foi o /frontend/ para a linguagem C do sistema de compiladores
-GCC, versão =8.3.0= \cite{gnu2018manual}. As bibliotecas padrão utilizadas
-foram, portanto, as distribuídas com esse /release/ do compilador. O /runtime/
-de OpenMP utilizado do projeto LLVM foi a versão distribuída com o lançamento
-=6.0.0= do /frontend/ Clang \cite{llvm2018manual}. Todas os /runtimes/ de OpenMP
-utilizados seguem a especificação =4.5= \cite{openmp2015spec}. A versão da
-biblioteca StarPU utilizada foi a versão estável =1.3.1=. Para todos os binários
-gerados, utilizamos a biblioteca LAPACK \cite{lapack1999guide} de versão
-=3.8.0=, distribuída no pacote Netlib[fn:2].
+*Versão das Bibliotecas e Binários*: A ferramenta utilizada para a
+compilação de todos os binários foi o /frontend/ para a linguagem C do
+sistema de compiladores GCC, versão =8.3.0= \cite{gnu2018manual}. As
+bibliotecas padrão utilizadas foram, portanto, as distribuídas com
+esse /release/ do compilador. O /runtime/ de OpenMP utilizado do projeto
+LLVM foi a versão distribuída com o lançamento =6.0.0= do /frontend/ Clang
+\cite{llvm2018manual}. Todas os /runtimes/ de OpenMP utilizados seguem a
+especificação =4.5= \cite{openmp2015spec}. A versão da biblioteca StarPU
+utilizada foi a versão estável =1.3.1=. Para todos os binários gerados,
+utilizamos a biblioteca LAPACK \cite{lapack1999guide} de versão =3.8.0=,
+distribuída no pacote Netlib[fn:2]. Para as ferramentas LIBKOMP
+\cite{broquedis2012libkomp} e KStar \cite{7912335}, foram utilizadas
+as versões em desenvolvimento, /branch/ ~libkomp~, /commit hash/
+32781b6dab10b1b51a07ef074078f28efd8f9b4e e /branch/ ~master~, /commit hash/
+bf6af54e57bad13004d21fa2ab8297922d6af151.
 
 # falta info sobre libkomp e kstar, que não possuem versões estáveis. como citar?
 
@@ -282,6 +287,19 @@ Tangle this file with C-c C-v t
 
 #+begin_src bibtex :tangle refs.bib
 % Only BIBTEX entries here
+
+@ARTICLE{7912335,
+  author={E. {Agullo} and O. {Aumage} and B. {Bramas} and O. {Coulaud} and S. {Pitoiset}},
+  journal={IEEE Transactions on Parallel and Distributed Systems},
+  title={Bridging the Gap Between OpenMP and Task-Based Runtime Systems for the Fast Multipole Method},
+  year={2017},
+  volume={28},
+  number={10},
+  pages={2794-2807},
+  doi={10.1109/TPDS.2017.2697857},
+  ISSN={2161-9883},
+  month={Oct}
+}
 
 @inproceedings{yoo2003slurm,
  author = {Yoo, Andy B. and Jette, Morris A. and Grondona, Mark},
