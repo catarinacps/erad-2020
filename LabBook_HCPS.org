@@ -2112,21 +2112,41 @@ readtrace <- function (filename) {
    df$Duration <- df$Duration*1e-9;
    df;
 }
+
+gantt_libkomp <- function (dtx) {
+     
+    # time zero (start of  first task in the DAG)
+    zero <- dtx %>% filter(Name == "dgeqrt") %>% .$Start %>% min
+    dtx %>% mutate(Start=Start-zero, End=End-zero) -> dty
+
+    dty %>% mutate(Resource=as.factor(Resource)) -> dta
+
+    # End of last task
+    makespan = dta %>% filter(Name == "dgeqrt") %>% .$End %>% max
+    makespan_y = (dta %>% .$Resource %>% unique %>% length) / 2
+
+    # blockQrLibkomp[[1]] %>% filter(Name == "dgeqrt") %>% summarize(Min=min(Start), Max=max(Start)) %>% mutate(Total=Max-Min) %>% mutate(Max=Max-Min) %>% mutate(Min=0)
+
+    dti <- dta %>% group_by(Resource) %>% summarize(Idleness = (1-(sum(End-Start)/makespan))*100)
+    
+    ggplot(data=dta, aes(x=date(Start), y=Resource)) +
+        geom_rect(aes(fill=Name,
+                      xmin=date(Start),
+                      xmax=date(End),
+                      ymin=as.numeric(Resource)-.4,
+                      ymax=as.numeric(Resource)+.4)) +
+        annotate("text", x = date(makespan), y = makespan_y, label = round(makespan, 2), angle=90) +
+        geom_label(data=dti, aes(x=date(makespan*(-0.05)), y=Resource, label=paste(round(Idleness, 2), "%"))) +
+        xlab("Time") +
+        ylab("Application Threads") +
+        theme_bw() +
+        theme (legend.position = "bottom") +
+        scale_fill_manual(values = c("#9bb6dd", "#96e3a2", "#f68285", "#d194d0")) +
+        scale_y_discrete()
+}
+
  #+end_src
 
- #+RESULTS: rLibkomp
- #+begin_example
-
- Attaching package: ‘dplyr’
-
- The following objects are masked from ‘package:stats’:
-
-     filter, lag
-
- The following objects are masked from ‘package:base’:
-
-     intersect, setdiff, setequal, union
- #+end_example
 
 ***** Reading Data
 #+header: :var rawDirExp="./experiments/exp02/results-draco1-wip"
