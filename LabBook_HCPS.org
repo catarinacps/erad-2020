@@ -1963,7 +1963,7 @@ rm -rf .git
  #+header: :var rawPath="./experiments/exp02/results-draco1-wip"
  #+begin_src sh :results output :exports both :cache yes :eval no-export
 export PATH=starvz-src/:$PATH
-export PATH=~/misc/pajeng/bin:$PATH
+export PATH=$HOME/misc/pajeng/bin:$PATH
 export PATH=`starpu-spack/src/spack/bin/spack location -i starpu`/bin/:$PATH
 
 for file in `find $rawPath -maxdepth 1 -type d -name "*starpu*"`;  do
@@ -2218,8 +2218,9 @@ done;
  #+begin_src R :results output :exports both :session R
 library(ggplot2)
 library(dplyr)
-
-# helper: convert s to the date
+library(stringr)
+library(readr)
+library(gtools)
 
 gantt_scorep <- function (dtx) {
 
@@ -2234,15 +2235,14 @@ gantt_scorep <- function (dtx) {
     makespan_y = (dta %>% .$WorkerID %>% unique %>% length) / 2
 
     dti <- dta %>% group_by(WorkerID) %>% summarize(Idleness = (1-(sum(End-Start)/makespan))*100)
-
-    ggplot(data=dta, aes(x=date(Start), y=WorkerID)) +
+    ggplot(data=dta, aes(x=Start, y=WorkerID)) +
         geom_rect(aes(fill=Kernel,
-                      xmin=date(Start),
-                      xmax=date(End),
+                      xmin=Start,
+                      xmax=End,
                       ymin=as.numeric(WorkerID)-.4,
                       ymax=as.numeric(WorkerID)+.4)) +
-        annotate("text", x = date(makespan), y = makespan_y, label = round(makespan, 2), angle=90) +
-        geom_label(data=dti, aes(x=date(makespan*(-0.05)), y=WorkerID, label=paste(round(Idleness, 2), "%"))) +
+        annotate("text", x = makespan, y = makespan_y, label = round(makespan, 2), angle=90) +
+        geom_label(data=dti, aes(x=makespan*(-0.05), y=WorkerID, label=paste(round(Idleness, 2), "%"))) +
         xlab("Time") +
         ylab("Application Threads") +
         theme_bw() +
@@ -2289,46 +2289,84 @@ Mapping kernel names
 | !$omp task @block_qr_openmp.c:58         | dgeqrt         |
 
 
-***** Reading traces
+***** Reading Data
+#+header: :var rawDirExp="./experiments/exp02/results-draco1-wip"
+#+header: :var fdep=rScorep
 #+header: :var mapping=mapping_omp_signature_to_kernel_name_otf2print
 #+begin_src R :results output :session R :exports both
-read_csv("./experiments/exp02/results-draco1-wip/scorep_8192_256/paje.libgomp.csv", col_names=FALSE, col_types=cols()) %>%
-    select(-X1, -X3) %>%
-    rename(Worker = X2,
-           Start = X4,
-           End = X5,
-           Duration = X6,
-           Imbrication = X7,
-           Value = X8,
-           JobId = X9) %>%
-    filter(Imbrication == 3) %>%
-    mutate(Worker = as.factor(Worker)) -> df.post
+blockQrScorep <-
+    grep("scorep", list.dirs(path=rawDirExp, full.names=TRUE, recursive=FALSE), value=TRUE) %>%
+    lapply(function(fl){
+        print(paste0("Working on ", fl))
+        read_csv(paste(fl, "paje.libgomp.csv", sep="/"), col_names=FALSE, col_types=cols()) %>%
+            select(-X1, -X3) %>%
+            rename(Worker = X2,
+                   Start = X4,
+                   End = X5,
+                   Duration = X6,
+                   Imbrication = X7,
+                   Value = X8,
+                   JobId = X9) %>%
+            filter(Imbrication == 3) %>%
+            mutate(Worker = as.factor(Worker)) -> df.post
+        df.post %>%
+            select(Worker) %>%
+            unique %>%
+            mutate(WorkerID = as.integer(1:n()-1)) -> df.worker
+        df.post %>%
+            left_join(df.worker, by="Worker") %>%
+            select(-Worker) %>%
+            select(WorkerID, everything()) -> df.post.2
+        df.post.2 %>%
+            left_join(mapping, by="Value") %>%
+            select(-Value) %>%
+            mutate(End = End - min(Start)) %>%
+            mutate(Start = Start - min(Start)) -> df.post.3
+        df.post.3
+    })
 
-df.post %>%
-    select(Worker) %>%
-    unique %>%
-    mutate(WorkerID = as.integer(1:n()-1)) -> df.worker
-
-df.post %>%
-    left_join(df.worker, by="Worker") %>%
-    select(-Worker) %>%
-    select(WorkerID, everything()) -> df.post.2
-
-df.post.2 %>%
-    left_join(mapping, by="Value") %>%
-    #select(-Value) %>%
-    mutate(End = End - min(Start)) %>%
-    mutate(Start = Start - min(Start)) -> df.post.3
-
-df.post.3 -> df.libgomp
+names(blockQrScorep) <-
+    grep("scorep", list.dirs(path=rawDirExp, full.names=TRUE, recursive=FALSE), value=TRUE) %>%
+    lapply(function(fl){
+        #nm <- basename(fl) %>% strsplit("_") %>% unlist()
+        #nm[0:(length(nm)-2)] %>% paste(collapse ='-')
+        nm <- basename(fl) %>% str_replace_all("_", "-")
+    })
 #+end_src
 
 
-***** Plot
-      #+begin_src R :results output graphics :file (org-babel-temp-file "figure" ".png") :exports both :width 1350 :height 400 :session R
-gantt_scorep(df.libgomp)
-      #+end_src
 
+***** All Plots Scorep
+****** Generating ORG blocks                                       :noexport:
+#+name: scorepnames
+#+begin_src R :results output :session R :exports none :eval no-export
+blockQrScorep %>% names
+#+end_src
+
+#+header: :var lista=scorepnames
+#+begin_src shell :results value raw :exports results :eval no-export
+echo " "
+echo "****** Full View Chart"
+for r in $lista; do
+    echo "******* Execution $r"
+    r2=$(echo $r | sed "s/\"//g")
+    echo "#+begin_src R :results output graphics :file img/trace-qr-$r2-scorep.png :exports both :width 1400 :height 800 :session R :eval no-export "
+    echo "  gantt_scorep(blockQrScorep[[$r]])"
+    echo "#+end_src"
+    echo ""
+done;
+ #+end_src
+
+ #+RESULTS:
+
+****** Full View Chart
+******* Execution "scorep-8192-256"
+ #+begin_src R :results output graphics :file img/trace-qr-scorep-8192-256-scorep.png :exports both :width 1400 :height 800 :session R :eval no-export
+   gantt_scorep(blockQrScorep[["scorep-8192-256"]])
+ #+end_src
+
+
+**** OMPT (clang - libomp)
 
 **** All - Comparing Task Duration
 ***** Code
