@@ -96,7 +96,7 @@ mais performática e, sobretudo, por que ela é.
 
 Podemos citar OpenMP \cite{dagum1998openmp}, StarPU \cite{augonnet2011starpu},
 TBB \cite{pheatt2008tbb} e OmpSs \cite{duran2011ompss} como algumas dessas
-bibliotecas e /runtimes/ de programação paralelas. Essas implementações suportam
+bibliotecas e /runtimes/ de programação paralela. Essas implementações suportam
 modelos mais sofisticados de programação paralela, como a programação baseada em
 tarefas, que divide a lógica de um programa em tarefas e declara o paralelismo
 implicitamente baseado nas dependências de dados entre cada uma dessas tarefas,
@@ -245,17 +245,33 @@ foram, portanto, as distribuídas com esse /release/ do compilador. O /runtime/
 de OpenMP utilizado do projeto LLVM foi a versão distribuída com o lançamento
 =6.0.0= do /frontend/ Clang \cite{llvm2018manual}. Todas os /runtimes/ de OpenMP
 utilizados seguem a especificação =4.5= \cite{openmp2015spec}. A versão da
-biblioteca StarPU utilizada foi a versão estável =1.3.1=. Para todos os binários
+biblioteca StarPU utilizada foi a versão estável =1.3.1= utilizando o
+/scheduler/ padrão /Locality Work Stealing/ (/LWS/). Para todos os binários
 gerados, utilizamos a biblioteca LAPACK \cite{lapack1999guide} de versão
 =3.8.0=, distribuída no pacote Netlib[fn:2]. Para as ferramentas LIBKOMP
 \cite{broquedis2012libkomp} e KStar \cite{agullo2017kstar}, foram utilizadas as
-versões em desenvolvimento, /branch/ =libkomp=, /commit hash/ =32781b6dab10b1b5=
-e /branch/ =master=, /commit hash/ =bf6af54e57bad130=.
+versões em desenvolvimento das /branches/ =libkomp= (/commit hash/
+=32781b6dab10b1b5=) e =master= (/commit hash/ =bf6af54e57bad130=)
+respectivamente.
 
-# falta info sobre libkomp e kstar, que não possuem versões estáveis. como citar?
+O rastreamento da aplicação utilizando a biblioteca GCC/libgomp foi realizado
+utilizando a ferramente ScoreP versão =6.0= e, quando utilizando a biblioteca
+LLVM/libomp, rastreamos a aplicação com uma biblioteca própria utilizando
+chamadas conforme a especificação OMPT versão =4.5=. O rastreamento das
+biblioteca e compilador StarPU e KStar foi realizado nativamente através da
+biblioteca FxT versão =0.3.5=
 
 [fn:1] O link para o /website/ da distribuição é: https://www.debian.org/
 [fn:2] O link para o /website/ do Netlib é: https://www.netlib.org/
+
+** Diferenças de tempo de execução dos /kernels/ em função do /runtime/
+
+A partir da execução da aplicação
+
+#+name: fig:makespan
+#+attr_latex: :float t :placement [!htb]
+#+caption: Comparação do /makespan/ da execução de cada runtime.
+[[../img/makespan-all.png]]
 
 ** Comparação do Escalonamento entre os três /runtimes/
 
@@ -267,8 +283,6 @@ Figura que a gente conversou
 #+end_comment
 
 ** Análise de Ociosidade por /Worker/
-
-** Diferenças de tempo de execução dos /kernels/ em função do /runtime/
 
 * Conclusão e Trabalhos Futuros
 
