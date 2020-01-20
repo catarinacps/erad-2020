@@ -82,6 +82,28 @@
 - Estrutura do artigo
 #+end_comment
 
+Computação de alto desempenho e grandes agregados de computadores são, hoje em
+dia, jogadores majoritariamente invisíveis num mundo cujos usuários de
+tecnologia exigem contato ubíquo e imperceptível com a informação ao alcance de
+suas mãos. Embora de sutil presença, a demanda à sistemas de alto desempenho
+cresce exponencialmente e, para alcançar essas exigências, o paralelismo se
+firma como único método confiável para prover o grau de performance desejado
+nesses sistemas. Após décadas trabalhando em sistemas e num ferramental a par da
+tarefa mencionada, nos encontramos num período no qual o desenvolvedor desses
+sistemas tem diversas escolhas de bibliotecas, de /runtimes/ e de /Application
+Programming Interfaces/ (APIs) para utilizar a fim de utilizar efetivamente o
+paralelismo oferecido no /hardware/ desses sistemas. Nisso encontramos um grave
+problema: com diversas implementações e propostas observamos também clara
+diferença de performance entre essas, até entre implementações que seguem a
+mesma especificação de API, como é o caso de OpenMP.
+
+A diferença é tal que não se trata mais da qualidade da implementação ditar a
+performance desses sistemas, mas sim a escolha de biblioteca utilizada pelo
+programador. Com isso, surge a questão de definir qual dessas implementações é a
+mais performática e, sobretudo, por que ela é.
+
+# achei sketchy até aqui
+
 * Metodologia de Coleta e Análise de Dados
 
 #+begin_comment
