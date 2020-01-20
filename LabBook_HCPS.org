@@ -2382,6 +2382,125 @@ done;
 
 
 **** OMPT (clang - libomp)
+***** Functions in R
+ #+name: rOmpt
+ #+begin_src R :results output :exports both :session R
+library(ggplot2)
+library(dplyr)
+library(stringr)
+library(readr)
+library(gtools)
+library(tidyr)
+
+gantt_ompt <- function (dtx) {
+     
+    # time zero (start of  first task in the DAG)
+    zero <- dtx %>% filter(Operation == "lapack_dgeqrt") %>% .$time_start %>% min
+    dtx %>% mutate(time_start=time_start-zero, time_end=time_end-zero) -> dty
+
+    dty %>% mutate(Thread=as.factor(Thread), Operation=as.factor(Operation)) %>% mutate(Operation=factor(Operation, levels=mixedsort(levels(Operation)))) -> dta
+
+    # time_end of last task
+    makespan = dta %>% filter(Operation == "lapack_dgeqrt") %>% .$time_end %>% max
+    makespan_y = (dta %>% .$Thread %>% unique %>% length) / 2
+
+    dti <- dta %>% group_by(Thread) %>% summarize(Idleness = (1-(sum(time_end-time_start)/makespan))*100)
+    
+    ggplot(data=dta, aes(x=time_start, y=Thread)) +
+        geom_rect(aes(fill=Operation,
+                      xmin=time_start,
+                      xmax=time_end,
+                      ymin=as.numeric(Thread)-.4,
+                      ymax=as.numeric(Thread)+.4)) +
+        annotate("text", x = makespan, y = makespan_y, label = round(makespan, 2), angle=90) +
+        geom_label(data=dti, aes(x=makespan*(-0.05), y=Thread, label=paste(round(Idleness, 2), "%"))) +
+        xlab("Time") +
+        ylab("Application Threads") +
+        theme_bw() +
+        theme (legend.position = "bottom") +
+        scale_fill_manual(values = c("#96e3a2", "#f68285", "#9bb6dd", "#d194d0")) +
+        scale_y_discrete()
+}
+
+ #+end_src
+
+
+***** Reading Data
+#+header: :var rawDirExp="./experiments/exp02/results-draco1-wip"
+#+header: :var fdep=rOmpt
+#+begin_src R :results output :session R :exports both
+blockQrOmpt <-
+    grep("ompt", list.dirs(path=rawDirExp, full.names=TRUE, recursive=FALSE), value=TRUE) %>%
+    lapply(function(fl){
+        print(paste0("Working on ", fl))
+        read_delim(paste(fl, "events.out", sep="/"), delim=" ", col_names=FALSE) %>%
+	rename(Thread = X1,
+         Task = X2,
+	       Callback = X3,
+	       Operation = X4,
+	       Time = X5) %>%
+	filter(Callback != "task_dependence") -> df
+
+        df %>%
+            filter(Callback == "task_completed" |
+                   Callback == "task_others") -> df1
+
+        df1 %>%
+            group_by(Thread, Task) %>%
+            summarise(Time = paste(Time, collapse=",")) %>%
+            ungroup %>%
+            separate(Time, sep=",", c("time_start", "time_end"), convert=TRUE) %>%
+            mutate (time_elapsed = time_end - time_start) -> df2
+
+        df %>%
+            filter(Callback == "task_create" & Task != 0) %>%
+            select(Operation, Task) %>%
+            inner_join(df2, by = "Task") -> df3
+
+        df3
+    })
+        
+names(blockQrOmpt) <-
+    grep("ompt", list.dirs(path=rawDirExp, full.names=TRUE, recursive=FALSE), value=TRUE) %>%
+    lapply(function(fl){
+        #nm <- basename(fl) %>% strsplit("_") %>% unlist()
+        #nm[0:(length(nm)-2)] %>% paste(collapse ='-')
+        nm <- basename(fl) %>% str_replace_all("_", "-") 
+    })
+#+end_src
+
+
+***** All Plots Ompt
+****** Generating ORG blocks                                       :noexport:
+#+name: omptnames
+#+begin_src R :results output :session R :exports none :eval no-export
+blockQrOmpt %>% names
+#+end_src
+
+#+RESULTS: omptnames
+: [1] "ompt-8192-256"
+
+#+header: :var lista=omptnames
+#+begin_src shell :results value raw :exports results :eval no-export
+echo " "
+echo "****** Full View Chart"
+for r in $lista; do
+    echo "******* Execution $r"
+    r2=$(echo $r | sed "s/\"//g")
+    echo "#+begin_src R :results output graphics :file img/trace-qr-$r2-ompt.png :exports both :width 1400 :height 800 :session R :eval no-export "
+    echo "  gantt_ompt(blockQrOmpt[[$r]])"
+    echo "#+end_src"
+    echo ""
+done;
+ #+end_src
+
+ #+RESULTS:
+
+****** Full View Chart
+******* Execution "ompt-8192-256"
+ #+begin_src R :results output graphics :file img/trace-qr-ompt-8192-256-ompt.png :exports both :width 1400 :height 800 :session R :eval no-export 
+   gantt_ompt(blockQrOmpt[["ompt-8192-256"]])
+ #+end_src
 
 **** All - Comparing Task Duration
 ***** Code
@@ -2409,6 +2528,14 @@ done;
           lapply(blockQrLibkomp %>% names, function(x){
               nm <- x %>% strsplit("-") %>% unlist()
               blockQrLibkomp[[x]] %>% select(Name, Resource, Duration) %>% rename(Task=Name) %>% mutate(Resource=as.character(Resource)) %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[3], Block=nm[4])
+          }),
+          lapply(blockQrScorep %>% names, function(x){
+              nm <- x %>% strsplit("-") %>% unlist()
+              blockQrScorep[[x]] %>% select(Kernel, WorkerID, Duration) %>% rename(Task=Kernel) %>% mutate(Resource=as.character(WorkerID)) %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[3], Block=nm[4])
+          }),
+          lapply(blockQrOmpt %>% names, function(x){
+              nm <- x %>% strsplit("-") %>% unlist()
+              blockQrOmpt[[x]] %>% select(Operation, Thread, time_elapsed) %>% rename(Task=Operation, Duration=time_elapsed) %>% mutate(Resource=as.character(Thread)) %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[3], Block=nm[4])  %>% mutate(Task=str_replace(Task, "lapack_", ""))
           })
       ) -> dt_duration
       #+end_src
