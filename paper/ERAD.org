@@ -237,18 +237,18 @@ identificaremos conforme a [[tab:versoes][Tabela 2]].
 #+name: tab:versoes
 #+attr_latex: :float t :placement [!htb] :font \small
 #+caption: Características das versões executadas da aplicação.
-|-----------------+------------------+---------|
-| <l>             |              <r> |     <r> |
-| *Identificador* |   *Código Fonte* |   *ABI* |
-|-----------------+------------------+---------|
-| libgomp_GCC     |                  |     GCC |
-| libomp_LLVM     |                  |    LLVM |
-| KStar_StarPU    | Diretivas OpenMP |  StarPU |
-| LIBKOMP_libgomp |                  | LIBKOMP |
-| LIBKOMP_libomp  |                  | LIBKOMP |
-|-----------------+------------------+---------|
-| StarPU          |    Nativo StarPU |  StarPU |
-|-----------------+------------------+---------|
+|-----------------+------------------+-----------------|
+| <l>             |              <r> |             <r> |
+| *Identificador* |   *Código Fonte* | *ABI Utilizada* |
+|-----------------+------------------+-----------------|
+| libgomp_GCC     |                  |             GCC |
+| libomp_LLVM     |                  |            LLVM |
+| KStar_StarPU    | Diretivas OpenMP |          StarPU |
+| LIBKOMP_libgomp |                  |         LIBKOMP |
+| LIBKOMP_libomp  |                  |         LIBKOMP |
+|-----------------+------------------+-----------------|
+| StarPU          |    Nativo StarPU |          StarPU |
+|-----------------+------------------+-----------------|
 
 #+latex: \noindent
 *Versão das Bibliotecas e Binários*: A ferramenta utilizada para a compilação de
@@ -277,14 +277,20 @@ utilizando a ferramente ScoreP versão =6.0= e, quando utilizando a biblioteca
 LLVM/libomp, rastreamos a aplicação com uma biblioteca própria utilizando
 chamadas conforme a especificação OMPT versão =4.5=. O rastreamento das
 biblioteca e compilador StarPU e KStar foi realizado nativamente através da
-biblioteca FxT versão =0.3.5=
+biblioteca FxT versão =0.3.5= e o rastreamento das versões utilizando LIBKOMP
+foi realizado pelo próprio /runtime/, que implementa chamadas à /API/ OMPT.
 
 [fn:1] O link para o /website/ da distribuição é: https://www.debian.org/
 [fn:2] O link para o /website/ do Netlib é: https://www.netlib.org/
 
 ** Diferenças de tempo de execução dos /kernels/ em função do /runtime/
 
-Executamos as aplicações
+Executamos as versões das aplicações descritas na [[tab:versoes][Tabela 2]] buscando coletar o
+tempo de execução. Na [[fig:makespan][Figura 1]] observamos os resultados coletados nesse
+experimento, onde nas colunas observamos os diferentes tamanhos de bloco de cada
+tarefa e na linha observamos as diferentes máquinas utilizadas no
+experimento. Apresentamos ambas média das 5 observações e o erro médio (?)
+dessa média.
 
 #+name: fig:makespan
 #+attr_latex: :float t :placement [!htb]
