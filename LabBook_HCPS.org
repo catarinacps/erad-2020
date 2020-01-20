@@ -2238,9 +2238,14 @@ done;
 ***** Merge all
       #+begin_src R :results output :session R :exports both
       bind_rows(
-          blockQrStarpuKstar[[1]]$State %>% select(Value, ResourceId, Duration) %>% rename(Task=Value, Resource=ResourceId) %>% mutate(Runtime="KStar-StarPU"),
-          blockQrStarpuKstar[[2]]$State %>% select(Value, ResourceId, Duration) %>% rename(Task=Value, Resource=ResourceId) %>% mutate(Runtime="StarPU") %>% mutate(Task=str_replace(Task, "lapack_", "")),
-          #blockQrLibkomp[[1]] %>% select(Name, Resource, Duration) %>% rename(Task=Name) %>% mutate(Resource=as.character(Resource), Runtime="Libkomp-Clang")
+          lapply(blockQrStarpuKstar %>% names, function(x){
+              nm <- x %>% strsplit("-") %>% unlist()
+              blockQrStarpuKstar[[x]]$State %>% select(Value, ResourceId, Duration) %>% rename(Task=Value, Resource=ResourceId) %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[3], Block=nm[4]) %>% mutate(Task=str_replace(Task, "lapack_", ""))
+          }),
+          lapply(blockQrLibkomp %>% names, function(x){
+              nm <- x %>% strsplit("-") %>% unlist()
+              blockQrLibkomp[[x]] %>% select(Name, Resource, Duration) %>% rename(Task=Name) %>% mutate(Resource=as.character(Resource)) %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[3], Block=nm[4])
+          })
       ) -> dt_duration
       #+end_src
 
