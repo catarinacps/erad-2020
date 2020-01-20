@@ -32,7 +32,7 @@
 
 #+startup: overview indent
 #+language: pt-br
-#+options: H:3 creator:nil timestamp:nil skip:nil toc:nil num:t ^:nil ~:~ date:nil title:nil
+#+options: H:3 creator:nil timestamp:nil skip:nil toc:nil num:t ~:~ date:nil title:nil
 #+tags: noexport(n) deprecated(d) ignore(i)
 #+export_select_tags: export
 #+export_exclude_tags: noexport
@@ -116,11 +116,9 @@ de uma transpilação para StarPU realizada pelo compilador Kstar. A implementa�
 em StarPU, por fim, será executada nativamente. Sendo assim, nossos objetivos
 nesse trabalho são comparar o *escalonamento* das tarefas, observar a
 *ociosidade* dos trabalhadores de cada /runtime/ e identificar *anomalias* em
-quaisquer das bibliotecas testadas.
+quaisquer das bibliotecas avaliadas.
 
-# ...
-# <insira paragrafo sobre related work aqui>
-# ...
+# lembrete pra eu colocar o paragrafo de related work aqui
 
 * Metodologia de Coleta e Análise de Dados
 
@@ -215,27 +213,42 @@ detalharemos as plataformas nas quais os experimentos foram realizados.
   - Starpu/LWS
 #+end_comment
 
-Para a execução da aplicação, utilizamos as plataformas descritas na
-[[tab:plataformas][Tabela 1]]. Listamos em cada uma dessas o seu identificador, o(s)
-processador(es), a quantidade e níveis de memória /cache/ e quantidade de
-memória /RAM/.
+Para a execução da aplicação, utilizamos as plataformas descritas na [[tab:plataformas][Tabela
+1]]. Listamos em cada uma dessas o seu identificador, a quantidade de nós
+utilizados na coleta do /makespan/ e do rastreamento, o(s) processador(es), a
+quantidade e níveis de memória /cache/ e quantidade de memória /RAM/,
+respectivamente.
 
 #+name: tab:plataformas
 #+attr_latex: :float t :placement [!htb] :font \small
 #+caption: Configuração das plataformas utilizadas nos experimentos.
-|---------+-----+---------------------------------------+--------------------+------------|
-| <l>     | <l> | <l>                                   | <l>                | <l>        |
-| *Nome*  | *#* | *CPU*                                 | *L1/L2/LLC*        | *RAM*      |
-|---------+-----+---------------------------------------+--------------------+------------|
-| =draco= | $5$ | $2 \times 8$ Xeon E5 2640 v2 2.5GHz   | 32KB/256KB/20MB    | 64GB DDR3  |
-| =cei=   | $7$ | $2 \times 12$ Xeon Silver 4116 2.1GHz | 32KB/1024KB/16.5MB | 93GB DDR4  |
-| =hype=  | $4$ | $2 \times 10$ Xeon E5 2650 v3 2.3GHz  | 32KB/256KB/25MB    | 128GB DDR4 |
-|---------+-----+---------------------------------------+--------------------+------------|
+|---------+-----------+---------------------------------------+--------------------+------------|
+| <l>     | <l>       | <l>                                   | <l>                | <l>        |
+| *Nome*  | *#_{1,2}* | *CPU*                                 | *L1/L2/LLC*        | *RAM*      |
+|---------+-----------+---------------------------------------+--------------------+------------|
+| =draco= | $5, 1$    | $2 \times 8$ Xeon E5 2640 v2 2.5GHz   | 32KB/256KB/20MB    | 64GB DDR3  |
+| =cei=   | $7, 1$    | $2 \times 12$ Xeon Silver 4116 2.1GHz | 32KB/1024KB/16.5MB | 93GB DDR4  |
+| =hype=  | $4, 1$    | $2 \times 10$ Xeon E5 2650 v3 2.3GHz  | 32KB/256KB/25MB    | 128GB DDR4 |
+|---------+-----------+---------------------------------------+--------------------+------------|
 
-Todas as plataformas detalhadas executam a versão do /kernel/ Linux =4.19.0-6=
-da distribuição Debian[fn:1]. A versão da distribuição corresponde ao lançamento
-da segunda atualização da décima distribuição estável =10.2=, de codinome
-Buster.
+Conforme descrito na [[Introdução, Objetivos e Trabalhos Relacionados][Seção 1]], executaremos seis versões das aplicações e as
+identificaremos conforme a [[tab:versoes][Tabela 2]].
+
+#+name: tab:versoes
+#+attr_latex: :float t :placement [!htb] :font \small
+#+caption: Características das versões executadas da aplicação.
+|-----------------+------------------+-----------------|
+| <l>             |              <r> |             <r> |
+| *Identificador* |   *Código Fonte* | *ABI Utilizada* |
+|-----------------+------------------+-----------------|
+| libgomp_GCC     |                  |             GCC |
+| libomp_LLVM     |                  |            LLVM |
+| KStar_StarPU    | Diretivas OpenMP |          StarPU |
+| LIBKOMP_libgomp |                  |         LIBKOMP |
+| LIBKOMP_libomp  |                  |         LIBKOMP |
+|-----------------+------------------+-----------------|
+| StarPU          |    Nativo StarPU |          StarPU |
+|-----------------+------------------+-----------------|
 
 #+latex: \noindent
 *Versão das Bibliotecas e Binários*: A ferramenta utilizada para a compilação de
@@ -254,19 +267,30 @@ versões em desenvolvimento das /branches/ =libkomp= (/commit hash/
 =32781b6dab10b1b5=) e =master= (/commit hash/ =bf6af54e57bad130=)
 respectivamente.
 
+Todas as plataformas detalhadas executam a versão do /kernel/ Linux =4.19.0-6=
+da distribuição Debian[fn:1]. A versão da distribuição corresponde ao lançamento
+da segunda atualização da décima distribuição estável =10.2=, de codinome
+Buster.
+
 O rastreamento da aplicação utilizando a biblioteca GCC/libgomp foi realizado
 utilizando a ferramente ScoreP versão =6.0= e, quando utilizando a biblioteca
 LLVM/libomp, rastreamos a aplicação com uma biblioteca própria utilizando
 chamadas conforme a especificação OMPT versão =4.5=. O rastreamento das
 biblioteca e compilador StarPU e KStar foi realizado nativamente através da
-biblioteca FxT versão =0.3.5=
+biblioteca FxT versão =0.3.5= e o rastreamento das versões utilizando LIBKOMP
+foi realizado pelo próprio /runtime/, que implementa chamadas à /API/ OMPT.
 
 [fn:1] O link para o /website/ da distribuição é: https://www.debian.org/
 [fn:2] O link para o /website/ do Netlib é: https://www.netlib.org/
 
 ** Diferenças de tempo de execução dos /kernels/ em função do /runtime/
 
-A partir da execução da aplicação
+Executamos as versões das aplicações descritas na [[tab:versoes][Tabela 2]] buscando coletar o
+tempo de execução. Na [[fig:makespan][Figura 1]] observamos os resultados coletados nesse
+experimento, onde nas colunas observamos os diferentes tamanhos de bloco de cada
+tarefa e na linha observamos as diferentes máquinas utilizadas no
+experimento. Apresentamos ambas média das 5 observações e o erro médio (?)
+dessa média.
 
 #+name: fig:makespan
 #+attr_latex: :float t :placement [!htb]
