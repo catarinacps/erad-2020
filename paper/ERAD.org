@@ -48,6 +48,7 @@
 #+latex_header: \usepackage{booktabs}
 #+latex_header: \usepackage{hyphenat}
 #+latex_header: \usepackage{breakcites}
+#+latex_header: \usepackage{fancyvrb}
 #+latex_header: \hyphenation{e-la-bo-ra-ção re-pre-sen-tar}
 
 # You need at least Org 9 and Emacs 24 to make this work.
@@ -237,18 +238,18 @@ identificaremos conforme a [[tab:versoes][Tabela 2]].
 #+name: tab:versoes
 #+attr_latex: :float t :placement [!htb] :font \small
 #+caption: Características das versões executadas da aplicação.
-|-----------------+------------------+-----------------|
-| <l>             |              <r> |             <r> |
-| *Identificador* |   *Código Fonte* | *ABI Utilizada* |
-|-----------------+------------------+-----------------|
-| libgomp_GCC     |                  |             GCC |
-| libomp_LLVM     |                  |            LLVM |
-| KStar_StarPU    | Diretivas OpenMP |          StarPU |
-| LIBKOMP_libgomp |                  |         LIBKOMP |
-| LIBKOMP_libomp  |                  |         LIBKOMP |
-|-----------------+------------------+-----------------|
-| StarPU          |    Nativo StarPU |          StarPU |
-|-----------------+------------------+-----------------|
+|-----------------+------------------+---------------------|
+| <l>             | <l>              | <l>                 |
+| *Identificador* | *Código Fonte*   | *ABI Utilizada*     |
+|-----------------+------------------+---------------------|
+| libgomp_GCC     |                  | OpenMP/GCC          |
+| libomp_LLVM     |                  | OpenMP/LLVM         |
+| KStar_StarPU    | Diretivas OpenMP | StarPU              |
+| LIBKOMP_libgomp |                  | OpenMP/LIBKOMP-LLVM |
+| LIBKOMP_libomp  |                  | OpenMP/LIBKOMP-GCC  |
+|-----------------+------------------+---------------------|
+| StarPU          | Nativo StarPU    | StarPU              |
+|-----------------+------------------+---------------------|
 
 #+latex: \noindent
 *Versão das Bibliotecas e Binários*: A ferramenta utilizada para a compilação de
