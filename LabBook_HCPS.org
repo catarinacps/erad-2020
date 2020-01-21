@@ -2159,12 +2159,14 @@ blockQrLibkomp <-
     grep("libkomp", list.dirs(path=rawDirExp, full.names=TRUE, recursive=TRUE), value=TRUE) %>%
     lapply(function(fl){
         print(paste0("Working on ", fl))
-        ret <- readtrace(paste(fl, "tasks.csv", sep="/")) %>% 
-            left_join(mapping, by="Name") %>% 
-            rename(OldName=Name) %>% 
-            rename(Name=Kernel)
-        ret
-    })
+        if(file.exists(paste(fl, "tasks.csv", sep="/"))){
+            ret <- readtrace(paste(fl, "tasks.csv", sep="/")) %>% 
+                left_join(mapping, by="Name") %>% 
+                rename(OldName=Name) %>% 
+                rename(Name=Kernel)
+            ret
+        }
+    })  %>% list.clean(function(x) length(x) == 0L, FALSE)
 
 names(blockQrLibkomp) <-
     grep("libkomp", list.dirs(path=rawDirExp, full.names=TRUE, recursive=FALSE), value=TRUE) %>%
