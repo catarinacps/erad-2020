@@ -1927,7 +1927,7 @@ wait
 **** StarVZ - Starpu & Kstar
 ***** Get starvz scritps
  #+begin_src shell :results output :exports both :eval no-export
-git clone --depth=1 git@github.com:schnorr/starvz.git starvz-src && cd starvz-src
+git clone --depth=1 https://github.com/schnorr/starvz.git starvz-src && cd starvz-src
 git rev-parse HEAD
 rm -rf .git
  #+end_src
