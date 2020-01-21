@@ -2638,6 +2638,50 @@ plot_duration(dt_duration)
       #+end_src
 
 
+**** Schnorr figure!  
+***** Merge all
+      #+begin_src R :results output :session R :exports both
+      bind_rows(
+          lapply(blockQrStarpuKstar %>% names, function(x){
+              nm <- x %>% strsplit("-") %>% unlist()
+              blockQrStarpuKstar[[x]]$State %>% select(Value, Start) %>% rename(Task=Value) %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)]) %>% mutate(Task=str_replace(Task, "lapack_", "")) %>% filter(grepl("dgeqrt", Task))
+          }),
+          lapply(blockQrLibkomp %>% names, function(x){
+              nm <- x %>% strsplit("-") %>% unlist()
+              blockQrLibkomp[[x]] %>% select(Name, Start) %>% rename(Task=Name) %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)]) %>% filter(grepl("dgeqrt", Task))
+          }),
+          lapply(blockQrScorep %>% names, function(x){
+              nm <- x %>% strsplit("-") %>% unlist()
+              blockQrScorep[[x]] %>% select(Kernel, Start) %>% rename(Task=Kernel) %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)]) %>% filter(grepl("dgeqrt", Task))
+          }),
+          lapply(blockQrOmpt %>% names, function(x){
+              nm <- x %>% strsplit("-") %>% unlist()
+              blockQrOmpt[[x]] %>% select(Operation, time_start) %>% rename(Task=Operation, Start=time_start) %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)])  %>% mutate(Task=str_replace(Task, "lapack_", "")) %>% filter(grepl("dgeqrt", Task))
+          })
+      ) -> dt_start
+      #+end_src
+
+
+***** Code
+      #+begin_src R :results output :session R :exports both
+       
+      plot_schnorr <- function(dta){
+
+          dta %>% group_by(Runtime, Matrix, Block) %>% arrange(Start) %>% mutate(i=seq(n())) %>%
+              ggplot(aes(x=Start, y=i, color=Runtime)) +
+                  geom_point() +
+                  facet_grid(Block~Matrix, scales="free") +
+                  ylab("?") +
+                  scale_y_reverse() +
+                  theme_bw() +
+                  theme (legend.position = "bottom")
+      }
+
+      #+end_src
+
+      #+RESULTS:
+
+
 * Resources
 :PROPERTIES:
 :ATTACH_DIR: resources/
