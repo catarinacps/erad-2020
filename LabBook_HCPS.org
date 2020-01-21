@@ -1298,7 +1298,7 @@ fig_1
 
 now for the plot...
 
-#+begin_src R :session :results output :file (org-babel-temp-file "figure" ".png") :exports both :width 500 :height 300
+#+begin_src R :session :results output graphics :file (org-babel-temp-file "figure" ".png") :exports both :width 500 :height 300
 fig_1 %>%
   ggplot(aes(x = as.factor(matrix_size),
              y = avg_time,
