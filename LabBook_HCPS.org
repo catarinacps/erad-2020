@@ -1326,7 +1326,7 @@ fig_1 %>%
 
 there is inter-node variability...
 
-#+begin_src R :session :results output graphics :file img/makespan-all.png :exports both :width 800 :height 600
+#+begin_src R :session :results output graphics :file img/makespan-all.png :exports both :width 900 :height 450
 suppressMessages(library(gtools))
 
 fig_1 %>%
@@ -1342,10 +1342,10 @@ fig_1 %>%
                     ymax = avg_time + error),
                 width = 0.5,
                 position=position_dodge(width = 1)) +
-  labs(x = "Tamanho da matriz",
+  labs(
        y = "Tempo médio de execução [seg]",
-       color = "Runtime utilizado",
-       shape = "Runtime utilizado") +
+       color = "Runtime",
+       shape = "Runtime") +
   facet_wrap(~ case, scales="free", nrow = 3) +
   scale_y_continuous(expand = expand_scale(mult = c(0, 0.05)),
                      breaks = scales::pretty_breaks(n = 8),
@@ -1354,10 +1354,15 @@ fig_1 %>%
   theme(text = element_text(family = "Palatino", size = 16),
         strip.text = element_text(size = 12),
         # strip.background = element_rect(fill = "white"),
-        legend.position = "top")
+        legend.position = "right",
+        axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        plot.margin = unit(c(0, 10, 0, 0), "mm"))
 #+end_src
 
 #+RESULTS:
+[[file:img/makespan-all.png]]
 
 ** STARTED 2 - Tracing
 - State "STARTED"    from              [2020-01-09 qui 15:22]
