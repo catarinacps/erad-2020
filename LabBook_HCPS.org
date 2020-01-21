@@ -2578,6 +2578,74 @@ plot_duration(dt_duration)
       #+end_src
 
 
+**** Idleness plots
+***** Code
+      #+begin_src R :results output :session R :exports both
+       
+      plot_all_idleness <- function(dta){
+
+          dta %>% 
+              ggplot(aes(x=Resource, y=Idleness, fill=Runtime)) +
+                  geom_bar(stat="identity", position=position_dodge()) +
+                  facet_grid(Block~Matrix, scales="free") +
+                  ylab("Idleness Ratio (%)") +
+                  theme_bw() +
+                  theme (legend.position = "bottom")
+      }
+
+      plot_idleness_average <- function(dta){
+
+          dta %>%
+              group_by(Runtime, Block, Matrix) %>% 
+              summarize(Mean=mean(Idleness), Median=median(Idleness), Sd=sd(Idleness)) %>%
+              ggplot(aes(x=Runtime, y=Mean, fill=Runtime)) +
+                 geom_bar(stat="identity") +
+                 geom_errorbar(aes(ymin=Mean-Sd, ymax=Mean+Sd)) +
+                 facet_grid(Block~Matrix, scales="free") +
+                 ylab("Mean Idleness Ratio (%)") +
+                 theme_bw() +
+                 theme (legend.position = "bottom")        
+      }
+      #+end_src
+
+      
+***** Merge all
+      #+begin_src R :results output :session R :exports both
+   
+      bind_rows(
+          lapply(blockQrStarpuKstar %>% names, function(x){
+              nm <- x %>% strsplit("-") %>% unlist()
+              blockQrStarpuKstar[[x]]$State %>% calculate_resource_idleness(max_only = FALSE) %>% select(-ResourceType, -Node, -ResourceId, -Height, -End) %>% rename(Resource=Position)  %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)]) 
+          }),
+          lapply(blockQrLibkomp %>% names, function(x){
+              nm <- x %>% strsplit("-") %>% unlist()
+              blockQrLibkomp[[x]] %>% idleness_libkomp() %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)]) 
+          }),
+          lapply(blockQrScorep %>% names, function(x){
+              nm <- x %>% strsplit("-") %>% unlist()
+              blockQrScorep[[x]] %>% idleness_scorep()  %>% rename(Resource=WorkerID) %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)]) 
+          }),
+          lapply(blockQrOmpt %>% names, function(x){
+              nm <- x %>% strsplit("-") %>% unlist()
+              blockQrOmpt[[x]] %>% idleness_ompt() %>% rename(Resource=Thread)  %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)]) 
+          })
+      ) %>% mutate(Resource=factor(Resource)) -> dt_idleness
+      
+      #+end_src
+
+
+***** Plot - Idleness All
+      #+begin_src R :results output graphics :file img/idleness-all.png :exports both :width 600 :height 400 :session R
+       dt_idleness %>% plot_all_idleness
+      #+end_src
+
+
+***** Plot - Idleness Average
+      #+begin_src R :results output graphics :file img/idleness-average.png :exports both :width 600 :height 400 :session R
+       dt_idleness %>% plot_idleness_average
+      #+end_src
+
+
 * Resources
 :PROPERTIES:
 :ATTACH_DIR: resources/
