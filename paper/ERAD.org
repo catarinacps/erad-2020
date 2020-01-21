@@ -75,21 +75,21 @@
 - Estrutura do artigo
 #+end_comment
 
-Computação de alto desempenho e grandes agregados de computadores são, hoje em
-dia, jogadores majoritariamente invisíveis num mundo cujos usuários de
-tecnologia exigem contato ubíquo e imperceptível com a informação ao alcance de
-suas mãos. Embora de sutil presença, a demanda à sistemas de alto desempenho
-cresce exponencialmente e, para alcançar essas exigências, o paralelismo se
-firma como único método confiável para prover o grau de performance desejado
-nesses sistemas. Após décadas trabalhando em sistemas e num ferramental a par
-dessa tarefa, nos encontramos num período no qual o desenvolvedor desses
-sistemas tem diversas escolhas de bibliotecas, de /runtimes/ e de /Application
-Programming Interfaces/ (APIs) para utilizar a fim de utilizar efetivamente o
-paralelismo oferecido no /hardware/ desses sistemas. Entretanto, a diferença
-entre elas é tal que não se trata mais da qualidade da implementação ditar a
-performance desses sistemas, mas sim a escolha de biblioteca utilizada pelo
-programador. Com isso, surge a questão de definir qual dessas implementações é a
-mais performática e, sobretudo, por que ela é.
+Supercomputadores e computação de alto desempenho em geral são, hoje em dia,
+jogadores majoritariamente invisíveis num mundo cujos usuários de tecnologia
+exigem contato ubíquo e imperceptível com a informação ao alcance de suas
+mãos. Embora de sutil presença, a demanda à sistemas de alto desempenho cresce
+exponencialmente e, para alcançar essas exigências, o paralelismo se firma como
+único método confiável para prover o grau de performance desejado nesses
+sistemas. Após décadas trabalhando em sistemas e num ferramental a par dessa
+tarefa, nos encontramos num período no qual o desenvolvedor desses sistemas tem
+diversas escolhas de bibliotecas, de /runtimes/ e de /Application Programming
+Interfaces/ (APIs) para utilizar a fim de utilizar efetivamente o paralelismo
+oferecido no /hardware/ desses sistemas. Entretanto, a diferença entre elas é
+tal que não se trata mais da qualidade da implementação ditar a performance
+desses sistemas, mas sim a escolha de biblioteca utilizada pelo programador. Com
+isso, surge a questão de definir qual dessas implementações é a mais
+performática e, sobretudo, por que ela é.
 
 # achei sketchy até aqui
 # outra realização: não tem tanto espaço assim na verdade, e ainda falta muita
@@ -111,12 +111,12 @@ Avaliaremos, assim, o desempenho e comportamento de uma aplicação que implemen
 uma fatoração QR de uma matriz densa de implementações utilizando diretamente as
 diretivas de tarefas do OpenMP e de uma implementação nativa em StarPU. Essa
 primeira será executada utilizando ambos os /runtimes/ nativos da ABI do GCC e
-do LLVM, a /runtime/ da biblioteca LIBKOMP baseado em X-Kaapi e também através
-de uma transpilação para StarPU realizada pelo compilador Kstar. A implementação
-em StarPU, por fim, será executada nativamente. Sendo assim, nossos objetivos
-nesse trabalho são comparar o *escalonamento* das tarefas, observar a
-*ociosidade* dos trabalhadores de cada /runtime/ e identificar *anomalias* em
-quaisquer das bibliotecas avaliadas.
+do LLVM, o /runtime/ da biblioteca LIBKOMP baseado em X-Kaapi e também através
+da transpilação para StarPU realizada pelo compilador KStar. A implementação em
+StarPU, por fim, será executada nativamente. Sendo assim, nossos objetivos nesse
+trabalho são comparar o *escalonamento* das tarefas, observar a *ociosidade* dos
+trabalhadores de cada /runtime/ e identificar *anomalias* em quaisquer das
+bibliotecas avaliadas.
 
 # lembrete pra eu colocar o paragrafo de related work aqui
 
@@ -243,18 +243,18 @@ décima distribuição estável =10.2=, de codinome Buster.
 #+name: tab:versoes
 #+attr_latex: :float t :placement [!htb] :font \small
 #+caption: Características das versões executadas da aplicação.
-|-----------------+-----------+-------------------------+-------------------------------------|
-| <l>             | <l>       | <l>                     |                                     |
-| *Identificador* | *Fonte*   | *ABI/API Utilizada*     | *Versão*                            |
-|-----------------+-----------+-------------------------+-------------------------------------|
-| libgomp_GCC     |           | OpenMP/GCC              | =8.3.0=                             |
-| libomp_LLVM     |           | OpenMP/LLVM             | =6.0.0=                             |
-| KStar_StarPU    | Diretivas | StarPU  (LWS scheduler) | =master=\xfeff_{=bf6af54e57bad130=} |
-| LIBKOMP_libgomp |           | OpenMP/LIBKOMP-LLVM     | =master=\xfeff_{=32781b6dab10b1b5=} |
-| LIBKOMP_libomp  |           | OpenMP/LIBKOMP-GCC      | =master=\xfeff_{=32781b6dab10b1b5=} |
-|-----------------+-----------+-------------------------+-------------------------------------|
-| StarPU          | Nativo    | StarPU (LWS scheduler)  | =1.3.1=                             |
-|-----------------+-----------+-------------------------+-------------------------------------|
+|-----------------+-----------+--------------------------+-------------------------------------|
+| <l>             | <l>       | <l>                      | <l>                                 |
+| *Identificador* | *Fonte*   | *ABI/API Utilizada*      | *Versão*                            |
+|-----------------+-----------+--------------------------+-------------------------------------|
+| libgomp_GCC     |           | OpenMP/GCC               | =8.3.0=                             |
+| libomp_LLVM     |           | OpenMP/LLVM              | =6.0.0=                             |
+| KStar_StarPU    | Diretivas | StarPU (/LWS scheduler/) | =master=\xfeff_{=bf6af54e57bad130=} |
+| LIBKOMP_libgomp |           | OpenMP/LIBKOMP-LLVM      | =master=\xfeff_{=32781b6dab10b1b5=} |
+| LIBKOMP_libomp  |           | OpenMP/LIBKOMP-GCC       | =master=\xfeff_{=32781b6dab10b1b5=} |
+|-----------------+-----------+--------------------------+-------------------------------------|
+| StarPU          | Nativo    | StarPU (/LWS scheduler/) | =1.3.1=                             |
+|-----------------+-----------+--------------------------+-------------------------------------|
 
 #+begin_comment
 #+latex: \noindent
@@ -566,7 +566,7 @@ Tangle this file with C-c C-v t
 }
 
 @manual{gnu2018manual,
- title = {GCC, the GNU Compiler Collection Version 8.3.0},
+ title = {{GCC}, the GNU Compiler Collection Version 8.3.0},
  author = {{GCC Team}},
  organization = {Free Software Foundation},
  address = {Massachusetts, United States of America},
@@ -586,7 +586,7 @@ Tangle this file with C-c C-v t
 }
 
 @inproceedings{eichenberger2013ompt,
- title = {OMPT: An OpenMP tools application programming interface for performance analysis},
+ title = {{OMPT}: An {OpenMP} tools application programming interface for performance analysis},
  author = {Eichenberger, Alexandre E and Mellor-Crummey, John and Schulz, Martin and Wong, Michael and Copty, Nawal and Dietrich, Robert and Liu, Xu and Loh, Eugene and Lorenz, Daniel},
  booktitle = {International Workshop on OpenMP},
  pages = {171--185},
@@ -608,7 +608,7 @@ Tangle this file with C-c C-v t
 }
 
 @article{duran2011ompss,
- title = {Ompss: a Proposal for Programming Heterogeneous Multi-Core Architectures.},
+ title = {{OmpSs}: a Proposal for Programming Heterogeneous Multi-Core Architectures.},
  volume = {21},
  doi = {10.1142/S0129626411000151},
  shorttitle = {Ompss},
