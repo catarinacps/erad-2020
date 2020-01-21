@@ -2103,6 +2103,19 @@ readtrace <- function (filename) {
    df;
 }
 
+makespan_libkomp  <- function (dtx) {   
+
+    dtx %>% filter(Name == "dgeqrt") %>% .$End %>% max -> ret
+    ret
+}
+
+idleness_libkomp <- function (dtx) {   
+    
+    dtx %>% mutate(End=End-min(Start)) %>% mutate(Start=Start-min(Start)) %>% 
+        group_by(Resource) %>% summarize(Idleness = (1-(sum(End-Start)/makespan_libkomp(.)))*100) -> ret
+    ret
+}
+
 gantt_libkomp <- function (dtx) {
 
     # time zero (start of  first task in the DAG)
@@ -2112,10 +2125,10 @@ gantt_libkomp <- function (dtx) {
     dty %>% mutate(Resource=as.factor(Resource)) -> dta
 
     # End of last task
-    makespan = dta %>% filter(Name == "dgeqrt") %>% .$End %>% max
+    makespan = makespan_libkomp(dta)
     makespan_y = (dta %>% .$Resource %>% unique %>% length) / 2
 
-    dti <- dta %>% group_by(Resource) %>% summarize(Idleness = (1-(sum(End-Start)/makespan))*100)
+    dti <- idleness_libkomp(dta)
 
     ggplot(data=dta, aes(x=date(Start), y=Resource)) +
         geom_rect(aes(fill=Name,
@@ -2229,6 +2242,18 @@ library(stringr)
 library(readr)
 library(gtools)
 
+makespan_scorep <- function (dtx) {   
+
+    dtx %>% filter(Kernel == "dgeqrt") %>% .$End %>% max -> ret
+    ret
+}
+
+idleness_scorep <- function (dtx) {   
+
+    dtx %>% group_by(WorkerID) %>% summarize(Idleness = (1-(sum(End-Start)/makespan_scorep(.)))*100) -> ret
+    ret
+}
+
 gantt_scorep <- function (dtx) {
 
     # time zero (start of  first task in the DAG)
@@ -2238,10 +2263,10 @@ gantt_scorep <- function (dtx) {
     dty %>% mutate(WorkerID=as.factor(WorkerID), Kernel=as.factor(Kernel)) %>% mutate(Kernel=factor(Kernel, levels=mixedsort(levels(Kernel)))) -> dta
 
     # End of last task
-    makespan = dta %>% filter(Kernel == "dgeqrt") %>% .$End %>% max
+    makespan = makespan_scorep(dta)
     makespan_y = (dta %>% .$WorkerID %>% unique %>% length) / 2
 
-    dti <- dta %>% group_by(WorkerID) %>% summarize(Idleness = (1-(sum(End-Start)/makespan))*100)
+    dti <- idleness_scorep(dta , makespan)
     ggplot(data=dta, aes(x=Start, y=WorkerID)) +
         geom_rect(aes(fill=Kernel,
                       xmin=Start,
@@ -2384,21 +2409,34 @@ library(readr)
 library(gtools)
 library(tidyr)
 
+makespan_ompt <- function (dtx) {
+     
+    dtx %>% filter(Operation == "lapack_dgeqrt") %>% .$time_end %>% max -> ret
+    ret
+}
+
+idleness_ompt <- function (dtx) {
+     
+    dtx %>% group_by(Thread) %>% summarize(Idleness = (1-(sum(time_end-time_start)/makespan_ompt(.)))*100) -> ret
+    ret
+}
+
 gantt_ompt <- function (dtx) {
+
+    dtx %>% mutate(Thread=as.factor(Thread), Operation=as.factor(Operation)) %>% mutate(Operation=factor(Operation, levels=mixedsort(levels(Operation)))) -> dty
      
     # time zero (start of  first task in the DAG)
-    zero <- dtx %>% filter(Operation == "lapack_dgeqrt") %>% .$time_start %>% min
-    dtx %>% mutate(time_start=time_start-zero, time_end=time_end-zero) -> dty
+    zero <- dty %>% filter(Operation == "lapack_dgeqrt") %>% .$time_start %>% min
+    dty %>% mutate(time_start=time_start-zero, time_end=time_end-zero) -> dtz
 
-    dty %>% mutate(Thread=as.factor(Thread), Operation=as.factor(Operation)) %>% mutate(Operation=factor(Operation, levels=mixedsort(levels(Operation)))) -> dta
 
     # time_end of last task
-    makespan = dta %>% filter(Operation == "lapack_dgeqrt") %>% .$time_end %>% max
-    makespan_y = (dta %>% .$Thread %>% unique %>% length) / 2
+    makespan = makespan_ompt(dtz)
+    makespan_y = (dtz %>% .$Thread %>% unique %>% length) / 2
 
-    dti <- dta %>% group_by(Thread) %>% summarize(Idleness = (1-(sum(time_end-time_start)/makespan))*100)
+    dti <- idleness_ompt(dtz)
     
-    ggplot(data=dta, aes(x=time_start, y=Thread)) +
+    ggplot(data=dtz, aes(x=time_start, y=Thread)) +
         geom_rect(aes(fill=Operation,
                       xmin=time_start,
                       xmax=time_end,
