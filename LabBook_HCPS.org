@@ -1952,13 +1952,13 @@ rm -rf .git
 
 ***** Phase 1
  #+name: raw-simu-starvz
- #+header: :var rawPath="./experiments/exp02/results-draco1-wip"
+ #+header: :var rawPath="./experiments/exp02/data/results"
  #+begin_src sh :results output :exports both :cache yes :eval no-export
 export PATH=starvz-src/:$PATH
 export PATH=$HOME/misc/pajeng/bin:$PATH
 export PATH=`starpu-spack/src/spack/bin/spack location -i starpu`/bin/:$PATH
 
-for file in `find $rawPath -maxdepth 1 -type d -name "*starpu*"`;  do
+for file in `find $rawPath -type d -name "*starpu*"`;  do
     # starvz
     ./starvz-src/src/phase1-workflow.sh $file qr
 done
@@ -2151,12 +2151,12 @@ Mapping kernel names
 | ;src/block_qr_openmp.c;main;73;9;;  | "dlarfb"  |
 | ;src/block_qr_openmp.c;main;113;9;; | "dtpmqrt" |
 
-#+header: :var rawDirExp="./experiments/exp02/results-draco1-wip"
+#+header: :var rawDirExp="./experiments/exp02/data/results"
 #+header: :var fdep=rLibkomp
 #+header: :var mapping=mapping_omp_signature_to_kernel_name_libkomp
 #+begin_src R :results output :exports both :session R :eval no-export
 blockQrLibkomp <-
-    grep("libkomp", list.dirs(path=rawDirExp, full.names=TRUE, recursive=FALSE), value=TRUE) %>%
+    grep("libkomp", list.dirs(path=rawDirExp, full.names=TRUE, recursive=TRUE), value=TRUE) %>%
     lapply(function(fl){
         print(paste0("Working on ", fl))
         ret <- readtrace(paste(fl, "tasks.csv", sep="/")) %>% 
@@ -2450,7 +2450,7 @@ gantt_ompt <- function (dtx) {
 
 
 ***** Reading Data
-#+header: :var rawDirExp="./experiments/exp02/results-draco1-wip"
+#+header: :var rawDirExp="./experiments/exp02/data/results"
 #+header: :var fdep=rOmpt
 #+begin_src R :results output :session R :exports both
 blockQrOmpt <-
