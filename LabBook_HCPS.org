@@ -2545,19 +2545,19 @@ done;
       bind_rows(
           lapply(blockQrStarpuKstar %>% names, function(x){
               nm <- x %>% strsplit("-") %>% unlist()
-              blockQrStarpuKstar[[x]]$State %>% select(Value, ResourceId, Duration) %>% rename(Task=Value, Resource=ResourceId) %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[3], Block=nm[4]) %>% mutate(Task=str_replace(Task, "lapack_", ""))
+              blockQrStarpuKstar[[x]]$State %>% select(Value, ResourceId, Duration) %>% rename(Task=Value, Resource=ResourceId) %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)]) %>% mutate(Task=str_replace(Task, "lapack_", ""))
           }),
           lapply(blockQrLibkomp %>% names, function(x){
               nm <- x %>% strsplit("-") %>% unlist()
-              blockQrLibkomp[[x]] %>% select(Name, Resource, Duration) %>% rename(Task=Name) %>% mutate(Resource=as.character(Resource)) %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[3], Block=nm[4])
+              blockQrLibkomp[[x]] %>% select(Name, Resource, Duration) %>% rename(Task=Name) %>% mutate(Resource=as.character(Resource)) %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)])
           }),
           lapply(blockQrScorep %>% names, function(x){
               nm <- x %>% strsplit("-") %>% unlist()
-              blockQrScorep[[x]] %>% select(Kernel, WorkerID, Duration) %>% rename(Task=Kernel) %>% mutate(Resource=as.character(WorkerID)) %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[3], Block=nm[4])
+              blockQrScorep[[x]] %>% select(Kernel, WorkerID, Duration) %>% rename(Task=Kernel) %>% mutate(Resource=as.character(WorkerID)) %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)])
           }),
           lapply(blockQrOmpt %>% names, function(x){
               nm <- x %>% strsplit("-") %>% unlist()
-              blockQrOmpt[[x]] %>% select(Operation, Thread, time_elapsed) %>% rename(Task=Operation, Duration=time_elapsed) %>% mutate(Resource=as.character(Thread)) %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[3], Block=nm[4])  %>% mutate(Task=str_replace(Task, "lapack_", ""))
+              blockQrOmpt[[x]] %>% select(Operation, Thread, time_elapsed) %>% rename(Task=Operation, Duration=time_elapsed) %>% mutate(Resource=as.character(Thread)) %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)])  %>% mutate(Task=str_replace(Task, "lapack_", ""))
           })
       ) -> dt_duration
       #+end_src
