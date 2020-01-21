@@ -1243,14 +1243,7 @@ exp01_df
 
 # A tibble: 450 x 9
    node  rep_id matrix_size block_size runtime compute_time total_time expid
-   <
- <
-      <
-     <
-<
-         <
-     <
-<chr>
+   <chr>  <dbl>       <dbl>      <dbl> <chr>          <dbl>      <dbl> <chr>
  1 cei2       1        8192        512 libomp         107.       108.  exp01
  2 cei2       1        8192         32 libkom…         NA         NA   exp01
  3 cei2       1        8192        256 libkom…         92.7       94.1 exp01
@@ -1330,12 +1323,6 @@ fig_1 %>%
 #+end_src
 
 #+RESULTS:
-:
-: Scale for 'y' is already present. Adding another scale for 'y', which will
-: replace the existing scale.
-: Warning messages:
-: 1: Removed 13 rows containing missing values (geom_point).
-: 2: Removed 13 rows containing missing values (geom_errorbar).
 
 there is inter-node variability...
 
