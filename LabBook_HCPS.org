@@ -2285,6 +2285,8 @@ gantt_scorep <- function (dtx) {
 export PATH=`starpu-spack/src/spack/bin/spack location -i otf2`/bin/:$PATH
 export PATH=$HOME/misc/pajeng/bin:$PATH
 
+find $rawPath -type d -empty -delete
+
 for file in `find $rawPath -maxdepth 1 -type d -name "*scorep*"`;  do
     ./scripts/otf2ompprint2paje.pl $file/traces.otf2 2> /dev/null | pj_dump --user-defined | grep ^State | grep -v create > $file/paje.libgomp.csv
 done
