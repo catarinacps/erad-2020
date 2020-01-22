@@ -78,6 +78,14 @@
 - Estrutura do artigo
 #+end_comment
 
+#+begin_comment Vinicius
+Este primeiro paragráfo está bom, porém não temos tanto espaço, então
+o ideal seria cortá-lo para umas 6 linhas, mantendo a mesma essencia,
+mas sendo mais direto. Como a ERAD é um evento especifico de alto
+desempenho, podemos ser mais diretos já que o público alvo tem algum
+dominio/interesse na temática.
+#+end_comment
+
 Supercomputadores e computação de alto desempenho em geral são, hoje em dia,
 jogadores majoritariamente invisíveis num mundo cujos usuários de tecnologia
 exigem contato ubíquo e imperceptível com a informação ao alcance de suas
@@ -87,7 +95,7 @@ exponencialmente e, para alcançar essas exigências, o paralelismo se firma com
 sistemas. Após décadas trabalhando em sistemas e num ferramental a par dessa
 tarefa, nos encontramos num período no qual o desenvolvedor desses sistemas tem
 diversas escolhas de bibliotecas, de /runtimes/ e de /Application Programming
-Interfaces/ (APIs) para utilizar a fim de utilizar efetivamente o paralelismo
+Interfaces/ (APIs) para explorar a fim de utilizar efetivamente o paralelismo
 oferecido no /hardware/ desses sistemas. Entretanto, a diferença entre elas é
 tal que não se trata mais da qualidade da implementação ditar a performance
 desses sistemas, mas sim a escolha de biblioteca utilizada pelo programador. Com
@@ -98,17 +106,18 @@ performática e, sobretudo, por que ela é.
 # outra realização: não tem tanto espaço assim na verdade, e ainda falta muita
 # coisa!
 
-Podemos citar OpenMP \cite{dagum1998openmp} e StarPU \cite{augonnet2011starpu}
-como algumas dessas bibliotecas e /runtimes/ de programação paralela. Essas
-implementações suportam modelos mais sofisticados de paralelismo, como a
-programação baseada em tarefas, que divide a lógica de um programa em tarefas e
-declara o paralelismo implicitamente baseado nas dependências de dados entre
-cada uma dessas tarefas, o que pode se traduzir visualmente num grafo
-direcionado acíclico (/DAG/). Através dessa abordagem, o /runtime/ em questão se
-assegura de escalonar e distribuir essas tarefas dentre seus /workers/ (os
-processadores e aceleradores do sistema). O StarPU foi projetado especificamente
-com esse conceito em mente e, na versão =3.0= de sua especificação, esse
-conceito foi introduzido na especificação do OpenMP.
+Podemos citar OpenMP \cite{dagum1998openmp}, a partir da versão 4, e
+StarPU \cite{augonnet2011starpu} como ferramentas de programação
+paralela que suportam modelos mais sofisticados de paralelismo, como a
+programação baseada em tarefas. Nesta, a lógica de um programa é
+organizada em tarefas e o paralelismo é inferido implicitamente pelas
+dependências de dados entre cada uma dessas tarefas, o que se traduz
+num grafo direcionado acíclico (/DAG/). Nessa abordagem, o /runtime/ em
+questão se assegura de escalonar e distribuir essas tarefas dentre
+seus /workers/ respeitando as dependências declaradas.
+# StarPU foi projetado especificamente com esse conceito em
+# mente e, na versão =3.0= de sua especificação, esse conceito foi
+# introduzido na especificação do OpenMP.
 
 Avaliaremos, assim, o desempenho e comportamento de uma aplicação que implementa
 uma fatoração QR de uma matriz densa de implementações utilizando diretamente as
@@ -152,8 +161,8 @@ execuções.
 
 É essencial possuir um conjunto de ferramentas atualizado e apropriado para
 garantir a qualidade de quaisquer análises em qualquer estudo. Sendo assim,
-compreendemos essas garantias ao empregar a linguagem de programação R
-\cite{rteam2018manual} em conjunto com o pacote tidyverse através de blocos de
+compreendemos essas garantias ao empregar a linguagem R
+em conjunto com o pacote tidyverse através de blocos de
 códigos embutidos em arquivos Org \cite{dominik2010orgmode} versionados na
 ferramenta =git=. Com tal abordagem construímos um caderno de laboratório
 (/labbook/) que centralizou o processo exploratório científico, as anotações
