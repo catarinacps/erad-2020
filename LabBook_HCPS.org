@@ -1989,6 +1989,17 @@ names(blockQrStarpuKstar) <-
         #nm <- basename(fl) %>% strsplit("_") %>% unlist()
         #nm[0:(length(nm)-2)] %>% paste(collapse ='-')
         nm <- basename(fl) %>% str_replace_all("_", "-")
+        if(grepl("hype", fl)){
+            platform = "hype"
+        } else if (grepl("cei", fl)){
+            platform = "cei"
+        } else if (grepl("draco", fl)){
+            platform = "draco"
+        } else {
+            platform =  str_split(fl, "/") %>% unlist()
+            platorm = platform[length(platform)-2]
+        }
+        paste(platform, nm, sep="-")
     })
  #+end_src
 
@@ -2181,6 +2192,17 @@ names(blockQrLibkomp) <-
             #nm <- basename(fl) %>% strsplit("_") %>% unlist()
             #nm[0:(length(nm)-2)] %>% paste(collapse ='-')
             nm <- basename(fl) %>% str_replace_all("_", "-")
+            if(grepl("hype", fl)){
+                platform = "hype"
+            } else if (grepl("cei", fl)){
+                platform = "cei"
+            } else if (grepl("draco", fl)){
+                platform = "draco"
+            } else {
+                platform =  str_split(fl, "/") %>% unlist()
+                platorm = platform[length(platform)-2]
+            }
+            paste(platform, nm, sep="-")
         }
     })  %>% list.clean(function(x) length(x) == 0L, FALSE)
 
@@ -2551,6 +2573,17 @@ names(blockQrScorep) <-
             #nm <- basename(fl) %>% strsplit("_") %>% unlist()
             #nm[0:(length(nm)-2)] %>% paste(collapse ='-')
             nm <- basename(fl) %>% str_replace_all("_", "-")
+            if(grepl("hype", fl)){
+                platform = "hype"
+            } else if (grepl("cei", fl)){
+                platform = "cei"
+            } else if (grepl("draco", fl)){
+                platform = "draco"
+            } else {
+                platform =  str_split(fl, "/") %>% unlist()
+                platorm = platform[length(platform)-2]
+            }
+            paste(platform, nm, sep="-")
         }
     }) %>% list.clean(function(x) length(x) == 0L, FALSE)
 
@@ -2784,6 +2817,17 @@ names(blockQrOmpt) <-
         #nm <- basename(fl) %>% strsplit("_") %>% unlist()
         #nm[0:(length(nm)-2)] %>% paste(collapse ='-')
         nm <- basename(fl) %>% str_replace_all("_", "-") 
+        if(grepl("hype", fl)){
+            platform = "hype"
+        } else if (grepl("cei", fl)){
+            platform = "cei"
+        } else if (grepl("draco", fl)){
+            platform = "draco"
+        } else {
+            platform =  str_split(fl, "/") %>% unlist()
+            platorm = platform[length(platform)-2]
+        }
+        paste(platform, nm, sep="-")
     })
 #+end_src
 
