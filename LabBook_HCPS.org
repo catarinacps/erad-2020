@@ -3325,9 +3325,9 @@ plot_duration(dt_duration)
 
 
 ***** Code
-      #+begin_src R :results output :session R :exports both
+      #+begin_src R :results output :exports both
        
-      plot_schnorr <- function(dta){
+      plot_dgeqrt_start <- function(dta){
 
           dta %>% group_by(Runtime, Matrix, Block) %>% arrange(Start) %>% mutate(i=seq(n())) %>%
               ggplot(aes(x=Start, y=i, color=Runtime)) +
