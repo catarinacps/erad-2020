@@ -3190,11 +3190,15 @@ done;
 ***** Code
       #+begin_src R :results output :session R :exports both
       plot_duration <- function(dta){
-          dta %>% filter(Task %in% c("dgeqrt", "dtpqrt", "dlarfb", "dtpmqrt")) %>% group_by(Task, Runtime) %>% summarize(Mean=mean(Duration), Median=median(Duration), Sd=sd(Duration)) %>%
+          dta %>% filter(Task %in% c("dgeqrt", "dtpqrt", "dlarfb", "dtpmqrt")) %>% 
+              group_by(Task, Runtime, Matrix, Block) %>% 
+              summarize(Mean=mean(Duration), Median=median(Duration), Sd=sd(Duration)) %>% 
+              mutate(case = factor(paste(Task, Block, sep = " : "))) %>%
+#              mutate(case = factor(case, levels = mixedsort(levels(case)))) %>%
               ggplot(aes(x=Runtime, y=Mean, fill=Runtime)) +
               geom_bar(stat="identity") +
               geom_errorbar(aes(ymin=Mean-Sd, ymax=Mean+Sd)) +
-              facet_wrap(~Task) +
+              facet_wrap(~case, scales="free", ncol=4) +
               theme_bw() +
               theme (legend.position = "bottom")
       }
@@ -3207,29 +3211,66 @@ done;
       bind_rows(
           lapply(blockQrStarpuKstar %>% names, function(x){
               nm <- x %>% strsplit("-") %>% unlist()
-              blockQrStarpuKstar[[x]]$State %>% select(Value, ResourceId, Duration) %>% rename(Task=Value, Resource=ResourceId) %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)]) %>% mutate(Task=str_replace(Task, "lapack_", ""))
+              blockQrStarpuKstar[[x]]$State %>% select(Value, ResourceId, Duration) %>% rename(Task=Value, Resource=ResourceId) %>% mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)], Platform=nm[1]) %>% mutate(Task=str_replace(Task, "lapack_", ""))
           }),
           lapply(blockQrLibkomp %>% names, function(x){
               nm <- x %>% strsplit("-") %>% unlist()
-              blockQrLibkomp[[x]] %>% select(Name, Resource, Duration) %>% rename(Task=Name) %>% mutate(Resource=as.character(Resource)) %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)])
+              blockQrLibkomp[[x]] %>% select(Name, Resource, Duration) %>% rename(Task=Name) %>% mutate(Resource=as.character(Resource)) %>% mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)], Platform=nm[1])
           }),
           lapply(blockQrScorep %>% names, function(x){
               nm <- x %>% strsplit("-") %>% unlist()
-              blockQrScorep[[x]] %>% select(Kernel, WorkerID, Duration) %>% rename(Task=Kernel) %>% mutate(Resource=as.character(WorkerID)) %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)])
+              blockQrScorep[[x]] %>% select(Kernel, WorkerID, Duration) %>% rename(Task=Kernel) %>% mutate(Resource=as.character(WorkerID)) %>% mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)], Platform=nm[1])
           }),
           lapply(blockQrOmpt %>% names, function(x){
               nm <- x %>% strsplit("-") %>% unlist()
-              blockQrOmpt[[x]] %>% select(Operation, Thread, time_elapsed) %>% rename(Task=Operation, Duration=time_elapsed) %>% mutate(Resource=as.character(Thread)) %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)])  %>% mutate(Task=str_replace(Task, "lapack_", ""))
+              blockQrOmpt[[x]] %>% select(Operation, Thread, time_elapsed) %>% rename(Task=Operation, Duration=time_elapsed) %>% mutate(Resource=as.character(Thread)) %>% mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)], Platform=nm[1])  %>% mutate(Task=str_replace(Task, "lapack_", ""))
           })
       ) -> dt_duration
       #+end_src
 
       #+RESULTS:
 
-***** Plot
-      #+begin_src R :results output graphics :file (org-babel-temp-file "figure" ".png") :exports both :width 600 :height 400 :session R
-plot_duration(dt_duration)
+***** Plot - cei
+      #+header: :session *ssh hype3*
+      #+begin_src R :results output graphics :file img/qr-task-duration-cei.png :exports both :width 1000 :height 600 :session R
+plot_duration(dt_duration %>% filter(Platform=="cei"))
       #+end_src
+
+      #+RESULTS:
+      [[file:img/qr-task-duration-cei.png]]
+
+***** Plot - draco
+      #+header: :session *ssh hype3*
+      #+begin_src R :results output graphics :file img/qr-task-duration-draco.png :exports both :width 1000 :height 600 :session R
+plot_duration(dt_duration %>% filter(Platform=="draco"))
+      #+end_src
+
+      #+RESULTS:
+      [[file:img/qr-task-duration-draco.png]]
+
+
+
+
+
+
+***** Plot - cei - no starpu
+      #+header: :session *ssh hype3*
+      #+begin_src R :results output graphics :file img/qr-task-duration-cei-b.png :exports both :width 1000 :height 600 :session R
+plot_duration(dt_duration %>% filter(Platform=="cei") %>% filter(!grepl("starpu", Runtime)))
+      #+end_src
+
+      #+RESULTS:
+      [[file:img/qr-task-duration-cei-b.png]]
+
+***** Plot - draco - no starpu
+      #+header: :session *ssh hype3*
+      #+begin_src R :results output graphics :file img/qr-task-duration-draco-b.png :exports both :width 1000 :height 600 :session R
+plot_duration(dt_duration %>% filter(Platform=="draco") %>% filter(!grepl("starpu", Runtime)))
+      #+end_src
+
+      #+RESULTS:
+      [[file:img/qr-task-duration-draco-b.png]]
+
 
 
 **** Idleness plots
