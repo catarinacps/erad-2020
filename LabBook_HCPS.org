@@ -3269,35 +3269,64 @@ plot_duration(dt_duration)
       bind_rows(
           lapply(blockQrStarpuKstar %>% names, function(x){
               nm <- x %>% strsplit("-") %>% unlist()
-              blockQrStarpuKstar[[x]]$State %>% calculate_resource_idleness(max_only = FALSE) %>% select(-ResourceType, -Node, -ResourceId, -Height, -End) %>% rename(Resource=Position)  %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)]) 
+              blockQrStarpuKstar[[x]]$State %>% calculate_resource_idleness(max_only = FALSE) %>% select(-ResourceType, -Node, -ResourceId, -Height, -End) %>% rename(Resource=Position)  %>% mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)], Platform=nm[1]) 
           }),
           lapply(blockQrLibkomp %>% names, function(x){
               nm <- x %>% strsplit("-") %>% unlist()
-              blockQrLibkomp[[x]] %>% idleness_libkomp() %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)]) 
+              blockQrLibkomp[[x]] %>% idleness_libkomp() %>% mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)], Platform=nm[1]) 
           }),
           lapply(blockQrScorep %>% names, function(x){
               nm <- x %>% strsplit("-") %>% unlist()
-              blockQrScorep[[x]] %>% idleness_scorep()  %>% rename(Resource=WorkerID) %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)]) 
+              blockQrScorep[[x]] %>% idleness_scorep()  %>% rename(Resource=WorkerID) %>% mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)], Platform=nm[1]) 
           }),
           lapply(blockQrOmpt %>% names, function(x){
               nm <- x %>% strsplit("-") %>% unlist()
-              blockQrOmpt[[x]] %>% idleness_ompt() %>% rename(Resource=Thread)  %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)]) 
+              blockQrOmpt[[x]] %>% idleness_ompt() %>% rename(Resource=Thread)  %>% mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)], Platform=nm[1]) 
           })
       ) %>% mutate(Resource=factor(Resource)) -> dt_idleness
       
       #+end_src
 
 
-***** Plot - Idleness All
-      #+begin_src R :results output graphics :file img/idleness-all.png :exports both :width 600 :height 400 :session R
-       dt_idleness %>% plot_all_idleness
-      #+end_src
+
+***** cei
+****** Plot - Idleness All
+       #+header: :session *ssh hype3*
+       #+begin_src R :results output graphics :file img/idleness-all-cei.png :exports both :width 1000 :height 600 :session R
+       dt_idleness %>% filter(Platform=="cei", Runtime!="libkomp-gcc") %>% plot_all_idleness
+       #+end_src
+
+       #+RESULTS:
+       [[file:img/idleness-all-cei.png]]
 
 
-***** Plot - Idleness Average
-      #+begin_src R :results output graphics :file img/idleness-average.png :exports both :width 600 :height 400 :session R
-       dt_idleness %>% plot_idleness_average
-      #+end_src
+****** Plot - Idleness Average
+       #+header: :session *ssh hype3*
+       #+begin_src R :results output graphics :file img/idleness-average-cei.png :exports both :width 1000 :height 600 :session R
+       dt_idleness %>% filter(Platform=="cei", Runtime!="libkomp-gcc") %>% plot_idleness_average
+       #+end_src
+
+       #+RESULTS:
+       [[file:img/idleness-average-cei.png]]
+
+***** draco
+****** Plot - Idleness All
+       #+header: :session *ssh hype3*
+       #+begin_src R :results output graphics :file img/idleness-all-draco.png :exports both :width 1000 :height 600 :session R
+       dt_idleness %>% filter(Platform=="draco", Runtime!="libkomp-gcc") %>% plot_all_idleness
+       #+end_src
+
+       #+RESULTS:
+       [[file:img/idleness-all-draco.png]]
+
+****** Plot - Idleness Average
+       #+header: :session *ssh hype3*
+       #+begin_src R :results output graphics :file img/idleness-average-draco.png :exports both :width 1000 :height 600 :session R
+       dt_idleness %>% filter(Platform=="draco", Runtime!="libkomp-gcc") %>% plot_idleness_average
+       #+end_src
+
+       #+RESULTS:
+       [[file:img/idleness-average-draco.png]]
 
 
 **** dgeqrt-start figure!  
