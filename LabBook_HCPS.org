@@ -1972,17 +1972,17 @@ library(starvz)
 
 
 ***** Reading Feather
- #+header: :var rawDirExp="./experiments/exp02/results-draco1-wip"
+ #+header: :var rawDirExp="./experiments/exp02/data/results"
  #+begin_src R :results output :exports both :session R :eval no-export
 blockQrStarpuKstar <-
-    grep("starpu", list.dirs(path=rawDirExp, full.names=TRUE, recursive=FALSE), value=TRUE) %>%
+    grep("starpu", list.dirs(path=rawDirExp, full.names=TRUE, recursive=TRUE), value=TRUE) %>%
     lapply(function(fl){
         print(paste0("Working on ", fl))
         the_fast_reader_function(fl)
     })
 
 names(blockQrStarpuKstar) <-
-    grep("starpu", list.dirs(path=rawDirExp, full.names=TRUE, recursive=FALSE), value=TRUE) %>%
+    grep("starpu", list.dirs(path=rawDirExp, full.names=TRUE, recursive=TRUE), value=TRUE) %>%
     lapply(function(fl){
         #nm <- basename(fl) %>% strsplit("_") %>% unlist()
         #nm[0:(length(nm)-2)] %>% paste(collapse ='-')
@@ -2151,15 +2151,19 @@ Mapping kernel names
 | ;src/block_qr_openmp.c;main;73;9;;  | "dlarfb"  |
 | ;src/block_qr_openmp.c;main;113;9;; | "dtpmqrt" |
 
+#+name: readLibkomp
 #+header: :var rawDirExp="./experiments/exp02/data/results"
 #+header: :var fdep=rLibkomp
 #+header: :var mapping=mapping_omp_signature_to_kernel_name_libkomp
 #+begin_src R :results output :exports both :session R :eval no-export
+library(rlist)
+
 blockQrLibkomp <-
     grep("libkomp", list.dirs(path=rawDirExp, full.names=TRUE, recursive=TRUE), value=TRUE) %>%
     lapply(function(fl){
         print(paste0("Working on ", fl))
         if(file.exists(paste(fl, "tasks.csv", sep="/"))){
+            print(paste0("File found! >> ", fl, "/tasks.csv"))
             ret <- readtrace(paste(fl, "tasks.csv", sep="/")) %>% 
                 left_join(mapping, by="Name") %>% 
                 rename(OldName=Name) %>% 
@@ -2169,12 +2173,14 @@ blockQrLibkomp <-
     })  %>% list.clean(function(x) length(x) == 0L, FALSE)
 
 names(blockQrLibkomp) <-
-    grep("libkomp", list.dirs(path=rawDirExp, full.names=TRUE, recursive=FALSE), value=TRUE) %>%
+    grep("libkomp", list.dirs(path=rawDirExp, full.names=TRUE, recursive=TRUE), value=TRUE) %>%
     lapply(function(fl){
-        #nm <- basename(fl) %>% strsplit("_") %>% unlist()
-        #nm[0:(length(nm)-2)] %>% paste(collapse ='-')
-        nm <- basename(fl) %>% str_replace_all("_", "-")
-    })
+        if(length(list.files(fl))>0){
+            #nm <- basename(fl) %>% strsplit("_") %>% unlist()
+            #nm[0:(length(nm)-2)] %>% paste(collapse ='-')
+            nm <- basename(fl) %>% str_replace_all("_", "-")
+        }
+    })  %>% list.clean(function(x) length(x) == 0L, FALSE)
 
 #+end_src
 
@@ -2282,21 +2288,21 @@ gantt_scorep <- function (dtx) {
 
 ***** Processing raw traces
  #+name: raw-scorep
- #+header: :var rawPath="./experiments/exp02/results-draco1-wip"
+ #+header: :var rawPath="./experiments/exp02/data/results"
  #+begin_src sh :results output :exports both :cache yes :eval no-export
 export PATH=`starpu-spack/src/spack/bin/spack location -i otf2`/bin/:$PATH
 export PATH=$HOME/misc/pajeng/bin:$PATH
 
 find $rawPath -type d -empty -delete
 
-for file in `find $rawPath -maxdepth 1 -type d -name "*scorep*"`;  do
+for file in `find $rawPath -type d -name "*scorep*"`;  do
     ./scripts/otf2ompprint2paje.pl $file/traces.otf2 2> /dev/null | pj_dump --user-defined | grep ^State | grep -v create > $file/paje.libgomp.csv
 done
  #+end_src
 
 
 Generated files:
- #+header: :var rawPath="./experiments/exp02/results-draco1-wip"
+ #+header: :var rawPath="./experiments/exp02/data/results"
  #+begin_src shell :results output :exports both
 find $rawPath -type f -name paje.libgomp.csv
   #+end_src
@@ -2318,48 +2324,56 @@ Mapping kernel names
 
 
 ***** Reading Data
-#+header: :var rawDirExp="./experiments/exp02/results-draco1-wip"
+#+name: readScorep
+#+header: :var rawDirExp="./experiments/exp02/data/results"
 #+header: :var fdep=rScorep
+#+header: :var fdep2=raw-scorep
 #+header: :var mapping=mapping_omp_signature_to_kernel_name_otf2print
 #+begin_src R :results output :session R :exports both
 blockQrScorep <-
-    grep("scorep", list.dirs(path=rawDirExp, full.names=TRUE, recursive=FALSE), value=TRUE) %>%
+    grep("scorep", list.dirs(path=rawDirExp, full.names=TRUE, recursive=TRUE), value=TRUE) %>%
     lapply(function(fl){
         print(paste0("Working on ", fl))
-        read_csv(paste(fl, "paje.libgomp.csv", sep="/"), col_names=FALSE, col_types=cols()) %>%
-            select(-X1, -X3) %>%
-            rename(Worker = X2,
-                   Start = X4,
-                   End = X5,
-                   Duration = X6,
-                   Imbrication = X7,
-                   Value = X8,
-                   JobId = X9) %>%
-            filter(Imbrication == 3) %>%
-            mutate(Worker = as.factor(Worker)) -> df.post
-        df.post %>%
-            select(Worker) %>%
-            unique %>%
-            mutate(WorkerID = as.integer(1:n()-1)) -> df.worker
-        df.post %>%
-            left_join(df.worker, by="Worker") %>%
-            select(-Worker) %>%
-            select(WorkerID, everything()) -> df.post.2
-        df.post.2 %>%
-            left_join(mapping, by="Value") %>%
-            select(-Value) %>%
-            mutate(End = End - min(Start)) %>%
-            mutate(Start = Start - min(Start)) -> df.post.3
-        df.post.3
-    })
+        if(file.exists(paste(fl, "paje.libgomp.csv", sep="/"))){
+            print(paste0("File found! >> ", fl, "/paje.libgomp.csv"))
+            read_csv(paste(fl, "paje.libgomp.csv", sep="/"), col_names=FALSE, col_types=cols()) %>%
+                select(-X1, -X3) %>%
+                rename(Worker = X2,
+                       Start = X4,
+                       End = X5,
+                       Duration = X6,
+                       Imbrication = X7,
+                       Value = X8,
+                       JobId = X9) %>%
+                filter(Imbrication == 3) %>%
+                mutate(Worker = as.factor(Worker)) -> df.post
+            df.post %>%
+                select(Worker) %>%
+                unique %>%
+                mutate(WorkerID = as.integer(1:n()-1)) -> df.worker
+            df.post %>%
+                left_join(df.worker, by="Worker") %>%
+                select(-Worker) %>%
+                select(WorkerID, everything()) -> df.post.2
+            df.post.2 %>%
+                left_join(mapping, by="Value") %>%
+                select(-Value) %>%
+                mutate(End = End - min(Start)) %>%
+                mutate(Start = Start - min(Start)) -> df.post.3
+            df.post.3
+        }
+    }) %>% list.clean(function(x) length(x) == 0L, FALSE)
 
 names(blockQrScorep) <-
-    grep("scorep", list.dirs(path=rawDirExp, full.names=TRUE, recursive=FALSE), value=TRUE) %>%
+    grep("scorep", list.dirs(path=rawDirExp, full.names=TRUE, recursive=TRUE), value=TRUE) %>%
     lapply(function(fl){
-        #nm <- basename(fl) %>% strsplit("_") %>% unlist()
-        #nm[0:(length(nm)-2)] %>% paste(collapse ='-')
-        nm <- basename(fl) %>% str_replace_all("_", "-")
-    })
+        if(file.exists(paste(fl, "paje.libgomp.csv", sep="/"))){
+            #nm <- basename(fl) %>% strsplit("_") %>% unlist()
+            #nm[0:(length(nm)-2)] %>% paste(collapse ='-')
+            nm <- basename(fl) %>% str_replace_all("_", "-")
+        }
+    }) %>% list.clean(function(x) length(x) == 0L, FALSE)
+
 #+end_src
 
 
@@ -2487,7 +2501,7 @@ blockQrOmpt <-
     })
         
 names(blockQrOmpt) <-
-    grep("ompt", list.dirs(path=rawDirExp, full.names=TRUE, recursive=FALSE), value=TRUE) %>%
+    grep("ompt", list.dirs(path=rawDirExp, full.names=TRUE, recursive=TRUE), value=TRUE) %>%
     lapply(function(fl){
         #nm <- basename(fl) %>% strsplit("_") %>% unlist()
         #nm[0:(length(nm)-2)] %>% paste(collapse ='-')
