@@ -86,34 +86,35 @@ desempenho, podemos ser mais diretos já que o público alvo tem algum
 dominio/interesse na temática.
 #+end_comment
 
-Supercomputadores e computação de alto desempenho em geral são, hoje em dia,
-jogadores majoritariamente invisíveis num mundo cujos usuários de tecnologia
-exigem contato ubíquo e imperceptível com a informação ao alcance de suas
-mãos. Embora de sutil presença, a demanda à sistemas de alto desempenho cresce
-exponencialmente e, para alcançar essas exigências, o paralelismo se firma como
-único método confiável para prover o grau de performance desejado nesses
-sistemas. Após décadas trabalhando em sistemas e num ferramental a par dessa
-tarefa, nos encontramos num período no qual o desenvolvedor desses sistemas tem
-diversas escolhas de bibliotecas, de /runtimes/ e de /Application Programming
-Interfaces/ (APIs) para explorar a fim de utilizar efetivamente o paralelismo
-oferecido no /hardware/ desses sistemas. Entretanto, a diferença entre elas é
-tal que não se trata mais da qualidade da implementação ditar a performance
-desses sistemas, mas sim a escolha de biblioteca utilizada pelo programador. Com
-isso, surge a questão de definir qual dessas implementações é a mais
-performática e, sobretudo, por que ela é.
+# Supercomputadores e computação de alto desempenho em geral são, hoje em dia,
+# jogadores majoritariamente invisíveis num mundo cujos usuários de tecnologia
+# exigem contato ubíquo e imperceptível com a informação ao alcance de suas
+# mãos. Embora de sutil presença, a demanda à sistemas de alto desempenho cresce
+# exponencialmente e, para alcançar essas exigências, o paralelismo se firma como
+# único método confiável para prover o grau de performance desejado nesses
+# sistemas.
+# :'(
+
+Após décadas trabalhando em sistemas e num ferramental a par da exponencial
+demanda por paralelismo, nos encontramos num período no qual o desenvolvedor de
+sistemas de alto desempenho tem diversas escolhas de bibliotecas, de /runtimes/
+e de /APIs/ para explorar a fim de utilizar efetivamente o /hardware/ desses
+sistemas. Entretanto, a diferença entre essas é tal que não se trata mais da
+qualidade da implementação ditar a performance desses sistemas, mas sim a
+escolha de biblioteca utilizada pelo programador. Com isso, surge a questão de
+definir qual dessas é a mais performática e, sobretudo, por que ela é.
 
 # achei sketchy até aqui
 # outra realização: não tem tanto espaço assim na verdade, e ainda falta muita
 # coisa!
 
-Podemos citar OpenMP \cite{dagum1998openmp}, a partir da versão 4, e
-StarPU \cite{augonnet2011starpu} como ferramentas de programação
-paralela que suportam modelos mais sofisticados de paralelismo, como a
-programação baseada em tarefas. Nesta, a lógica de um programa é
-organizada em tarefas e o paralelismo é inferido implicitamente pelas
-dependências de dados entre cada uma dessas tarefas, o que se traduz
-num grafo direcionado acíclico (/DAG/). Nessa abordagem, o /runtime/ em
-questão se assegura de escalonar e distribuir essas tarefas dentre
+Podemos citar OpenMP \cite{dagum1998openmp}, a partir da versão 4, e StarPU
+\cite{augonnet2011starpu} como ferramentas de programação paralela que suportam
+modelos mais sofisticados de paralelismo, como a programação baseada em
+tarefas. Nessa, a lógica de um programa é organizada em tarefas e o paralelismo
+é inferido implicitamente pelas dependências de dados entre cada uma dessas
+tarefas, o que se traduz num grafo direcionado acíclico (/DAG/). Assim, o
+/runtime/ em questão se assegura de escalonar e distribuir essas tarefas dentre
 seus /workers/ respeitando as dependências declaradas.
 # StarPU foi projetado especificamente com esse conceito em
 # mente e, na versão =3.0= de sua especificação, esse conceito foi
@@ -226,6 +227,18 @@ detalharemos as plataformas nas quais os experimentos foram realizados.
   - Starpu/LWS
 #+end_comment
 
+#+name: tab:plataformas
+#+attr_latex: :float t :placement [!htb] :font \small
+#+caption: Configuração das plataformas utilizadas nos experimentos.
+|---------+-----------+---------------------------------------+--------------------+------------|
+| <l>     | <l>       | <l>                                   | <l>                | <l>        |
+| *Nome*  | *#_{1,2}* | *CPU*                                 | *L1/L2/LLC*        | *RAM*      |
+|---------+-----------+---------------------------------------+--------------------+------------|
+| =draco= | $5, 1$    | $2 \times 8$ Xeon E5 2640 v2 2.5GHz   | 32KB/256KB/20MB    | 64GB DDR3  |
+| =cei=   | $7, 1$    | $2 \times 12$ Xeon Silver 4116 2.1GHz | 32KB/1024KB/16.5MB | 93GB DDR4  |
+| =hype=  | $4, 1$    | $2 \times 10$ Xeon E5 2650 v3 2.3GHz  | 32KB/256KB/25MB    | 128GB DDR4 |
+|---------+-----------+---------------------------------------+--------------------+------------|
+
 Para a execução da aplicação, utilizamos as plataformas descritas na [[tab:plataformas][Tabela 1]].
 Todas executam /kernel/ Linux =4.19.0-6= da distribuição Debian (=10.2=). A
 [[tab:versoes][Tabela 2]] apresenta as versões das ferramentas utilizadas.
@@ -239,18 +252,6 @@ respectivamente.
 A versão da distribuição corresponde ao lançamento da segunda atualização da
 décima distribuição estável =10.2=, de codinome Buster.
 #+end_comment
-
-#+name: tab:plataformas
-#+attr_latex: :float t :placement [!htb] :font \small
-#+caption: Configuração das plataformas utilizadas nos experimentos.
-|---------+-----------+---------------------------------------+--------------------+------------|
-| <l>     | <l>       | <l>                                   | <l>                | <l>        |
-| *Nome*  | *#_{1,2}* | *CPU*                                 | *L1/L2/LLC*        | *RAM*      |
-|---------+-----------+---------------------------------------+--------------------+------------|
-| =draco= | $5, 1$    | $2 \times 8$ Xeon E5 2640 v2 2.5GHz   | 32KB/256KB/20MB    | 64GB DDR3  |
-| =cei=   | $7, 1$    | $2 \times 12$ Xeon Silver 4116 2.1GHz | 32KB/1024KB/16.5MB | 93GB DDR4  |
-| =hype=  | $4, 1$    | $2 \times 10$ Xeon E5 2650 v3 2.3GHz  | 32KB/256KB/25MB    | 128GB DDR4 |
-|---------+-----------+---------------------------------------+--------------------+------------|
 
 #+name: tab:versoes
 #+attr_latex: :float t :placement [!htb] :font \small
