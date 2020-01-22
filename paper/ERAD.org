@@ -331,6 +331,45 @@ Figura que a gente conversou
 
 * Conclusão e Trabalhos Futuros
 
+#+begin_comment
+Precisamos aprofundar a investigação
+
+suposicoes:
+- kstar parece nao estar respeitando as deps (faz sentido pelo
+makespan mto curto e pela figura "schnorr")
+  - solucoes? implementar a verificacao da solucao
+  - olhar as dependencias das tarefas (starpu e kstar possuem essa
+  info)
+- kstar e libkomp nao sao bons com grão pequeno (mtas tarefas) ->
+conforme podemos ver nos gráficos de idleness
+
+- daqui pra baixo, foco no tamanho 64 que no momento é o mais
+intrigante!!
+
+- tarefas no kstar e starpu sao mto mais lentas sem razao aparente
+  - embora starpu tenha bom desempenho 
+
+- tarefas starpu duram mto mais, os tempos sao compativeis
+  - quem está errado, rastreamento do starpu ou os demais?
+
+
+  - continuar a analise dos rastros, visualmente sao compativeis, mas
+  é inconsistente com a duração das tarefas (ver cei tamanho 64)
+    - contar se o número de tarefas bate (tem q bater)
+      - suposicao: A minha suposição é o rastreamento do marcelo e/ou
+      scorep esta fatiando algumas tarefas 
+      - como proovar (isso só pra dois runtimes starpu vs ompt) : 
+        - plotar total de tarefas de cada tipo em cada runtime.
+        - soma o tempo total gasto computando cada tarefa
+     
+
+- trabalhos futuros: 
+  continuar a analise, implementar a verificacao da solucao do qr,
+  incluir ompss, testar outras arquiteturas (cpu)
+  
+
+#+end_comment
+
 * Referências                                                        :ignore:
 
 # See next section to understand how refs.bib file is created.
