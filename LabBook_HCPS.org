@@ -2072,19 +2072,245 @@ done;
  #+end_src
 
 ****** Full View Chart
-******* Execution "kstar-starpu-8192-128"
- #+header: :var dep1=customConfig
- #+begin_src R :results output graphics :file img/trace-qr-kstar-starpu-8192-128-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export
-   the_master_function(blockQrStarpuKstar[["kstar-starpu-8192-128"]])
+******* Execution "cei-kstar-starpu-8192-128"
+ #+header: :session *ssh hype3*
+ #+header: :nvar dep1=customConfig
+ #+begin_src R :results output graphics :file img/trace-qr-cei-kstar-starpu-8192-128-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+   the_master_function(blockQrStarpuKstar[["cei-kstar-starpu-8192-128"]])
  #+end_src
 
+ #+RESULTS:
+ [[file:img/trace-qr-cei-kstar-starpu-8192-128-starvz.png]]
 
-******* Execution "starpu-8192-128"
- #+header: :var dep1=customConfig
- #+begin_src R :results output graphics :file img/trace-qr-starpu-8192-128-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export
-   the_master_function(blockQrStarpuKstar[["starpu-8192-128"]])
+******* Execution "cei-kstar-starpu-8192-256"
+ #+header: :session *ssh hype3*
+ #+header: :nvar dep1=customConfig
+ #+begin_src R :results output graphics :file img/trace-qr-cei-kstar-starpu-8192-256-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+   the_master_function(blockQrStarpuKstar[["cei-kstar-starpu-8192-256"]])
  #+end_src
 
+ #+RESULTS:
+ [[file:img/trace-qr-cei-kstar-starpu-8192-256-starvz.png]]
+
+******* Execution "cei-kstar-starpu-8192-512"
+ #+header: :session *ssh hype3*
+ #+header: :nvar dep1=customConfig
+ #+begin_src R :results output graphics :file img/trace-qr-cei-kstar-starpu-8192-512-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+   the_master_function(blockQrStarpuKstar[["cei-kstar-starpu-8192-512"]])
+ #+end_src
+
+ #+RESULTS:
+ [[file:img/trace-qr-cei-kstar-starpu-8192-512-starvz.png]]
+
+******* Execution "cei-kstar-starpu-8192-64"
+ #+header: :session *ssh hype3*
+ #+header: :nvar dep1=customConfig
+ #+begin_src R :results output graphics :file img/trace-qr-cei-kstar-starpu-8192-64-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+   the_master_function(blockQrStarpuKstar[["cei-kstar-starpu-8192-64"]])
+ #+end_src
+
+ #+RESULTS:
+ [[file:img/trace-qr-cei-kstar-starpu-8192-64-starvz.png]]
+
+******* Execution "cei-starpu-8192-128"
+ #+header: :session *ssh hype3*
+ #+header: :nvar dep1=customConfig
+ #+begin_src R :results output graphics :file img/trace-qr-cei-starpu-8192-128-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+   the_master_function(blockQrStarpuKstar[["cei-starpu-8192-128"]])
+ #+end_src
+
+ #+RESULTS:
+ [[file:img/trace-qr-cei-starpu-8192-128-starvz.png]]
+
+******* Execution "cei-starpu-8192-256"
+ #+header: :session *ssh hype3*
+ #+header: :nvar dep1=customConfig
+ #+begin_src R :results output graphics :file img/trace-qr-cei-starpu-8192-256-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+   the_master_function(blockQrStarpuKstar[["cei-starpu-8192-256"]])
+ #+end_src
+
+ #+RESULTS:
+ [[file:img/trace-qr-cei-starpu-8192-256-starvz.png]]
+
+******* Execution "cei-starpu-8192-512"
+ #+header: :session *ssh hype3*
+ #+header: :nvar dep1=customConfig
+ #+begin_src R :results output graphics :file img/trace-qr-cei-starpu-8192-512-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+   the_master_function(blockQrStarpuKstar[["cei-starpu-8192-512"]])
+ #+end_src
+
+ #+RESULTS:
+ [[file:img/trace-qr-cei-starpu-8192-512-starvz.png]]
+
+******* Execution "cei-starpu-8192-64"
+ #+header: :session *ssh hype3*
+ #+header: :nvar dep1=customConfig
+ #+begin_src R :results output graphics :file img/trace-qr-cei-starpu-8192-64-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+   the_master_function(blockQrStarpuKstar[["cei-starpu-8192-64"]])
+ #+end_src
+
+ #+RESULTS:
+ [[file:img/trace-qr-cei-starpu-8192-64-starvz.png]]
+
+******* Execution "draco-kstar-starpu-8192-128"
+ #+header: :session *ssh hype3*
+ #+header: :nvar dep1=customConfig
+ #+begin_src R :results output graphics :file img/trace-qr-draco-kstar-starpu-8192-128-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+   the_master_function(blockQrStarpuKstar[["draco-kstar-starpu-8192-128"]])
+ #+end_src
+
+ #+RESULTS:
+ [[file:img/trace-qr-draco-kstar-starpu-8192-128-starvz.png]]
+
+******* Execution "draco-kstar-starpu-8192-256"
+ #+header: :session *ssh hype3*
+ #+header: :nvar dep1=customConfig
+ #+begin_src R :results output graphics :file img/trace-qr-draco-kstar-starpu-8192-256-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+   the_master_function(blockQrStarpuKstar[["draco-kstar-starpu-8192-256"]])
+ #+end_src
+
+ #+RESULTS:
+ [[file:img/trace-qr-draco-kstar-starpu-8192-256-starvz.png]]
+
+******* Execution "draco-kstar-starpu-8192-512"
+ #+header: :session *ssh hype3*
+ #+header: :nvar dep1=customConfig
+ #+begin_src R :results output graphics :file img/trace-qr-draco-kstar-starpu-8192-512-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+   the_master_function(blockQrStarpuKstar[["draco-kstar-starpu-8192-512"]])
+ #+end_src
+
+ #+RESULTS:
+ [[file:img/trace-qr-draco-kstar-starpu-8192-512-starvz.png]]
+
+******* Execution "draco-kstar-starpu-8192-64"
+ #+header: :session *ssh hype3*
+ #+header: :nvar dep1=customConfig
+ #+begin_src R :results output graphics :file img/trace-qr-draco-kstar-starpu-8192-64-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+   the_master_function(blockQrStarpuKstar[["draco-kstar-starpu-8192-64"]])
+ #+end_src
+
+ #+RESULTS:
+ [[file:img/trace-qr-draco-kstar-starpu-8192-64-starvz.png]]
+
+******* Execution "draco-starpu-8192-128"
+ #+header: :session *ssh hype3*
+ #+header: :nvar dep1=customConfig
+ #+begin_src R :results output graphics :file img/trace-qr-draco-starpu-8192-128-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+   the_master_function(blockQrStarpuKstar[["draco-starpu-8192-128"]])
+ #+end_src
+
+ #+RESULTS:
+ [[file:img/trace-qr-draco-starpu-8192-128-starvz.png]]
+
+******* Execution "draco-starpu-8192-256"
+ #+header: :session *ssh hype3*
+ #+header: :nvar dep1=customConfig
+ #+begin_src R :results output graphics :file img/trace-qr-draco-starpu-8192-256-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+   the_master_function(blockQrStarpuKstar[["draco-starpu-8192-256"]])
+ #+end_src
+
+ #+RESULTS:
+ [[file:img/trace-qr-draco-starpu-8192-256-starvz.png]]
+
+******* Execution "draco-starpu-8192-512"
+ #+header: :session *ssh hype3*
+ #+header: :nvar dep1=customConfig
+ #+begin_src R :results output graphics :file img/trace-qr-draco-starpu-8192-512-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+   the_master_function(blockQrStarpuKstar[["draco-starpu-8192-512"]])
+ #+end_src
+
+ #+RESULTS:
+ [[file:img/trace-qr-draco-starpu-8192-512-starvz.png]]
+
+******* Execution "draco-starpu-8192-64"
+ #+header: :session *ssh hype3*
+ #+header: :nvar dep1=customConfig
+ #+begin_src R :results output graphics :file img/trace-qr-draco-starpu-8192-64-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+   the_master_function(blockQrStarpuKstar[["draco-starpu-8192-64"]])
+ #+end_src
+
+ #+RESULTS:
+ [[file:img/trace-qr-draco-starpu-8192-64-starvz.png]]
+
+******* Execution "hype-kstar-starpu-8192-128"
+ #+header: :session *ssh hype3*
+ #+header: :nvar dep1=customConfig
+ #+begin_src R :results output graphics :file img/trace-qr-hype-kstar-starpu-8192-128-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+   the_master_function(blockQrStarpuKstar[["hype-kstar-starpu-8192-128"]])
+ #+end_src
+
+ #+RESULTS:
+ [[file:img/trace-qr-hype-kstar-starpu-8192-128-starvz.png]]
+
+******* Execution "hype-kstar-starpu-8192-256"
+ #+header: :session *ssh hype3*
+ #+header: :nvar dep1=customConfig
+ #+begin_src R :results output graphics :file img/trace-qr-hype-kstar-starpu-8192-256-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+   the_master_function(blockQrStarpuKstar[["hype-kstar-starpu-8192-256"]])
+ #+end_src
+
+ #+RESULTS:
+ [[file:img/trace-qr-hype-kstar-starpu-8192-256-starvz.png]]
+
+******* Execution "hype-kstar-starpu-8192-512"
+ #+header: :session *ssh hype3*
+ #+header: :nvar dep1=customConfig
+ #+begin_src R :results output graphics :file img/trace-qr-hype-kstar-starpu-8192-512-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+   the_master_function(blockQrStarpuKstar[["hype-kstar-starpu-8192-512"]])
+ #+end_src
+
+ #+RESULTS:
+ [[file:img/trace-qr-hype-kstar-starpu-8192-512-starvz.png]]
+
+******* Execution "hype-kstar-starpu-8192-64"
+ #+header: :session *ssh hype3*
+ #+header: :nvar dep1=customConfig
+ #+begin_src R :results output graphics :file img/trace-qr-hype-kstar-starpu-8192-64-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+   the_master_function(blockQrStarpuKstar[["hype-kstar-starpu-8192-64"]])
+ #+end_src
+
+ #+RESULTS:
+ [[file:img/trace-qr-hype-kstar-starpu-8192-64-starvz.png]]
+
+******* Execution "hype-starpu-8192-128"
+ #+header: :session *ssh hype3*
+ #+header: :nvar dep1=customConfig
+ #+begin_src R :results output graphics :file img/trace-qr-hype-starpu-8192-128-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+   the_master_function(blockQrStarpuKstar[["hype-starpu-8192-128"]])
+ #+end_src
+
+ #+RESULTS:
+ [[file:img/trace-qr-hype-starpu-8192-128-starvz.png]]
+
+******* Execution "hype-starpu-8192-256"
+ #+header: :session *ssh hype3*
+ #+header: :nvar dep1=customConfig
+ #+begin_src R :results output graphics :file img/trace-qr-hype-starpu-8192-256-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+   the_master_function(blockQrStarpuKstar[["hype-starpu-8192-256"]])
+ #+end_src
+
+ #+RESULTS:
+ [[file:img/trace-qr-hype-starpu-8192-256-starvz.png]]
+
+******* Execution "hype-starpu-8192-512"
+ #+header: :session *ssh hype3*
+ #+header: :nvar dep1=customConfig
+ #+begin_src R :results output graphics :file img/trace-qr-hype-starpu-8192-512-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+   the_master_function(blockQrStarpuKstar[["hype-starpu-8192-512"]])
+ #+end_src
+
+ #+RESULTS:
+ [[file:img/trace-qr-hype-starpu-8192-512-starvz.png]]
+
+******* Execution "hype-starpu-8192-64"
+ #+header: :session *ssh hype3*
+ #+header: :nvar dep1=customConfig
+ #+begin_src R :results output graphics :file img/trace-qr-hype-starpu-8192-64-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+   the_master_function(blockQrStarpuKstar[["hype-starpu-8192-64"]])
+ #+end_src
+
+ #+RESULTS:
+ [[file:img/trace-qr-hype-starpu-8192-64-starvz.png]]
 
 
 
