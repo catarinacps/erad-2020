@@ -1968,6 +1968,7 @@ done
 ***** Loading StarVZ
  #+begin_src R :results output :exports both :session R :eval no-export
 library(starvz)
+library(gtools)
 options(crayon.enabled = FALSE)
  #+end_src
 
