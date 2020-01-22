@@ -2268,7 +2268,7 @@ gantt_scorep <- function (dtx) {
     makespan = makespan_scorep(dta)
     makespan_y = (dta %>% .$WorkerID %>% unique %>% length) / 2
 
-    dti <- idleness_scorep(dta , makespan)
+    dti <- idleness_scorep(dta)
     ggplot(data=dta, aes(x=Start, y=WorkerID)) +
         geom_rect(aes(fill=Kernel,
                       xmin=Start,
