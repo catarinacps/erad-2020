@@ -3343,6 +3343,16 @@ plot_duration(dt_duration)
 
       #+RESULTS:
 
+***** Plot - cei
+      #+header: :session *ssh hype3*
+      #+begin_src R :results output graphics :file img/dgeqrt-start-cei.png :exports both :width 600 :height 400 :session R
+    plot_dgeqrt_start(dt_start %>% filter(Platform=="cei", Runtime!="libkomp-gcc"))
+      #+end_src
+
+      #+RESULTS:
+      [[file:img/dgeqrt-start-cei.png]]
+      
+
 
 * Resources
 :PROPERTIES:
