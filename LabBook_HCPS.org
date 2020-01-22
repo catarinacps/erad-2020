@@ -3300,25 +3300,26 @@ plot_duration(dt_duration)
       #+end_src
 
 
-**** Schnorr figure!  
+**** dgeqrt-start figure!  
 ***** Merge all
+      #+header: :session *ssh hype3*
       #+begin_src R :results output :session R :exports both
       bind_rows(
           lapply(blockQrStarpuKstar %>% names, function(x){
               nm <- x %>% strsplit("-") %>% unlist()
-              blockQrStarpuKstar[[x]]$State %>% select(Value, Start) %>% rename(Task=Value) %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)]) %>% mutate(Task=str_replace(Task, "lapack_", "")) %>% filter(grepl("dgeqrt", Task))
+              blockQrStarpuKstar[[x]]$State %>% select(Value, Start) %>% rename(Task=Value) %>% mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)], Platform=nm[1]) %>% mutate(Task=str_replace(Task, "lapack_", "")) %>% filter(grepl("dgeqrt", Task))
           }),
           lapply(blockQrLibkomp %>% names, function(x){
               nm <- x %>% strsplit("-") %>% unlist()
-              blockQrLibkomp[[x]] %>% select(Name, Start) %>% rename(Task=Name) %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)]) %>% filter(grepl("dgeqrt", Task))
+              blockQrLibkomp[[x]] %>% select(Name, Start) %>% rename(Task=Name) %>% mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)], Platform=nm[1]) %>% filter(grepl("dgeqrt", Task)) %>% mutate(Start=Start-min(Start))
           }),
           lapply(blockQrScorep %>% names, function(x){
               nm <- x %>% strsplit("-") %>% unlist()
-              blockQrScorep[[x]] %>% select(Kernel, Start) %>% rename(Task=Kernel) %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)]) %>% filter(grepl("dgeqrt", Task))
+              blockQrScorep[[x]] %>% select(Kernel, Start) %>% rename(Task=Kernel) %>% mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)], Platform=nm[1]) %>% filter(grepl("dgeqrt", Task))
           }),
           lapply(blockQrOmpt %>% names, function(x){
               nm <- x %>% strsplit("-") %>% unlist()
-              blockQrOmpt[[x]] %>% select(Operation, time_start) %>% rename(Task=Operation, Start=time_start) %>% mutate(Runtime=(nm[0:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)])  %>% mutate(Task=str_replace(Task, "lapack_", "")) %>% filter(grepl("dgeqrt", Task))
+              blockQrOmpt[[x]] %>% select(Operation, time_start) %>% rename(Task=Operation, Start=time_start) %>% mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)], Platform=nm[1])  %>% mutate(Task=str_replace(Task, "lapack_", "")) %>% filter(grepl("dgeqrt", Task))
           })
       ) -> dt_start
       #+end_src
