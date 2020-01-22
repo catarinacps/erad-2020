@@ -119,18 +119,21 @@ seus /workers/ respeitando as dependências declaradas.
 # mente e, na versão =3.0= de sua especificação, esse conceito foi
 # introduzido na especificação do OpenMP.
 
-Avaliaremos, assim, o desempenho e comportamento de uma aplicação que implementa
-uma fatoração QR de uma matriz densa de implementações utilizando diretamente as
-diretivas de tarefas do OpenMP e de uma implementação nativa em StarPU. Essa
-primeira será executada utilizando ambos os /runtimes/ nativos da ABI do GCC e
-do LLVM, o /runtime/ da biblioteca LIBKOMP baseado em X-Kaapi e também através
-da transpilação para StarPU realizada pelo compilador KStar. A implementação em
-StarPU, por fim, será executada nativamente. Sendo assim, nossos objetivos nesse
-trabalho são comparar o *escalonamento* das tarefas, observar a *ociosidade* dos
-trabalhadores de cada /runtime/ e identificar *anomalias* em quaisquer das
-bibliotecas avaliadas.
+Avaliaremos o desempenho e comportamento de uma fatoração QR para
+matriz densa com duas implementações, uma utilizando diretamente as
+diretivas de tarefas do OpenMP e outra nativa em StarPU. A primeira
+será executada com os /runtimes/ nativos do GCC e do LLVM,
+o /runtime/ da biblioteca LIBKOMP baseado em X-Kaapi e através da
+transpilação para StarPU via compilador KStar. Sendo assim, nossos
+objetivos nesse trabalho são comparar o *escalonamento* das tarefas,
+observar a *ociosidade* dos trabalhadores de cada /runtime/ e identificar
+*anomalias* em quaisquer das bibliotecas avaliadas.
 
 # lembrete pra eu colocar o paragrafo de related work aqui
+#+begin_comment
+Deixa sem por eqto, só vamos citar o do marcelo. Depois na versão
+final, fazemos este ajuste..
+#+end_comment
 
 * Metodologia de Coleta e Análise de Dados
 
