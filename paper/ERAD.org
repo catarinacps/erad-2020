@@ -28,6 +28,9 @@
 # eval: (require 'ox-extra)
 # eval: (require 'org-inlinetask)
 # eval: (ox-extras-activate '(ignore-headlines))
+# eval: (setq ispell-local-dictionary "brasileiro")
+# eval: (flyspell-mode t)
+
 # End:
 
 #+startup: overview indent
