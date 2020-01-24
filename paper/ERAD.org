@@ -305,17 +305,39 @@ Executamos as versões das aplicações descritas na [[tab:versoes][Tabela 2]] b
 tempo de execução. Na [[fig:makespan][Figura 1]] observamos os resultados coletados nesse
 experimento, onde nas colunas observamos os diferentes tamanhos de bloco de cada
 tarefa e na linha observamos as diferentes máquinas utilizadas no
-experimento. Apresentamos ambas média das 5 observações e o erro médio (?)
-dessa média.
-
-# é erro médio ou só erro que se diz?
+experimento. Apresentamos ambas média das 5 observações e seu erro médio.
 
 #+name: fig:makespan
 #+attr_latex: :float t :placement [!htb]
 #+caption: Comparação do /makespan/ da execução de cada runtime.
 [[../img/makespan-all.png]]
 
+Observamos que a tendência de comportamento se preserva entre as plataformas
+utilizadas. Sendo assim, analisaremos mais atentamente os detalhes da execução
+das tarefas na plataforma =cei=.
+
+** Análise de Ociosidade por /Worker/
+
+Na [[fig:idleness][Figura 2]] observamos que, além do caso de tamanho $64$, os /runtimes/ mantém
+ociosidade similar para todos os casos. Com um tamanho de bloco $64$ os
+/runtimes/ necessitam lidar com um grande número de tarefas, o que estressa a
+capacidade de escalonamento, o que, por consequência, afeta na quantidade de
+tempo ocioso por /worker/ da plataforma.
+
+#+name: fig:idleness
+#+attr_latex: :float t :placement [!htb]
+#+caption: Comparação do /idleness/ das tarefas em cada runtime.
+[[../img/idleness-all-cei.png]]
+
+Pela análise da figura observamos que esse caso é especialmente interessante, já
+que ambos LIBKOMP_clang quanto KStar apresentam uma ociosidade média
+consideravelmente maior. Em todos os casos, libgomp_GCC, libomp_LLVM e StarPU
+mantém performance compatível em questão da efetividade do escalonamento das
+tarefas.
+
 ** Comparação do Escalonamento entre os três /runtimes/
+
+
 
 #+begin_comment
 Figura que a gente conversou
@@ -323,8 +345,6 @@ Figura que a gente conversou
 - Selecionar alguns dgeqrt (primeira tarefa de cada laço mais externo)
   - Colocar elas em evidência de maneira sincronizado
 #+end_comment
-
-** Análise de Ociosidade por /Worker/
 
 * Conclusão e Trabalhos Futuros
 
