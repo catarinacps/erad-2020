@@ -22,7 +22,7 @@
 
 #+end_resumo
 
-* Configuração                                            :noexport:
+* Configuração                                                     :noexport:
 
 # Local Variables:
 # eval: (require 'ox-extra)
@@ -79,21 +79,19 @@
 #+end_comment
 
 #+begin_comment Vinicius
-Este primeiro paragráfo está bom, porém não temos tanto espaço, então
-o ideal seria cortá-lo para umas 6 linhas, mantendo a mesma essencia,
-mas sendo mais direto. Como a ERAD é um evento especifico de alto
-desempenho, podemos ser mais diretos já que o público alvo tem algum
-dominio/interesse na temática.
+Este primeiro paragráfo está bom, porém não temos tanto espaço, então o ideal
+seria cortá-lo para umas 6 linhas, mantendo a mesma essencia, mas sendo mais
+direto. Como a ERAD é um evento especifico de alto desempenho, podemos ser mais
+diretos já que o público alvo tem algum dominio/interesse na temática.
 #+end_comment
 
 # Supercomputadores e computação de alto desempenho em geral são, hoje em dia,
 # jogadores majoritariamente invisíveis num mundo cujos usuários de tecnologia
 # exigem contato ubíquo e imperceptível com a informação ao alcance de suas
 # mãos. Embora de sutil presença, a demanda à sistemas de alto desempenho cresce
-# exponencialmente e, para alcançar essas exigências, o paralelismo se firma como
-# único método confiável para prover o grau de performance desejado nesses
-# sistemas.
-# :'(
+# exponencialmente e, para alcançar essas exigências, o paralelismo se firma
+# como único método confiável para prover o grau de performance desejado nesses
+# sistemas. :'(
 
 Após décadas trabalhando em sistemas e num ferramental a par da exponencial
 demanda por paralelismo, nos encontramos num período no qual o desenvolvedor de
@@ -120,20 +118,19 @@ seus /workers/ respeitando as dependências declaradas.
 # mente e, na versão =3.0= de sua especificação, esse conceito foi
 # introduzido na especificação do OpenMP.
 
-Avaliaremos o desempenho e comportamento de uma fatoração QR para
-matriz densa com duas implementações, uma utilizando diretamente as
-diretivas de tarefas do OpenMP e outra nativa em StarPU. A primeira
-será executada com os /runtimes/ nativos do GCC e do LLVM,
-o /runtime/ da biblioteca LIBKOMP baseado em X-Kaapi e através da
-transpilação para StarPU via compilador KStar. Sendo assim, nossos
-objetivos nesse trabalho são comparar o *escalonamento* das tarefas,
-observar a *ociosidade* dos trabalhadores de cada /runtime/ e identificar
-*anomalias* em quaisquer das bibliotecas avaliadas.
+Avaliaremos o desempenho e comportamento de uma fatoração QR para matriz densa
+com duas implementações, uma utilizando diretamente as diretivas de tarefas do
+OpenMP e outra nativa em StarPU. A primeira será executada com os /runtimes/
+nativos do GCC e do LLVM, o /runtime/ da biblioteca LIBKOMP baseado em X-Kaapi e
+através da transpilação para StarPU via compilador KStar. Sendo assim, nossos
+objetivos nesse trabalho são comparar o *escalonamento* das tarefas, observar a
+*ociosidade* dos trabalhadores de cada /runtime/ e identificar *anomalias* em
+quaisquer das bibliotecas avaliadas.
 
 # lembrete pra eu colocar o paragrafo de related work aqui
 #+begin_comment
-Deixa sem por eqto, só vamos citar o do marcelo. Depois na versão
-final, fazemos este ajuste..
+Deixa sem por eqto, só vamos citar o do marcelo. Depois na versão final, fazemos
+este ajuste..
 #+end_comment
 
 * Metodologia de Coleta e Análise de Dados
@@ -347,27 +344,23 @@ conforme podemos ver nos gráficos de idleness
 intrigante!!
 
 - tarefas no kstar e starpu sao mto mais lentas sem razao aparente
-  - embora starpu tenha bom desempenho 
+  - embora starpu tenha bom desempenho
 
 - tarefas starpu duram mto mais, os tempos sao compativeis
   - quem está errado, rastreamento do starpu ou os demais?
-
 
   - continuar a analise dos rastros, visualmente sao compativeis, mas
   é inconsistente com a duração das tarefas (ver cei tamanho 64)
     - contar se o número de tarefas bate (tem q bater)
       - suposicao: A minha suposição é o rastreamento do marcelo e/ou
-      scorep esta fatiando algumas tarefas 
-      - como proovar (isso só pra dois runtimes starpu vs ompt) : 
+      scorep esta fatiando algumas tarefas
+      - como proovar (isso só pra dois runtimes starpu vs ompt) :
         - plotar total de tarefas de cada tipo em cada runtime.
         - soma o tempo total gasto computando cada tarefa
-     
 
-- trabalhos futuros: 
+- trabalhos futuros:
   continuar a analise, implementar a verificacao da solucao do qr,
   incluir ompss, testar outras arquiteturas (cpu)
-  
-
 #+end_comment
 
 * Referências                                                        :ignore:
