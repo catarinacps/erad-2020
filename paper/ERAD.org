@@ -19,7 +19,13 @@
 #+end_export
 
 #+begin_resumo
-
+Nesse trabalho verificamos o comportamento de cinco /runtimes/ numa aplicação
+utilizando programação baseada em tarefas. Observamos discrepâncias na duração
+reportada das tarefas em relação ao tempo total de duração de algumas versões,
+além de dificuldades no gerenciamento das tarefas quando existe um excesso
+dessas nas versões LIBKOMP e KStar_StarPU. A versão StarPU manteve boa
+performance mesmo com tarefas significativamente mais lentas que as de outras
+versões.
 #+end_resumo
 
 * Configuração                                                     :noexport:
@@ -239,9 +245,10 @@ detalharemos as plataformas nas quais os experimentos foram realizados.
 | =hype=  | $4, 1$    | $2 \times 10$ Xeon E5 2650 v3 2.3GHz  | 32KB/256KB/25MB    | 128GB DDR4 |
 |---------+-----------+---------------------------------------+--------------------+------------|
 
-Para a execução da aplicação, utilizamos as plataformas descritas na [[tab:plataformas][Tabela 1]].
-Todas executam /kernel/ Linux =4.19.0-6= da distribuição Debian (=10.2=). A
-[[tab:versoes][Tabela 2]] apresenta as versões das ferramentas utilizadas.
+Para a execução da aplicação, utilizamos as plataformas descritas na
+[[tab:plataformas][Tabela 1]].  Todas executam /kernel/ Linux =4.19.0-6= da
+distribuição Debian (=10.2=). A [[tab:versoes][Tabela 2]] apresenta as versões
+das ferramentas utilizadas.
 
 #+begin_comment
 Listamos em cada uma dessas o seu identificador, a quantidade de nós
@@ -301,11 +308,12 @@ e o rastreamento das versões utilizando LIBKOMP foi realizado pelo próprio
 
 ** Diferenças de tempo de execução dos /kernels/ em função do /runtime/
 
-Executamos as versões das aplicações descritas na [[tab:versoes][Tabela 2]] buscando coletar o
-tempo de execução. Na [[fig:makespan][Figura 1]] observamos os resultados coletados nesse
-experimento, onde nas colunas observamos os diferentes tamanhos de bloco de cada
-tarefa e na linha observamos as diferentes máquinas utilizadas no
-experimento. Apresentamos ambas média das 5 observações e seu erro padrão.
+Executamos as versões das aplicações descritas na [[tab:versoes][Tabela 2]]
+buscando coletar o tempo de execução. Na [[fig:makespan][Figura 1]] observamos
+os resultados coletados nesse experimento, onde nas colunas observamos os
+diferentes tamanhos de bloco de cada tarefa e na linha observamos as diferentes
+máquinas utilizadas no experimento. Apresentamos ambas média das 5 observações e
+seu erro padrão.
 
 #+name: fig:makespan
 #+attr_latex: :float t :placement [!htb]
@@ -314,15 +322,15 @@ experimento. Apresentamos ambas média das 5 observações e seu erro padrão.
 
 Observamos que a tendência de comportamento se preserva entre as plataformas
 utilizadas. Sendo assim, analisaremos nas próximas seções os detalhes da
-execução das tarefas na plataforma =cei=.
+execução das tarefas na plataforma =cei= com o tamanho $64$ de bloco.
 
 ** Análise de Ociosidade por /Worker/
 
-Na [[fig:idleness][Figura 2]] observamos que, além do caso de tamanho $64$, os /runtimes/ mantém
-ociosidade similar para todos os casos. Com um tamanho de bloco $64$ os
-/runtimes/ necessitam lidar com um grande número de tarefas, o que estressa a
-capacidade de escalonamento, o que, por consequência, afeta na quantidade de
-tempo ocioso por /worker/ da plataforma.
+Na [[fig:idleness][Figura 2]] observamos que, além do caso de tamanho $64$, os
+/runtimes/ mantém ociosidade similar para todos os casos. Com um tamanho de
+bloco $64$ os /runtimes/ necessitam lidar com um grande número de tarefas, o que
+estressa a capacidade de escalonamento, o que, por consequência, afeta na
+quantidade de tempo ocioso por /worker/ da plataforma.
 
 #+name: fig:idleness
 #+attr_latex: :float t :placement [!htb]
@@ -337,19 +345,27 @@ tarefas.
 
 ** Comparação do Escalonamento entre os três /runtimes/
 
-Um teste.
-
-#+name: fig:dgeqrt
-#+attr_latex: :float t :placement [!htb]
-#+caption: Comparação do escalonamento e progressão de cada /runtime/
-[[../img/dgeqrt-start-cei.png]]
-
 #+begin_comment
 Figura que a gente conversou
 - cowplot -> ~plot_grid~, alinhamento do eixo X (tempo), eixo Y são os workers
 - Selecionar alguns dgeqrt (primeira tarefa de cada laço mais externo)
   - Colocar elas em evidência de maneira sincronizado
 #+end_comment
+
+A [[fig:dgeqrt][Figura 3]] apresenta o tempo de início da tarefa =dgeqrt=, que é
+o primeiro procedimento realizado no loop de execução de uma fatoração QR. Ao
+observar o seu tempo de início, esperamos verificar a progressão da
+implementação no processo de fatoração e a eficiência desse.
+
+#+name: fig:dgeqrt
+#+attr_latex: :float t :placement [!htb]
+#+caption: Comparação do escalonamento e progressão de cada /runtime/
+[[../img/dgeqrt-start-cei.png]]
+
+Fora as implementações KStar_StarPU e StarPU, todas essas tarefas foram
+iniciadas no primeiro segundo de execução. Além disso, a implementação
+KStar_StarPU iniciou essas tarefas significativamente antes do que a em StarPU
+nativo.
 
 * Conclusão e Trabalhos Futuros
 
@@ -387,6 +403,24 @@ intrigante!!
   continuar a analise, implementar a verificacao da solucao do qr,
   incluir ompss, testar outras arquiteturas (cpu)
 #+end_comment
+
+Nesse trabalho analisamos a performance e comportamento de cinco /runtimes/
+implementando uma fatoração QR utilizando tarefas. A partir dessas observações,
+identificamos que os tempos de duração das tarefas são incompatíveis com a taxa
+de ociosidade e tempo total observados, como é o caso das implementações
+libgomp_GCC, libomp_LLVM e LIBKOMP. Além disso, verificamos que as ferramentas
+KStar e LIBKOMP não obtiveram performance desejável quando o grão de trabalho
+era pequeno, conforme detalhado na [[Análise de Ociosidade por
+/Worker/][Subseção 3.3]]. Pela visualização do /makespan/ da
+[[fig:makespan][Figura 1]] percebemos que existe um comportamento anômalo da
+ferramenta KStar_StarPU em quase todos os casos, o que acreditamos indicar que
+as tarefas executadas por essa versão não estavam respeitando suas dependências.
+
+Tais constatações pedem pela continuação e aprofundamento da investigação até
+aqui realizada. Para trabalhos futuros, consideramos implementar a verificação
+da solução obtida pela execução, adicionar o /runtime/ OmpSs
+\cite{duran2011ompss} aos testes e também abranger diferentes arquiteturas de
+processador nos testes.
 
 * Referências                                                        :ignore:
 

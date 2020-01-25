@@ -3192,17 +3192,19 @@ done;
 
 #+begin_src R :results output :session R :exports both
 plot_duration <- function(dta){
-    dta %>% filter(Task %in% c("dgeqrt", "dtpqrt", "dlarfb", "dtpmqrt")) %>%
-        group_by(Task, Runtime, Matrix, Block) %>%
-        summarize(Mean=mean(Duration), Median=median(Duration), Sd=sd(Duration)) %>%
-        mutate(case = factor(paste(Task, Block, sep = " : "))) %>%
-#       mutate(case = factor(case, levels = mixedsort(levels(case)))) %>%
-        ggplot(aes(x=Runtime, y=Mean, fill=Runtime)) +
-        geom_bar(stat="identity") +
-        geom_errorbar(aes(ymin=Mean-Sd, ymax=Mean+Sd)) +
-        facet_wrap(~case, scales="free", ncol=4) +
-        theme_bw() +
-        theme (legend.position = "bottom")
+  dta %>% filter(Task %in% c("dgeqrt", "dtpqrt", "dlarfb", "dtpmqrt")) %>%
+    group_by(Task, Runtime, Matrix, Block) %>%
+    summarize(Mean=mean(Duration), Median=median(Duration), Sd=sd(Duration)) %>%
+    mutate(case = factor(paste(Task, Block, sep = " : "))) %>%
+    mutate(case = factor(case, levels = mixedsort(levels(case)))) %>%
+    ggplot(aes(x=Runtime, y=Mean, fill=Runtime)) +
+    geom_bar(stat="identity") +
+    geom_errorbar(aes(ymin=Mean-Sd, ymax=Mean+Sd)) +
+    facet_wrap(~case, scales="free", ncol=4) +
+    labs(y = "Duração média da tarefa [sec]",
+         x = "Runtime") +
+    theme_bw() +
+    theme(legend.position = "bottom")
 }
 #+end_src
 
@@ -3213,20 +3215,61 @@ plot_duration <- function(dta){
 #+begin_src R :results output :session R :exports both
 bind_rows(
     lapply(blockQrStarpuKstar %>% names, function(x){
-        nm <- x %>% strsplit("-") %>% unlist()
-        blockQrStarpuKstar[[x]]$State %>% select(Value, ResourceId, Duration) %>% rename(Task=Value, Resource=ResourceId) %>% mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)], Platform=nm[1]) %>% mutate(Task=str_replace(Task, "lapack_", ""))
+      nm <- x %>%
+        strsplit("-") %>%
+        unlist()
+
+      blockQrStarpuKstar[[x]]$State %>%
+        select(Value, ResourceId, Duration) %>%
+        rename(Task=Value, Resource=ResourceId) %>%
+        mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')),
+               Matrix=nm[length(nm)-1],
+               Block=nm[length(nm)],
+               Platform=nm[1]) %>%
+        mutate(Task=str_replace(Task, "lapack_", ""))
     }),
     lapply(blockQrLibkomp %>% names, function(x){
-        nm <- x %>% strsplit("-") %>% unlist()
-        blockQrLibkomp[[x]] %>% select(Name, Resource, Duration) %>% rename(Task=Name) %>% mutate(Resource=as.character(Resource)) %>% mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)], Platform=nm[1])
+      nm <- x %>%
+        strsplit("-") %>%
+        unlist()
+
+      blockQrLibkomp[[x]] %>%
+        select(Name, Resource, Duration) %>%
+        rename(Task=Name) %>%
+        mutate(Resource=as.character(Resource)) %>%
+        mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')),
+               Matrix=nm[length(nm)-1],
+               Block=nm[length(nm)],
+               Platform=nm[1])
     }),
     lapply(blockQrScorep %>% names, function(x){
-        nm <- x %>% strsplit("-") %>% unlist()
-        blockQrScorep[[x]] %>% select(Kernel, WorkerID, Duration) %>% rename(Task=Kernel) %>% mutate(Resource=as.character(WorkerID)) %>% mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)], Platform=nm[1])
+      nm <- x %>%
+        strsplit("-") %>%
+        unlist()
+
+      blockQrScorep[[x]] %>%
+        select(Kernel, WorkerID, Duration) %>%
+        rename(Task=Kernel) %>%
+        mutate(Resource=as.character(WorkerID)) %>%
+        mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')),
+               Matrix=nm[length(nm)-1],
+               Block=nm[length(nm)],
+               Platform=nm[1])
     }),
     lapply(blockQrOmpt %>% names, function(x){
-        nm <- x %>% strsplit("-") %>% unlist()
-        blockQrOmpt[[x]] %>% select(Operation, Thread, time_elapsed) %>% rename(Task=Operation, Duration=time_elapsed) %>% mutate(Resource=as.character(Thread)) %>% mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)], Platform=nm[1])  %>% mutate(Task=str_replace(Task, "lapack_", ""))
+      nm <- x %>%
+        strsplit("-") %>%
+        unlist()
+
+      blockQrOmpt[[x]] %>%
+        select(Operation, Thread, time_elapsed) %>%
+        rename(Task=Operation, Duration=time_elapsed) %>%
+        mutate(Resource=as.character(Thread)) %>%
+        mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')),
+               Matrix=nm[length(nm)-1],
+               Block=nm[length(nm)],
+               Platform=nm[1]) %>%
+        mutate(Task=str_replace(Task, "lapack_", ""))
     })
 ) -> dt_duration
 #+end_src
@@ -3276,21 +3319,23 @@ plot_duration(dt_duration %>% filter(Platform=="draco") %>% filter(!grepl("starp
 **** Idleness plots
 ***** Code
 
-#+begin_src R :results output :session R :exports both
-plot_all_idleness <- function(dta){
+#+begin_src R :results output :session R :exports both :tangle (concat (hcps/get-user-server) "/scratch/hcpsilva/script.R")
+plot_all_idleness <- function(dta) {
   dta %>%
     ggplot(aes(x = Resource, y = Idleness, fill = Runtime)) +
     geom_bar(stat = "identity", position = position_dodge()) +
     facet_grid(Block ~., scales="free") +
-    labs(y = "Taxa de Ociosidade [%]",
+    labs(y = "Ociosidade [%]",
          x = "Trabalhador",
          fill = "Runtime") +
+    scale_y_continuous(expand = expand_scale(mult = c(0, 0.05)),
+                       breaks = scales::pretty_breaks(n = 8)) +
     theme_bw() +
     theme(text = element_text(family = "Palatino", size = 18),
           strip.text = element_text(size = 16),
           legend.position = "right",
           plot.margin = unit(c(0, 10, 0, 0), "mm"))
-  ggsave("temp.png", width = 30, units = "cm")
+  ggsave("temp.png", width = 30, height = 8, units = "cm")
 }
 
 plot_idleness_average <- function(dta){
@@ -3400,11 +3445,15 @@ bind_rows(
 
 #+header: :session *ssh hype3*
 #+begin_src R :results output graphics :file img/idleness-all-cei.png :exports both :width 1000 :height 600 :session R
-dt_idleness %>% filter(Platform=="cei", Runtime!="libkomp-gcc") %>% plot_all_idleness
+dt_idleness %>% filter(Platform=="cei", Runtime!="libkomp-gcc", Block == 64) %>% plot_all_idleness
+#+end_src
+
+#+begin_src bash :exports both :results output
+scp cei2:/scratch/hcpsilva/temp.png img/idleness-all-cei.png
 #+end_src
 
 #+RESULTS:
-file:img/idleness-all-cei.png]]
+
 
 ****** Plot - Idleness Average
 
@@ -3506,7 +3555,7 @@ bind_rows(
 
 ***** Code
 
-#+begin_src R :results output :exports both
+#+begin_src R :results output :exports both :tangle (concat (hcps/get-user-server) "/scratch/hcpsilva/script.R")
 plot_dgeqrt_start <- function(dta) {
   dta %>%
     group_by(Runtime, Matrix, Block) %>%
@@ -3515,7 +3564,7 @@ plot_dgeqrt_start <- function(dta) {
     ggplot(aes(x = Start, y = i, color = Runtime, shape = Runtime)) +
     geom_point() +
     facet_grid(Block ~., scales = "free") +
-    labs(y = "Tarefa DGEQRT",
+    labs(y = "DGEQRT",
          x = "Início da tarefa [sec]") +
     scale_y_reverse(expand = expand_scale(mult = c(0, 0.05)),
                     breaks = scales::pretty_breaks(n = 8)) +
@@ -3524,7 +3573,7 @@ plot_dgeqrt_start <- function(dta) {
           strip.text = element_text(size = 16),
           legend.position = "right",
           plot.margin = unit(c(0, 10, 0, 0), "mm"))
-  ggsave("temp.png", width = 27.5, units = "cm")
+  ggsave("temp.png", width = 30, height = 8, units = "cm")
 }
 #+end_src
 
@@ -3534,11 +3583,18 @@ plot_dgeqrt_start <- function(dta) {
 
 #+header: :session *ssh hype3*
 #+begin_src R :results output graphics :file img/dgeqrt-start-cei.png :exports both :width 600 :height 400 :session R
-plot_dgeqrt_start(dt_start %>% filter(Platform=="cei", Runtime!="libkomp-gcc"))
+plot_dgeqrt_start(dt_start %>% filter(Platform == "cei", Runtime != "libkomp-gcc", Block == 64))
 #+end_src
 
 #+RESULTS:
 [[file:img/dgeqrt-start-cei.png]]
+
+#+begin_src bash :exports both :results output
+scp cei2:/scratch/hcpsilva/temp.png img/dgeqrt-start-cei.png
+#+end_src
+
+#+RESULTS:
+
 
 * Resources
 :PROPERTIES:
