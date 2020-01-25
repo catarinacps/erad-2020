@@ -305,7 +305,7 @@ Executamos as versões das aplicações descritas na [[tab:versoes][Tabela 2]] b
 tempo de execução. Na [[fig:makespan][Figura 1]] observamos os resultados coletados nesse
 experimento, onde nas colunas observamos os diferentes tamanhos de bloco de cada
 tarefa e na linha observamos as diferentes máquinas utilizadas no
-experimento. Apresentamos ambas média das 5 observações e seu erro médio.
+experimento. Apresentamos ambas média das 5 observações e seu erro padrão.
 
 #+name: fig:makespan
 #+attr_latex: :float t :placement [!htb]
@@ -313,8 +313,8 @@ experimento. Apresentamos ambas média das 5 observações e seu erro médio.
 [[../img/makespan-all.png]]
 
 Observamos que a tendência de comportamento se preserva entre as plataformas
-utilizadas. Sendo assim, analisaremos mais atentamente os detalhes da execução
-das tarefas na plataforma =cei=.
+utilizadas. Sendo assim, analisaremos nas próximas seções os detalhes da
+execução das tarefas na plataforma =cei=.
 
 ** Análise de Ociosidade por /Worker/
 
@@ -330,14 +330,19 @@ tempo ocioso por /worker/ da plataforma.
 [[../img/idleness-all-cei.png]]
 
 Pela análise da figura observamos que esse caso é especialmente interessante, já
-que ambos LIBKOMP_clang quanto KStar apresentam uma ociosidade média
+que ambos LIBKOMP_clang quanto KStar_StarPU apresentam uma ociosidade média
 consideravelmente maior. Em todos os casos, libgomp_GCC, libomp_LLVM e StarPU
 mantém performance compatível em questão da efetividade do escalonamento das
 tarefas.
 
 ** Comparação do Escalonamento entre os três /runtimes/
 
+Um teste.
 
+#+name: fig:dgeqrt
+#+attr_latex: :float t :placement [!htb]
+#+caption: Comparação do escalonamento e progressão de cada /runtime/
+[[../img/dgeqrt-start-cei.png]]
 
 #+begin_comment
 Figura que a gente conversou
