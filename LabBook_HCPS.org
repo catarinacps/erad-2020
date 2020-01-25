@@ -647,7 +647,9 @@ popd
 popd
 #+end_src
 
-** WAITING 1 - Overview - makespan only                              :EXP01:
+** DONE 1 - Overview - makespan only                                 :EXP01:
+CLOSED: [2020-01-25 sáb 01:47]
+- State "DONE"       from "WAITING"    [2020-01-25 sáb 01:47]
 - State "WAITING"    from "STARTED"    [2020-01-09 qui 15:22]
 - State "STARTED"    from              [2020-01-09 qui 15:22]
 
@@ -1342,8 +1344,7 @@ fig_1 %>%
                     ymax = avg_time + error),
                 width = 0.5,
                 position=position_dodge(width = 1)) +
-  labs(
-       y = "Tempo médio de execução [seg]",
+  labs(y = "Tempo médio de execução [seg]",
        color = "Runtime",
        shape = "Runtime") +
   facet_wrap(~ case, scales="free", nrow = 3) +
@@ -3277,51 +3278,120 @@ plot_duration(dt_duration %>% filter(Platform=="draco") %>% filter(!grepl("starp
 
 #+begin_src R :results output :session R :exports both
 plot_all_idleness <- function(dta){
-
-    dta %>%
-        ggplot(aes(x=Resource, y=Idleness, fill=Runtime)) +
-            geom_bar(stat="identity", position=position_dodge()) +
-            facet_grid(Block~Matrix, scales="free") +
-            ylab("Idleness Ratio (%)") +
-            theme_bw() +
-            theme (legend.position = "bottom")
+  dta %>%
+    ggplot(aes(x = Resource, y = Idleness, fill = Runtime)) +
+    geom_bar(stat = "identity", position = position_dodge()) +
+    facet_grid(Block ~., scales="free") +
+    labs(y = "Taxa de Ociosidade [%]",
+         x = "Trabalhador",
+         fill = "Runtime") +
+    theme_bw() +
+    theme(text = element_text(family = "Palatino", size = 18),
+          strip.text = element_text(size = 16),
+          legend.position = "right",
+          plot.margin = unit(c(0, 10, 0, 0), "mm"))
+  ggsave("temp.png", width = 30, units = "cm")
 }
 
 plot_idleness_average <- function(dta){
-
-    dta %>%
-        group_by(Runtime, Block, Matrix) %>%
-        summarize(Mean=mean(Idleness), Median=median(Idleness), Sd=sd(Idleness)) %>%
-        ggplot(aes(x=Runtime, y=Mean, fill=Runtime)) +
-           geom_bar(stat="identity") +
-           geom_errorbar(aes(ymin=Mean-Sd, ymax=Mean+Sd)) +
-           facet_grid(Block~Matrix, scales="free") +
-           ylab("Mean Idleness Ratio (%)") +
-           theme_bw() +
-           theme (legend.position = "bottom")
+  dta %>%
+    group_by(Runtime, Block, Matrix) %>%
+    summarize(Mean=mean(Idleness), Median=median(Idleness), Sd=sd(Idleness)) %>%
+    ggplot(aes(x=Runtime, y=Mean, fill=Runtime)) +
+    geom_bar(stat="identity") +
+    geom_errorbar(aes(ymin=Mean-Sd, ymax=Mean+Sd)) +
+    facet_grid(Block~Matrix, scales="free") +
+    ylab("Mean Idleness Ratio (%)") +
+    theme_bw() +
+    theme (legend.position = "bottom")
 }
 #+end_src
 
 ***** Merge all
 
 #+begin_src R :results output :session R :exports both
+makespan_libkomp <- . %>%
+  filter(Name == "dgeqrt") %>%
+  .$End %>%
+  max
+
+idleness_libkomp <- . %>%
+  mutate(End = End - min(Start)) %>%
+  mutate(Start = Start - min(Start)) %>%
+  group_by(Resource) %>%
+  summarize(Idleness = (1 - (sum(End - Start)/makespan_libkomp(.))) * 100)
+
+makespan_scorep <- . %>%
+  filter(Kernel == "dgeqrt") %>%
+  .$End %>%
+  max
+
+idleness_scorep <- . %>%
+  group_by(WorkerID) %>%
+  summarize(Idleness = (1 - (sum(End - Start) / makespan_scorep(.))) * 100)
+
+makespan_ompt <- . %>%
+  filter(Operation == "lapack_dgeqrt") %>%
+  .$time_end %>%
+  max
+
+idleness_ompt <- . %>%
+  group_by(Thread) %>%
+  summarize(Idleness = (1 - (sum(time_end - time_start) / makespan_ompt(.))) * 100)
+
 bind_rows(
-    lapply(blockQrStarpuKstar %>% names, function(x){
-        nm <- x %>% strsplit("-") %>% unlist()
-        blockQrStarpuKstar[[x]]$State %>% calculate_resource_idleness(max_only = FALSE) %>% select(-ResourceType, -Node, -ResourceId, -Height, -End) %>% rename(Resource=Position)  %>% mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)], Platform=nm[1])
-    }),
-    lapply(blockQrLibkomp %>% names, function(x){
-        nm <- x %>% strsplit("-") %>% unlist()
-        blockQrLibkomp[[x]] %>% idleness_libkomp() %>% mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)], Platform=nm[1])
-    }),
-    lapply(blockQrScorep %>% names, function(x){
-        nm <- x %>% strsplit("-") %>% unlist()
-        blockQrScorep[[x]] %>% idleness_scorep()  %>% rename(Resource=WorkerID) %>% mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)], Platform=nm[1])
-    }),
-    lapply(blockQrOmpt %>% names, function(x){
-        nm <- x %>% strsplit("-") %>% unlist()
-        blockQrOmpt[[x]] %>% idleness_ompt() %>% rename(Resource=Thread)  %>% mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)], Platform=nm[1])
-    })
+  lapply(blockQrStarpuKstar %>% names, function(x){
+    nm <- x %>%
+      strsplit("-") %>%
+      unlist()
+
+    blockQrStarpuKstar[[x]]$State %>%
+      calculate_resource_idleness(max_only = FALSE) %>%
+      select(-ResourceType, -Node, -ResourceId, -Height, -End) %>%
+      rename(Resource=Position) %>%
+      mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')),
+             Matrix=nm[length(nm)-1],
+             Block=nm[length(nm)],
+             Platform=nm[1])
+  }),
+  lapply(blockQrLibkomp %>% names, function(x){
+    nm <- x %>%
+      strsplit("-") %>%
+      unlist()
+
+    blockQrLibkomp[[x]] %>%
+      idleness_libkomp() %>%
+      mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')),
+             Matrix=nm[length(nm)-1],
+             Block=nm[length(nm)],
+             Platform=nm[1])
+  }),
+  lapply(blockQrScorep %>% names, function(x){
+    nm <- x %>%
+      strsplit("-") %>%
+      unlist()
+
+    blockQrScorep[[x]] %>%
+      idleness_scorep() %>%
+      rename(Resource=WorkerID) %>%
+      mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')),
+             Matrix=nm[length(nm)-1],
+             Block=nm[length(nm)],
+             Platform=nm[1])
+  }),
+  lapply(blockQrOmpt %>% names, function(x){
+    nm <- x %>%
+      strsplit("-") %>%
+      unlist()
+
+    blockQrOmpt[[x]] %>%
+      idleness_ompt() %>%
+      rename(Resource=Thread)  %>%
+      mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')),
+             Matrix=nm[length(nm)-1],
+             Block=nm[length(nm)],
+             Platform=nm[1])
+  })
 ) %>% mutate(Resource=factor(Resource)) -> dt_idleness
 #+end_src
 
@@ -3374,20 +3444,62 @@ file:img/idleness-average-draco.png
 #+begin_src R :results output :session R :exports both
 bind_rows(
     lapply(blockQrStarpuKstar %>% names, function(x){
-        nm <- x %>% strsplit("-") %>% unlist()
-        blockQrStarpuKstar[[x]]$State %>% select(Value, Start) %>% rename(Task=Value) %>% mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)], Platform=nm[1]) %>% mutate(Task=str_replace(Task, "lapack_", "")) %>% filter(grepl("dgeqrt", Task))
+      nm <- x %>%
+        strsplit("-") %>%
+        unlist()
+
+      blockQrStarpuKstar[[x]]$State %>%
+        select(Value, Start) %>%
+        rename(Task=Value) %>%
+        mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')),
+               Matrix=nm[length(nm)-1],
+               Block=nm[length(nm)],
+               Platform=nm[1]) %>%
+        mutate(Task=str_replace(Task, "lapack_", "")) %>%
+        filter(grepl("dgeqrt", Task))
     }),
     lapply(blockQrLibkomp %>% names, function(x){
-        nm <- x %>% strsplit("-") %>% unlist()
-        blockQrLibkomp[[x]] %>% select(Name, Start) %>% rename(Task=Name) %>% mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)], Platform=nm[1]) %>% filter(grepl("dgeqrt", Task)) %>% mutate(Start=Start-min(Start))
+      nm <- x %>%
+        strsplit("-") %>%
+        unlist()
+
+      blockQrLibkomp[[x]] %>%
+        select(Name, Start) %>%
+        rename(Task=Name) %>%
+        mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')),
+               Matrix=nm[length(nm)-1],
+               Block=nm[length(nm)],
+               Platform=nm[1]) %>%
+        filter(grepl("dgeqrt", Task)) %>%
+        mutate(Start=Start-min(Start))
     }),
     lapply(blockQrScorep %>% names, function(x){
-        nm <- x %>% strsplit("-") %>% unlist()
-        blockQrScorep[[x]] %>% select(Kernel, Start) %>% rename(Task=Kernel) %>% mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)], Platform=nm[1]) %>% filter(grepl("dgeqrt", Task))
+      nm <- x %>%
+        strsplit("-") %>%
+        unlist()
+      blockQrScorep[[x]] %>%
+        select(Kernel, Start) %>%
+        rename(Task=Kernel) %>%
+        mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')),
+               Matrix=nm[length(nm)-1],
+               Block=nm[length(nm)],
+               Platform=nm[1]) %>%
+        filter(grepl("dgeqrt", Task))
     }),
     lapply(blockQrOmpt %>% names, function(x){
-        nm <- x %>% strsplit("-") %>% unlist()
-        blockQrOmpt[[x]] %>% select(Operation, time_start) %>% rename(Task=Operation, Start=time_start) %>% mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)], Platform=nm[1])  %>% mutate(Task=str_replace(Task, "lapack_", "")) %>% filter(grepl("dgeqrt", Task))
+      nm <- x %>%
+        strsplit("-") %>%
+        unlist()
+
+      blockQrOmpt[[x]] %>%
+        select(Operation, time_start) %>%
+        rename(Task=Operation, Start=time_start) %>%
+        mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')),
+               Matrix=nm[length(nm)-1],
+               Block=nm[length(nm)],
+               Platform=nm[1]) %>%
+        mutate(Task=str_replace(Task, "lapack_", "")) %>%
+        filter(grepl("dgeqrt", Task))
     })
 ) -> dt_start
 #+end_src
@@ -3395,16 +3507,24 @@ bind_rows(
 ***** Code
 
 #+begin_src R :results output :exports both
-plot_dgeqrt_start <- function(dta){
-
-    dta %>% group_by(Runtime, Matrix, Block) %>% arrange(Start) %>% mutate(i=seq(n())) %>%
-        ggplot(aes(x=Start, y=i, color=Runtime)) +
-            geom_point() +
-            facet_grid(Block~Matrix, scales="free") +
-            ylab("?") +
-            scale_y_reverse() +
-            theme_bw() +
-            theme (legend.position = "bottom")
+plot_dgeqrt_start <- function(dta) {
+  dta %>%
+    group_by(Runtime, Matrix, Block) %>%
+    arrange(Start) %>%
+    mutate(i = seq(n())) %>%
+    ggplot(aes(x = Start, y = i, color = Runtime, shape = Runtime)) +
+    geom_point() +
+    facet_grid(Block ~., scales = "free") +
+    labs(y = "Tarefa DGEQRT",
+         x = "Início da tarefa [sec]") +
+    scale_y_reverse(expand = expand_scale(mult = c(0, 0.05)),
+                    breaks = scales::pretty_breaks(n = 8)) +
+    theme_bw() +
+    theme(text = element_text(family = "Palatino", size = 18),
+          strip.text = element_text(size = 16),
+          legend.position = "right",
+          plot.margin = unit(c(0, 10, 0, 0), "mm"))
+  ggsave("temp.png", width = 27.5, units = "cm")
 }
 #+end_src
 
