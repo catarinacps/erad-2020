@@ -2075,7 +2075,7 @@ done;
 ******* Execution "cei-kstar-starpu-8192-128"
  #+header: :session *ssh hype3*
  #+header: :nvar dep1=customConfig
- #+begin_src R :results output graphics :file img/trace-qr-cei-kstar-starpu-8192-128-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-cei-kstar-starpu-8192-128-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export
    the_master_function(blockQrStarpuKstar[["cei-kstar-starpu-8192-128"]])
  #+end_src
 
@@ -2085,7 +2085,7 @@ done;
 ******* Execution "cei-kstar-starpu-8192-256"
  #+header: :session *ssh hype3*
  #+header: :nvar dep1=customConfig
- #+begin_src R :results output graphics :file img/trace-qr-cei-kstar-starpu-8192-256-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-cei-kstar-starpu-8192-256-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export
    the_master_function(blockQrStarpuKstar[["cei-kstar-starpu-8192-256"]])
  #+end_src
 
@@ -2095,7 +2095,7 @@ done;
 ******* Execution "cei-kstar-starpu-8192-512"
  #+header: :session *ssh hype3*
  #+header: :nvar dep1=customConfig
- #+begin_src R :results output graphics :file img/trace-qr-cei-kstar-starpu-8192-512-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-cei-kstar-starpu-8192-512-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export
    the_master_function(blockQrStarpuKstar[["cei-kstar-starpu-8192-512"]])
  #+end_src
 
@@ -2105,7 +2105,7 @@ done;
 ******* Execution "cei-kstar-starpu-8192-64"
  #+header: :session *ssh hype3*
  #+header: :nvar dep1=customConfig
- #+begin_src R :results output graphics :file img/trace-qr-cei-kstar-starpu-8192-64-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-cei-kstar-starpu-8192-64-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export
    the_master_function(blockQrStarpuKstar[["cei-kstar-starpu-8192-64"]])
  #+end_src
 
@@ -2115,7 +2115,7 @@ done;
 ******* Execution "cei-starpu-8192-128"
  #+header: :session *ssh hype3*
  #+header: :nvar dep1=customConfig
- #+begin_src R :results output graphics :file img/trace-qr-cei-starpu-8192-128-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-cei-starpu-8192-128-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export
    the_master_function(blockQrStarpuKstar[["cei-starpu-8192-128"]])
  #+end_src
 
@@ -2125,7 +2125,7 @@ done;
 ******* Execution "cei-starpu-8192-256"
  #+header: :session *ssh hype3*
  #+header: :nvar dep1=customConfig
- #+begin_src R :results output graphics :file img/trace-qr-cei-starpu-8192-256-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-cei-starpu-8192-256-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export
    the_master_function(blockQrStarpuKstar[["cei-starpu-8192-256"]])
  #+end_src
 
@@ -2135,7 +2135,7 @@ done;
 ******* Execution "cei-starpu-8192-512"
  #+header: :session *ssh hype3*
  #+header: :nvar dep1=customConfig
- #+begin_src R :results output graphics :file img/trace-qr-cei-starpu-8192-512-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-cei-starpu-8192-512-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export
    the_master_function(blockQrStarpuKstar[["cei-starpu-8192-512"]])
  #+end_src
 
@@ -2145,7 +2145,7 @@ done;
 ******* Execution "cei-starpu-8192-64"
  #+header: :session *ssh hype3*
  #+header: :nvar dep1=customConfig
- #+begin_src R :results output graphics :file img/trace-qr-cei-starpu-8192-64-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-cei-starpu-8192-64-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export
    the_master_function(blockQrStarpuKstar[["cei-starpu-8192-64"]])
  #+end_src
 
@@ -2155,7 +2155,7 @@ done;
 ******* Execution "draco-kstar-starpu-8192-128"
  #+header: :session *ssh hype3*
  #+header: :nvar dep1=customConfig
- #+begin_src R :results output graphics :file img/trace-qr-draco-kstar-starpu-8192-128-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-draco-kstar-starpu-8192-128-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export
    the_master_function(blockQrStarpuKstar[["draco-kstar-starpu-8192-128"]])
  #+end_src
 
@@ -2165,7 +2165,7 @@ done;
 ******* Execution "draco-kstar-starpu-8192-256"
  #+header: :session *ssh hype3*
  #+header: :nvar dep1=customConfig
- #+begin_src R :results output graphics :file img/trace-qr-draco-kstar-starpu-8192-256-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-draco-kstar-starpu-8192-256-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export
    the_master_function(blockQrStarpuKstar[["draco-kstar-starpu-8192-256"]])
  #+end_src
 
@@ -2175,7 +2175,7 @@ done;
 ******* Execution "draco-kstar-starpu-8192-512"
  #+header: :session *ssh hype3*
  #+header: :nvar dep1=customConfig
- #+begin_src R :results output graphics :file img/trace-qr-draco-kstar-starpu-8192-512-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-draco-kstar-starpu-8192-512-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export
    the_master_function(blockQrStarpuKstar[["draco-kstar-starpu-8192-512"]])
  #+end_src
 
@@ -2185,7 +2185,7 @@ done;
 ******* Execution "draco-kstar-starpu-8192-64"
  #+header: :session *ssh hype3*
  #+header: :nvar dep1=customConfig
- #+begin_src R :results output graphics :file img/trace-qr-draco-kstar-starpu-8192-64-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-draco-kstar-starpu-8192-64-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export
    the_master_function(blockQrStarpuKstar[["draco-kstar-starpu-8192-64"]])
  #+end_src
 
@@ -2195,7 +2195,7 @@ done;
 ******* Execution "draco-starpu-8192-128"
  #+header: :session *ssh hype3*
  #+header: :nvar dep1=customConfig
- #+begin_src R :results output graphics :file img/trace-qr-draco-starpu-8192-128-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-draco-starpu-8192-128-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export
    the_master_function(blockQrStarpuKstar[["draco-starpu-8192-128"]])
  #+end_src
 
@@ -2205,7 +2205,7 @@ done;
 ******* Execution "draco-starpu-8192-256"
  #+header: :session *ssh hype3*
  #+header: :nvar dep1=customConfig
- #+begin_src R :results output graphics :file img/trace-qr-draco-starpu-8192-256-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-draco-starpu-8192-256-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export
    the_master_function(blockQrStarpuKstar[["draco-starpu-8192-256"]])
  #+end_src
 
@@ -2215,7 +2215,7 @@ done;
 ******* Execution "draco-starpu-8192-512"
  #+header: :session *ssh hype3*
  #+header: :nvar dep1=customConfig
- #+begin_src R :results output graphics :file img/trace-qr-draco-starpu-8192-512-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-draco-starpu-8192-512-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export
    the_master_function(blockQrStarpuKstar[["draco-starpu-8192-512"]])
  #+end_src
 
@@ -2225,7 +2225,7 @@ done;
 ******* Execution "draco-starpu-8192-64"
  #+header: :session *ssh hype3*
  #+header: :nvar dep1=customConfig
- #+begin_src R :results output graphics :file img/trace-qr-draco-starpu-8192-64-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-draco-starpu-8192-64-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export
    the_master_function(blockQrStarpuKstar[["draco-starpu-8192-64"]])
  #+end_src
 
@@ -2235,7 +2235,7 @@ done;
 ******* Execution "hype-kstar-starpu-8192-128"
  #+header: :session *ssh hype3*
  #+header: :nvar dep1=customConfig
- #+begin_src R :results output graphics :file img/trace-qr-hype-kstar-starpu-8192-128-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-hype-kstar-starpu-8192-128-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export
    the_master_function(blockQrStarpuKstar[["hype-kstar-starpu-8192-128"]])
  #+end_src
 
@@ -2245,7 +2245,7 @@ done;
 ******* Execution "hype-kstar-starpu-8192-256"
  #+header: :session *ssh hype3*
  #+header: :nvar dep1=customConfig
- #+begin_src R :results output graphics :file img/trace-qr-hype-kstar-starpu-8192-256-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-hype-kstar-starpu-8192-256-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export
    the_master_function(blockQrStarpuKstar[["hype-kstar-starpu-8192-256"]])
  #+end_src
 
@@ -2255,7 +2255,7 @@ done;
 ******* Execution "hype-kstar-starpu-8192-512"
  #+header: :session *ssh hype3*
  #+header: :nvar dep1=customConfig
- #+begin_src R :results output graphics :file img/trace-qr-hype-kstar-starpu-8192-512-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-hype-kstar-starpu-8192-512-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export
    the_master_function(blockQrStarpuKstar[["hype-kstar-starpu-8192-512"]])
  #+end_src
 
@@ -2265,7 +2265,7 @@ done;
 ******* Execution "hype-kstar-starpu-8192-64"
  #+header: :session *ssh hype3*
  #+header: :nvar dep1=customConfig
- #+begin_src R :results output graphics :file img/trace-qr-hype-kstar-starpu-8192-64-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-hype-kstar-starpu-8192-64-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export
    the_master_function(blockQrStarpuKstar[["hype-kstar-starpu-8192-64"]])
  #+end_src
 
@@ -2275,7 +2275,7 @@ done;
 ******* Execution "hype-starpu-8192-128"
  #+header: :session *ssh hype3*
  #+header: :nvar dep1=customConfig
- #+begin_src R :results output graphics :file img/trace-qr-hype-starpu-8192-128-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-hype-starpu-8192-128-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export
    the_master_function(blockQrStarpuKstar[["hype-starpu-8192-128"]])
  #+end_src
 
@@ -2285,7 +2285,7 @@ done;
 ******* Execution "hype-starpu-8192-256"
  #+header: :session *ssh hype3*
  #+header: :nvar dep1=customConfig
- #+begin_src R :results output graphics :file img/trace-qr-hype-starpu-8192-256-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-hype-starpu-8192-256-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export
    the_master_function(blockQrStarpuKstar[["hype-starpu-8192-256"]])
  #+end_src
 
@@ -2295,7 +2295,7 @@ done;
 ******* Execution "hype-starpu-8192-512"
  #+header: :session *ssh hype3*
  #+header: :nvar dep1=customConfig
- #+begin_src R :results output graphics :file img/trace-qr-hype-starpu-8192-512-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-hype-starpu-8192-512-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export
    the_master_function(blockQrStarpuKstar[["hype-starpu-8192-512"]])
  #+end_src
 
@@ -2305,7 +2305,7 @@ done;
 ******* Execution "hype-starpu-8192-64"
  #+header: :session *ssh hype3*
  #+header: :nvar dep1=customConfig
- #+begin_src R :results output graphics :file img/trace-qr-hype-starpu-8192-64-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-hype-starpu-8192-64-starvz.png :exports both :width 1400 :height 1200 :session R :eval no-export
    the_master_function(blockQrStarpuKstar[["hype-starpu-8192-64"]])
  #+end_src
 
@@ -2334,15 +2334,15 @@ readtrace <- function (filename) {
    df;
 }
 
-makespan_libkomp  <- function (dtx) {   
+makespan_libkomp  <- function (dtx) {
 
     dtx %>% filter(Name == "dgeqrt") %>% .$End %>% max -> ret
     ret
 }
 
-idleness_libkomp <- function (dtx) {   
-    
-    dtx %>% mutate(End=End-min(Start)) %>% mutate(Start=Start-min(Start)) %>% 
+idleness_libkomp <- function (dtx) {
+
+    dtx %>% mutate(End=End-min(Start)) %>% mutate(Start=Start-min(Start)) %>%
         group_by(Resource) %>% summarize(Idleness = (1-(sum(End-Start)/makespan_libkomp(.)))*100) -> ret
     ret
 }
@@ -2403,9 +2403,9 @@ blockQrLibkomp <-
         print(paste0("Working on ", fl))
         if(file.exists(paste(fl, "tasks.csv", sep="/"))){
             print(paste0("File found! >> ", fl, "/tasks.csv"))
-            ret <- readtrace(paste(fl, "tasks.csv", sep="/")) %>% 
-                left_join(mapping, by="Name") %>% 
-                rename(OldName=Name) %>% 
+            ret <- readtrace(paste(fl, "tasks.csv", sep="/")) %>%
+                left_join(mapping, by="Name") %>%
+                rename(OldName=Name) %>%
                 rename(Name=Kernel)
             ret
         }
@@ -2452,16 +2452,16 @@ blockQrLibkomp %>% names
 
 #+RESULTS: libkompnames
 #+begin_example
- [1] "cei-libkomp-clang-8192-128"   "cei-libkomp-clang-8192-256"  
- [3] "cei-libkomp-clang-8192-512"   "cei-libkomp-clang-8192-64"   
- [5] "cei-libkomp-gcc-8192-128"     "cei-libkomp-gcc-8192-256"    
- [7] "cei-libkomp-gcc-8192-512"     "cei-libkomp-gcc-8192-64"     
+ [1] "cei-libkomp-clang-8192-128"   "cei-libkomp-clang-8192-256"
+ [3] "cei-libkomp-clang-8192-512"   "cei-libkomp-clang-8192-64"
+ [5] "cei-libkomp-gcc-8192-128"     "cei-libkomp-gcc-8192-256"
+ [7] "cei-libkomp-gcc-8192-512"     "cei-libkomp-gcc-8192-64"
  [9] "draco-libkomp-clang-8192-256" "draco-libkomp-clang-8192-512"
-[11] "draco-libkomp-clang-8192-64"  "draco-libkomp-gcc-8192-128"  
-[13] "draco-libkomp-gcc-8192-256"   "draco-libkomp-gcc-8192-512"  
-[15] "draco-libkomp-gcc-8192-64"    "hype-libkomp-clang-8192-256" 
-[17] "hype-libkomp-clang-8192-512"  "hype-libkomp-clang-8192-64"  
-[19] "hype-libkomp-gcc-8192-128"    "hype-libkomp-gcc-8192-256"   
+[11] "draco-libkomp-clang-8192-64"  "draco-libkomp-gcc-8192-128"
+[13] "draco-libkomp-gcc-8192-256"   "draco-libkomp-gcc-8192-512"
+[15] "draco-libkomp-gcc-8192-64"    "hype-libkomp-clang-8192-256"
+[17] "hype-libkomp-clang-8192-512"  "hype-libkomp-clang-8192-64"
+[19] "hype-libkomp-gcc-8192-128"    "hype-libkomp-gcc-8192-256"
 [21] "hype-libkomp-gcc-8192-512"    "hype-libkomp-gcc-8192-64"
 #+end_example
 
@@ -2483,7 +2483,7 @@ done;
 
 ****** Full View Chart
 ******* Execution "cei-libkomp-clang-8192-128"
- #+begin_src R :results output graphics :file img/trace-qr-cei-libkomp-clang-8192-128-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-cei-libkomp-clang-8192-128-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_libkomp(blockQrLibkomp[["cei-libkomp-clang-8192-128"]])
  #+end_src
 
@@ -2491,7 +2491,7 @@ done;
  [[file:img/trace-qr-cei-libkomp-clang-8192-128-libkomp.png]]
 
 ******* Execution "cei-libkomp-clang-8192-256"
- #+begin_src R :results output graphics :file img/trace-qr-cei-libkomp-clang-8192-256-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-cei-libkomp-clang-8192-256-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_libkomp(blockQrLibkomp[["cei-libkomp-clang-8192-256"]])
  #+end_src
 
@@ -2499,7 +2499,7 @@ done;
  [[file:img/trace-qr-cei-libkomp-clang-8192-256-libkomp.png]]
 
 ******* Execution "cei-libkomp-clang-8192-512"
- #+begin_src R :results output graphics :file img/trace-qr-cei-libkomp-clang-8192-512-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-cei-libkomp-clang-8192-512-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_libkomp(blockQrLibkomp[["cei-libkomp-clang-8192-512"]])
  #+end_src
 
@@ -2507,7 +2507,7 @@ done;
  [[file:img/trace-qr-cei-libkomp-clang-8192-512-libkomp.png]]
 
 ******* Execution "cei-libkomp-clang-8192-64"
- #+begin_src R :results output graphics :file img/trace-qr-cei-libkomp-clang-8192-64-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-cei-libkomp-clang-8192-64-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_libkomp(blockQrLibkomp[["cei-libkomp-clang-8192-64"]])
  #+end_src
 
@@ -2515,7 +2515,7 @@ done;
  [[file:img/trace-qr-cei-libkomp-clang-8192-64-libkomp.png]]
 
 ******* Execution "cei-libkomp-gcc-8192-128"
- #+begin_src R :results output graphics :file img/trace-qr-cei-libkomp-gcc-8192-128-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-cei-libkomp-gcc-8192-128-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_libkomp(blockQrLibkomp[["cei-libkomp-gcc-8192-128"]])
  #+end_src
 
@@ -2523,7 +2523,7 @@ done;
  [[file:img/trace-qr-cei-libkomp-gcc-8192-128-libkomp.png]]
 
 ******* Execution "cei-libkomp-gcc-8192-256"
- #+begin_src R :results output graphics :file img/trace-qr-cei-libkomp-gcc-8192-256-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-cei-libkomp-gcc-8192-256-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_libkomp(blockQrLibkomp[["cei-libkomp-gcc-8192-256"]])
  #+end_src
 
@@ -2531,7 +2531,7 @@ done;
  [[file:img/trace-qr-cei-libkomp-gcc-8192-256-libkomp.png]]
 
 ******* Execution "cei-libkomp-gcc-8192-512"
- #+begin_src R :results output graphics :file img/trace-qr-cei-libkomp-gcc-8192-512-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-cei-libkomp-gcc-8192-512-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_libkomp(blockQrLibkomp[["cei-libkomp-gcc-8192-512"]])
  #+end_src
 
@@ -2539,7 +2539,7 @@ done;
  [[file:img/trace-qr-cei-libkomp-gcc-8192-512-libkomp.png]]
 
 ******* Execution "cei-libkomp-gcc-8192-64"
- #+begin_src R :results output graphics :file img/trace-qr-cei-libkomp-gcc-8192-64-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-cei-libkomp-gcc-8192-64-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_libkomp(blockQrLibkomp[["cei-libkomp-gcc-8192-64"]])
  #+end_src
 
@@ -2547,7 +2547,7 @@ done;
  [[file:img/trace-qr-cei-libkomp-gcc-8192-64-libkomp.png]]
 
 ******* Execution "draco-libkomp-clang-8192-256"
- #+begin_src R :results output graphics :file img/trace-qr-draco-libkomp-clang-8192-256-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-draco-libkomp-clang-8192-256-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_libkomp(blockQrLibkomp[["draco-libkomp-clang-8192-256"]])
  #+end_src
 
@@ -2555,7 +2555,7 @@ done;
  [[file:img/trace-qr-draco-libkomp-clang-8192-256-libkomp.png]]
 
 ******* Execution "draco-libkomp-clang-8192-512"
- #+begin_src R :results output graphics :file img/trace-qr-draco-libkomp-clang-8192-512-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-draco-libkomp-clang-8192-512-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_libkomp(blockQrLibkomp[["draco-libkomp-clang-8192-512"]])
  #+end_src
 
@@ -2563,7 +2563,7 @@ done;
  [[file:img/trace-qr-draco-libkomp-clang-8192-512-libkomp.png]]
 
 ******* Execution "draco-libkomp-clang-8192-64"
- #+begin_src R :results output graphics :file img/trace-qr-draco-libkomp-clang-8192-64-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-draco-libkomp-clang-8192-64-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_libkomp(blockQrLibkomp[["draco-libkomp-clang-8192-64"]])
  #+end_src
 
@@ -2571,7 +2571,7 @@ done;
  [[file:img/trace-qr-draco-libkomp-clang-8192-64-libkomp.png]]
 
 ******* Execution "draco-libkomp-gcc-8192-128"
- #+begin_src R :results output graphics :file img/trace-qr-draco-libkomp-gcc-8192-128-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-draco-libkomp-gcc-8192-128-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_libkomp(blockQrLibkomp[["draco-libkomp-gcc-8192-128"]])
  #+end_src
 
@@ -2579,7 +2579,7 @@ done;
  [[file:img/trace-qr-draco-libkomp-gcc-8192-128-libkomp.png]]
 
 ******* Execution "draco-libkomp-gcc-8192-256"
- #+begin_src R :results output graphics :file img/trace-qr-draco-libkomp-gcc-8192-256-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-draco-libkomp-gcc-8192-256-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_libkomp(blockQrLibkomp[["draco-libkomp-gcc-8192-256"]])
  #+end_src
 
@@ -2587,7 +2587,7 @@ done;
  [[file:img/trace-qr-draco-libkomp-gcc-8192-256-libkomp.png]]
 
 ******* Execution "draco-libkomp-gcc-8192-512"
- #+begin_src R :results output graphics :file img/trace-qr-draco-libkomp-gcc-8192-512-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-draco-libkomp-gcc-8192-512-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_libkomp(blockQrLibkomp[["draco-libkomp-gcc-8192-512"]])
  #+end_src
 
@@ -2595,7 +2595,7 @@ done;
  [[file:img/trace-qr-draco-libkomp-gcc-8192-512-libkomp.png]]
 
 ******* Execution "draco-libkomp-gcc-8192-64"
- #+begin_src R :results output graphics :file img/trace-qr-draco-libkomp-gcc-8192-64-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-draco-libkomp-gcc-8192-64-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_libkomp(blockQrLibkomp[["draco-libkomp-gcc-8192-64"]])
  #+end_src
 
@@ -2603,7 +2603,7 @@ done;
  [[file:img/trace-qr-draco-libkomp-gcc-8192-64-libkomp.png]]
 
 ******* Execution "hype-libkomp-clang-8192-256"
- #+begin_src R :results output graphics :file img/trace-qr-hype-libkomp-clang-8192-256-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-hype-libkomp-clang-8192-256-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_libkomp(blockQrLibkomp[["hype-libkomp-clang-8192-256"]])
  #+end_src
 
@@ -2611,7 +2611,7 @@ done;
  [[file:img/trace-qr-hype-libkomp-clang-8192-256-libkomp.png]]
 
 ******* Execution "hype-libkomp-clang-8192-512"
- #+begin_src R :results output graphics :file img/trace-qr-hype-libkomp-clang-8192-512-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-hype-libkomp-clang-8192-512-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_libkomp(blockQrLibkomp[["hype-libkomp-clang-8192-512"]])
  #+end_src
 
@@ -2619,7 +2619,7 @@ done;
  [[file:img/trace-qr-hype-libkomp-clang-8192-512-libkomp.png]]
 
 ******* Execution "hype-libkomp-clang-8192-64"
- #+begin_src R :results output graphics :file img/trace-qr-hype-libkomp-clang-8192-64-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-hype-libkomp-clang-8192-64-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_libkomp(blockQrLibkomp[["hype-libkomp-clang-8192-64"]])
  #+end_src
 
@@ -2627,7 +2627,7 @@ done;
  [[file:img/trace-qr-hype-libkomp-clang-8192-64-libkomp.png]]
 
 ******* Execution "hype-libkomp-gcc-8192-128"
- #+begin_src R :results output graphics :file img/trace-qr-hype-libkomp-gcc-8192-128-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-hype-libkomp-gcc-8192-128-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_libkomp(blockQrLibkomp[["hype-libkomp-gcc-8192-128"]])
  #+end_src
 
@@ -2635,7 +2635,7 @@ done;
  [[file:img/trace-qr-hype-libkomp-gcc-8192-128-libkomp.png]]
 
 ******* Execution "hype-libkomp-gcc-8192-256"
- #+begin_src R :results output graphics :file img/trace-qr-hype-libkomp-gcc-8192-256-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-hype-libkomp-gcc-8192-256-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_libkomp(blockQrLibkomp[["hype-libkomp-gcc-8192-256"]])
  #+end_src
 
@@ -2643,7 +2643,7 @@ done;
  [[file:img/trace-qr-hype-libkomp-gcc-8192-256-libkomp.png]]
 
 ******* Execution "hype-libkomp-gcc-8192-512"
- #+begin_src R :results output graphics :file img/trace-qr-hype-libkomp-gcc-8192-512-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-hype-libkomp-gcc-8192-512-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_libkomp(blockQrLibkomp[["hype-libkomp-gcc-8192-512"]])
  #+end_src
 
@@ -2651,7 +2651,7 @@ done;
  [[file:img/trace-qr-hype-libkomp-gcc-8192-512-libkomp.png]]
 
 ******* Execution "hype-libkomp-gcc-8192-64"
- #+begin_src R :results output graphics :file img/trace-qr-hype-libkomp-gcc-8192-64-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-hype-libkomp-gcc-8192-64-libkomp.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_libkomp(blockQrLibkomp[["hype-libkomp-gcc-8192-64"]])
  #+end_src
 
@@ -2670,13 +2670,13 @@ library(stringr)
 library(readr)
 library(gtools)
 
-makespan_scorep <- function (dtx) {   
+makespan_scorep <- function (dtx) {
 
     dtx %>% filter(Kernel == "dgeqrt") %>% .$End %>% max -> ret
     ret
 }
 
-idleness_scorep <- function (dtx) {   
+idleness_scorep <- function (dtx) {
 
     dtx %>% group_by(WorkerID) %>% summarize(Idleness = (1-(sum(End-Start)/makespan_scorep(.)))*100) -> ret
     ret
@@ -2825,9 +2825,9 @@ blockQrScorep %>% names
 #+end_src
 
 #+RESULTS: scorepnames
-:  [1] "cei-scorep-8192-128"   "cei-scorep-8192-256"   "cei-scorep-8192-512"  
+:  [1] "cei-scorep-8192-128"   "cei-scorep-8192-256"   "cei-scorep-8192-512"
 :  [4] "cei-scorep-8192-64"    "draco-scorep-8192-128" "draco-scorep-8192-256"
-:  [7] "draco-scorep-8192-512" "draco-scorep-8192-64"  "hype-scorep-8192-128" 
+:  [7] "draco-scorep-8192-512" "draco-scorep-8192-64"  "hype-scorep-8192-128"
 : [10] "hype-scorep-8192-256"  "hype-scorep-8192-512"  "hype-scorep-8192-64"
 
 #+header: :var lista=scorepnames
@@ -2848,7 +2848,7 @@ done;
 
 ****** Full View Chart
 ******* Execution "cei-scorep-8192-128"
- #+begin_src R :results output graphics :file img/trace-qr-cei-scorep-8192-128-scorep.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-cei-scorep-8192-128-scorep.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_scorep(blockQrScorep[["cei-scorep-8192-128"]])
  #+end_src
 
@@ -2856,7 +2856,7 @@ done;
  [[file:img/trace-qr-cei-scorep-8192-128-scorep.png]]
 
 ******* Execution "cei-scorep-8192-256"
- #+begin_src R :results output graphics :file img/trace-qr-cei-scorep-8192-256-scorep.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-cei-scorep-8192-256-scorep.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_scorep(blockQrScorep[["cei-scorep-8192-256"]])
  #+end_src
 
@@ -2864,7 +2864,7 @@ done;
  [[file:img/trace-qr-cei-scorep-8192-256-scorep.png]]
 
 ******* Execution "cei-scorep-8192-512"
- #+begin_src R :results output graphics :file img/trace-qr-cei-scorep-8192-512-scorep.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-cei-scorep-8192-512-scorep.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_scorep(blockQrScorep[["cei-scorep-8192-512"]])
  #+end_src
 
@@ -2872,7 +2872,7 @@ done;
  [[file:img/trace-qr-cei-scorep-8192-512-scorep.png]]
 
 ******* Execution "cei-scorep-8192-64"
- #+begin_src R :results output graphics :file img/trace-qr-cei-scorep-8192-64-scorep.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-cei-scorep-8192-64-scorep.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_scorep(blockQrScorep[["cei-scorep-8192-64"]])
  #+end_src
 
@@ -2880,7 +2880,7 @@ done;
  [[file:img/trace-qr-cei-scorep-8192-64-scorep.png]]
 
 ******* Execution "draco-scorep-8192-128"
- #+begin_src R :results output graphics :file img/trace-qr-draco-scorep-8192-128-scorep.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-draco-scorep-8192-128-scorep.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_scorep(blockQrScorep[["draco-scorep-8192-128"]])
  #+end_src
 
@@ -2888,7 +2888,7 @@ done;
  [[file:img/trace-qr-draco-scorep-8192-128-scorep.png]]
 
 ******* Execution "draco-scorep-8192-256"
- #+begin_src R :results output graphics :file img/trace-qr-draco-scorep-8192-256-scorep.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-draco-scorep-8192-256-scorep.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_scorep(blockQrScorep[["draco-scorep-8192-256"]])
  #+end_src
 
@@ -2896,7 +2896,7 @@ done;
  [[file:img/trace-qr-draco-scorep-8192-256-scorep.png]]
 
 ******* Execution "draco-scorep-8192-512"
- #+begin_src R :results output graphics :file img/trace-qr-draco-scorep-8192-512-scorep.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-draco-scorep-8192-512-scorep.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_scorep(blockQrScorep[["draco-scorep-8192-512"]])
  #+end_src
 
@@ -2904,7 +2904,7 @@ done;
  [[file:img/trace-qr-draco-scorep-8192-512-scorep.png]]
 
 ******* Execution "draco-scorep-8192-64"
- #+begin_src R :results output graphics :file img/trace-qr-draco-scorep-8192-64-scorep.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-draco-scorep-8192-64-scorep.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_scorep(blockQrScorep[["draco-scorep-8192-64"]])
  #+end_src
 
@@ -2912,7 +2912,7 @@ done;
  [[file:img/trace-qr-draco-scorep-8192-64-scorep.png]]
 
 ******* Execution "hype-scorep-8192-128"
- #+begin_src R :results output graphics :file img/trace-qr-hype-scorep-8192-128-scorep.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-hype-scorep-8192-128-scorep.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_scorep(blockQrScorep[["hype-scorep-8192-128"]])
  #+end_src
 
@@ -2920,7 +2920,7 @@ done;
  [[file:img/trace-qr-hype-scorep-8192-128-scorep.png]]
 
 ******* Execution "hype-scorep-8192-256"
- #+begin_src R :results output graphics :file img/trace-qr-hype-scorep-8192-256-scorep.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-hype-scorep-8192-256-scorep.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_scorep(blockQrScorep[["hype-scorep-8192-256"]])
  #+end_src
 
@@ -2928,7 +2928,7 @@ done;
  [[file:img/trace-qr-hype-scorep-8192-256-scorep.png]]
 
 ******* Execution "hype-scorep-8192-512"
- #+begin_src R :results output graphics :file img/trace-qr-hype-scorep-8192-512-scorep.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-hype-scorep-8192-512-scorep.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_scorep(blockQrScorep[["hype-scorep-8192-512"]])
  #+end_src
 
@@ -2936,7 +2936,7 @@ done;
  [[file:img/trace-qr-hype-scorep-8192-512-scorep.png]]
 
 ******* Execution "hype-scorep-8192-64"
- #+begin_src R :results output graphics :file img/trace-qr-hype-scorep-8192-64-scorep.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-hype-scorep-8192-64-scorep.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_scorep(blockQrScorep[["hype-scorep-8192-64"]])
  #+end_src
 
@@ -2957,13 +2957,13 @@ library(gtools)
 library(tidyr)
 
 makespan_ompt <- function (dtx) {
-     
+
     dtx %>% filter(Operation == "lapack_dgeqrt") %>% .$time_end %>% max -> ret
     ret
 }
 
 idleness_ompt <- function (dtx) {
-     
+
     dtx %>% group_by(Thread) %>% summarize(Idleness = (1-(sum(time_end-time_start)/makespan_ompt(.)))*100) -> ret
     ret
 }
@@ -2971,7 +2971,7 @@ idleness_ompt <- function (dtx) {
 gantt_ompt <- function (dtx) {
 
     dtx %>% mutate(Thread=as.factor(Thread), Operation=as.factor(Operation)) %>% mutate(Operation=factor(Operation, levels=mixedsort(levels(Operation)))) -> dty
-     
+
     # time zero (start of  first task in the DAG)
     zero <- dty %>% filter(Operation == "lapack_dgeqrt") %>% .$time_start %>% min
     dty %>% mutate(time_start=time_start-zero, time_end=time_end-zero) -> dtz
@@ -2982,7 +2982,7 @@ gantt_ompt <- function (dtx) {
     makespan_y = (dtz %>% .$Thread %>% unique %>% length) / 2
 
     dti <- idleness_ompt(dtz)
-    
+
     ggplot(data=dtz, aes(x=time_start, y=Thread)) +
         geom_rect(aes(fill=Operation,
                       xmin=time_start,
@@ -3036,13 +3036,13 @@ blockQrOmpt <-
 
         df3
     })
-        
+
 names(blockQrOmpt) <-
     grep("ompt", list.dirs(path=rawDirExp, full.names=TRUE, recursive=TRUE), value=TRUE) %>%
     lapply(function(fl){
         #nm <- basename(fl) %>% strsplit("_") %>% unlist()
         #nm[0:(length(nm)-2)] %>% paste(collapse ='-')
-        nm <- basename(fl) %>% str_replace_all("_", "-") 
+        nm <- basename(fl) %>% str_replace_all("_", "-")
         if(grepl("hype", fl)){
             platform = "hype"
         } else if (grepl("cei", fl)){
@@ -3066,9 +3066,9 @@ blockQrOmpt %>% names
 #+end_src
 
 #+RESULTS: omptnames
-:  [1] "cei-ompt-8192-128"   "cei-ompt-8192-256"   "cei-ompt-8192-512"  
+:  [1] "cei-ompt-8192-128"   "cei-ompt-8192-256"   "cei-ompt-8192-512"
 :  [4] "cei-ompt-8192-64"    "draco-ompt-8192-128" "draco-ompt-8192-256"
-:  [7] "draco-ompt-8192-512" "draco-ompt-8192-64"  "hype-ompt-8192-128" 
+:  [7] "draco-ompt-8192-512" "draco-ompt-8192-64"  "hype-ompt-8192-128"
 : [10] "hype-ompt-8192-256"  "hype-ompt-8192-512"  "hype-ompt-8192-64"
 
 #+header: :var lista=omptnames
@@ -3089,7 +3089,7 @@ done;
 
 ****** Full View Chart
 ******* Execution "cei-ompt-8192-128"
- #+begin_src R :results output graphics :file img/trace-qr-cei-ompt-8192-128-ompt.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-cei-ompt-8192-128-ompt.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_ompt(blockQrOmpt[["cei-ompt-8192-128"]])
  #+end_src
 
@@ -3097,7 +3097,7 @@ done;
  [[file:img/trace-qr-cei-ompt-8192-128-ompt.png]]
 
 ******* Execution "cei-ompt-8192-256"
- #+begin_src R :results output graphics :file img/trace-qr-cei-ompt-8192-256-ompt.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-cei-ompt-8192-256-ompt.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_ompt(blockQrOmpt[["cei-ompt-8192-256"]])
  #+end_src
 
@@ -3105,7 +3105,7 @@ done;
  [[file:img/trace-qr-cei-ompt-8192-256-ompt.png]]
 
 ******* Execution "cei-ompt-8192-512"
- #+begin_src R :results output graphics :file img/trace-qr-cei-ompt-8192-512-ompt.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-cei-ompt-8192-512-ompt.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_ompt(blockQrOmpt[["cei-ompt-8192-512"]])
  #+end_src
 
@@ -3113,7 +3113,7 @@ done;
  [[file:img/trace-qr-cei-ompt-8192-512-ompt.png]]
 
 ******* Execution "cei-ompt-8192-64"
- #+begin_src R :results output graphics :file img/trace-qr-cei-ompt-8192-64-ompt.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-cei-ompt-8192-64-ompt.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_ompt(blockQrOmpt[["cei-ompt-8192-64"]])
  #+end_src
 
@@ -3121,7 +3121,7 @@ done;
  [[file:img/trace-qr-cei-ompt-8192-64-ompt.png]]
 
 ******* Execution "draco-ompt-8192-128"
- #+begin_src R :results output graphics :file img/trace-qr-draco-ompt-8192-128-ompt.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-draco-ompt-8192-128-ompt.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_ompt(blockQrOmpt[["draco-ompt-8192-128"]])
  #+end_src
 
@@ -3129,7 +3129,7 @@ done;
  [[file:img/trace-qr-draco-ompt-8192-128-ompt.png]]
 
 ******* Execution "draco-ompt-8192-256"
- #+begin_src R :results output graphics :file img/trace-qr-draco-ompt-8192-256-ompt.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-draco-ompt-8192-256-ompt.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_ompt(blockQrOmpt[["draco-ompt-8192-256"]])
  #+end_src
 
@@ -3137,7 +3137,7 @@ done;
  [[file:img/trace-qr-draco-ompt-8192-256-ompt.png]]
 
 ******* Execution "draco-ompt-8192-512"
- #+begin_src R :results output graphics :file img/trace-qr-draco-ompt-8192-512-ompt.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-draco-ompt-8192-512-ompt.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_ompt(blockQrOmpt[["draco-ompt-8192-512"]])
  #+end_src
 
@@ -3145,7 +3145,7 @@ done;
  [[file:img/trace-qr-draco-ompt-8192-512-ompt.png]]
 
 ******* Execution "draco-ompt-8192-64"
- #+begin_src R :results output graphics :file img/trace-qr-draco-ompt-8192-64-ompt.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-draco-ompt-8192-64-ompt.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_ompt(blockQrOmpt[["draco-ompt-8192-64"]])
  #+end_src
 
@@ -3153,7 +3153,7 @@ done;
  [[file:img/trace-qr-draco-ompt-8192-64-ompt.png]]
 
 ******* Execution "hype-ompt-8192-128"
- #+begin_src R :results output graphics :file img/trace-qr-hype-ompt-8192-128-ompt.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-hype-ompt-8192-128-ompt.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_ompt(blockQrOmpt[["hype-ompt-8192-128"]])
  #+end_src
 
@@ -3161,7 +3161,7 @@ done;
  [[file:img/trace-qr-hype-ompt-8192-128-ompt.png]]
 
 ******* Execution "hype-ompt-8192-256"
- #+begin_src R :results output graphics :file img/trace-qr-hype-ompt-8192-256-ompt.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-hype-ompt-8192-256-ompt.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_ompt(blockQrOmpt[["hype-ompt-8192-256"]])
  #+end_src
 
@@ -3169,7 +3169,7 @@ done;
  [[file:img/trace-qr-hype-ompt-8192-256-ompt.png]]
 
 ******* Execution "hype-ompt-8192-512"
- #+begin_src R :results output graphics :file img/trace-qr-hype-ompt-8192-512-ompt.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-hype-ompt-8192-512-ompt.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_ompt(blockQrOmpt[["hype-ompt-8192-512"]])
  #+end_src
 
@@ -3177,7 +3177,7 @@ done;
  [[file:img/trace-qr-hype-ompt-8192-512-ompt.png]]
 
 ******* Execution "hype-ompt-8192-64"
- #+begin_src R :results output graphics :file img/trace-qr-hype-ompt-8192-64-ompt.png :exports both :width 1400 :height 800 :session R :eval no-export 
+ #+begin_src R :results output graphics :file img/trace-qr-hype-ompt-8192-64-ompt.png :exports both :width 1400 :height 800 :session R :eval no-export
    gantt_ompt(blockQrOmpt[["hype-ompt-8192-64"]])
  #+end_src
 
@@ -3276,10 +3276,10 @@ plot_duration(dt_duration %>% filter(Platform=="draco") %>% filter(!grepl("starp
 **** Idleness plots
 ***** Code
       #+begin_src R :results output :session R :exports both
-       
+
       plot_all_idleness <- function(dta){
 
-          dta %>% 
+          dta %>%
               ggplot(aes(x=Resource, y=Idleness, fill=Runtime)) +
                   geom_bar(stat="identity", position=position_dodge()) +
                   facet_grid(Block~Matrix, scales="free") +
@@ -3291,7 +3291,7 @@ plot_duration(dt_duration %>% filter(Platform=="draco") %>% filter(!grepl("starp
       plot_idleness_average <- function(dta){
 
           dta %>%
-              group_by(Runtime, Block, Matrix) %>% 
+              group_by(Runtime, Block, Matrix) %>%
               summarize(Mean=mean(Idleness), Median=median(Idleness), Sd=sd(Idleness)) %>%
               ggplot(aes(x=Runtime, y=Mean, fill=Runtime)) +
                  geom_bar(stat="identity") +
@@ -3299,33 +3299,33 @@ plot_duration(dt_duration %>% filter(Platform=="draco") %>% filter(!grepl("starp
                  facet_grid(Block~Matrix, scales="free") +
                  ylab("Mean Idleness Ratio (%)") +
                  theme_bw() +
-                 theme (legend.position = "bottom")        
+                 theme (legend.position = "bottom")
       }
       #+end_src
 
-      
+
 ***** Merge all
       #+begin_src R :results output :session R :exports both
-   
+
       bind_rows(
           lapply(blockQrStarpuKstar %>% names, function(x){
               nm <- x %>% strsplit("-") %>% unlist()
-              blockQrStarpuKstar[[x]]$State %>% calculate_resource_idleness(max_only = FALSE) %>% select(-ResourceType, -Node, -ResourceId, -Height, -End) %>% rename(Resource=Position)  %>% mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)], Platform=nm[1]) 
+              blockQrStarpuKstar[[x]]$State %>% calculate_resource_idleness(max_only = FALSE) %>% select(-ResourceType, -Node, -ResourceId, -Height, -End) %>% rename(Resource=Position)  %>% mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)], Platform=nm[1])
           }),
           lapply(blockQrLibkomp %>% names, function(x){
               nm <- x %>% strsplit("-") %>% unlist()
-              blockQrLibkomp[[x]] %>% idleness_libkomp() %>% mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)], Platform=nm[1]) 
+              blockQrLibkomp[[x]] %>% idleness_libkomp() %>% mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)], Platform=nm[1])
           }),
           lapply(blockQrScorep %>% names, function(x){
               nm <- x %>% strsplit("-") %>% unlist()
-              blockQrScorep[[x]] %>% idleness_scorep()  %>% rename(Resource=WorkerID) %>% mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)], Platform=nm[1]) 
+              blockQrScorep[[x]] %>% idleness_scorep()  %>% rename(Resource=WorkerID) %>% mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)], Platform=nm[1])
           }),
           lapply(blockQrOmpt %>% names, function(x){
               nm <- x %>% strsplit("-") %>% unlist()
-              blockQrOmpt[[x]] %>% idleness_ompt() %>% rename(Resource=Thread)  %>% mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)], Platform=nm[1]) 
+              blockQrOmpt[[x]] %>% idleness_ompt() %>% rename(Resource=Thread)  %>% mutate(Runtime=(nm[2:(length(nm)-2)] %>% paste(collapse ='-')), Matrix=nm[length(nm)-1], Block=nm[length(nm)], Platform=nm[1])
           })
       ) %>% mutate(Resource=factor(Resource)) -> dt_idleness
-      
+
       #+end_src
 
 
@@ -3370,7 +3370,7 @@ plot_duration(dt_duration %>% filter(Platform=="draco") %>% filter(!grepl("starp
        [[file:img/idleness-average-draco.png]]
 
 
-**** dgeqrt-start figure!  
+**** dgeqrt-start figure!
 ***** Merge all
       #+header: :session *ssh hype3*
       #+begin_src R :results output :session R :exports both
@@ -3397,7 +3397,7 @@ plot_duration(dt_duration %>% filter(Platform=="draco") %>% filter(!grepl("starp
 
 ***** Code
       #+begin_src R :results output :exports both
-       
+
       plot_dgeqrt_start <- function(dta){
 
           dta %>% group_by(Runtime, Matrix, Block) %>% arrange(Start) %>% mutate(i=seq(n())) %>%
@@ -3422,7 +3422,7 @@ plot_duration(dt_duration %>% filter(Platform=="draco") %>% filter(!grepl("starp
 
       #+RESULTS:
       [[file:img/dgeqrt-start-cei.png]]
-      
+
 
 
 * Resources
