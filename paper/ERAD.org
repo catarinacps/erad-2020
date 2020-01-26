@@ -18,6 +18,8 @@
 \maketitle
 #+end_export
 
+#+Latex: \vspace{-0.8cm}
+
 #+begin_resumo
 Nesse trabalho verificamos o comportamento de cinco /runtimes/ numa
 aplicação com programação baseada em tarefas. Observamos discrepâncias
@@ -27,6 +29,8 @@ excessivo de tarefas nas versões LIBKOMP e KStar_{StarPU}. A versão
 StarPU manteve bom desempenho mesmo com tarefas significativamente
 mais lentas que as de outras versões.
 #+end_resumo
+
+#+Latex: \vspace{-0.8cm}
 
 * Configuração                                                     :noexport:
 
