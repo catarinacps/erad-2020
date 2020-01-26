@@ -19,13 +19,13 @@
 #+end_export
 
 #+begin_resumo
-Nesse trabalho verificamos o comportamento de cinco /runtimes/ numa aplicação
-utilizando programação baseada em tarefas. Observamos discrepâncias na duração
-reportada das tarefas em relação ao tempo total de duração de algumas versões,
-além de dificuldades no gerenciamento das tarefas quando existe um excesso
-dessas nas versões LIBKOMP e KStar_{StarPU}. A versão StarPU manteve boa
-performance mesmo com tarefas significativamente mais lentas que as de outras
-versões.
+Nesse trabalho verificamos o comportamento de cinco /runtimes/ numa
+aplicação com programação baseada em tarefas. Observamos discrepâncias
+na duração das tarefas em relação ao tempo total de duração
+de algumas versões, além de dificuldades no gerenciamento com número
+excessivo de tarefas nas versões LIBKOMP e KStar_{StarPU}. A versão
+StarPU manteve bom desempenho mesmo com tarefas significativamente
+mais lentas que as de outras versões.
 #+end_resumo
 
 * Configuração                                                     :noexport:
