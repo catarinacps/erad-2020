@@ -196,10 +196,10 @@ processos de desenvolvimento e de verificação ocorressem paralelamente.
 #+latex: \noindent
 *Execução e Coleta dos Dados*: A automação dessas foi materializada por
 /scripts/ Shell executados pelo gerenciador de /jobs/ Slurm em cada nó de
-computação detalhado na [[tab:plataformas][Tabela 1]]. Dada inevitável complexidade de dependências
-dos /runtimes/ aqui abordados, também desenvolvemos um /script/ que abstrai
-detalhes pertinentes a plataforma do /cluster/ de computação gerenciado pelo
-Slurm e permite a fácil reprodução de um experimento numa só linha de comando.
+computação detalhado na [[tab:plataformas][Tabela 1]]. Dada inevitável complexidade de
+dependências dos /runtimes/ aqui abordados, também desenvolvemos um
+/script/ que abstrai detalhes pertinentes a plataforma do /cluster/ e
+permite a fácil reprodução de um experimento numa só linha de comando.
 
 #+latex: \noindent
 *Exploração e Análise dos Dados*: A integração das ferramentas previamente
@@ -248,8 +248,8 @@ experimentação. Além disso, detalharemos as plataformas utilizadas.
 | =hype=  | $4, 1$    | $2 \times 10$ Xeon E5 2650 v3 2.3GHz  | 32KB/256KB/25MB    | 128GB DDR4 |
 |---------+-----------+---------------------------------------+--------------------+------------|
 
-Para a execução da aplicação, usamos as plataformas descritas na
-[[tab:plataformas][Tabela 1]] e as ferramentas listadas na  [[tab:versoes][Tabela 2]]. Todas executam
+Na execução da aplicação, usamos as plataformas descritas na
+[[tab:plataformas][Tabela 1]] e as ferramentas da  [[tab:versoes][Tabela 2]]. Todas executam
 Debian (=10.2=) com  /kernel/ Linux =4.19.0-6=.
 
 #+begin_comment
