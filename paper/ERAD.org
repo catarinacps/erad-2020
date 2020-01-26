@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # -*- mode: org -*-
 
-#+title: Paper for ERAD 2020
+#+title: Análise da Influência do /Runtime/ OpenMP no Desempenho de Aplicação com Tarefas
 #+author: Henrique Corrêa Pereira da Silva@@latex:\and@@
 #+author: Marcelo Cogo Milletto@@latex:\and@@
 #+author: Vinicius Garcia Pinto@@latex:\and\\@@
