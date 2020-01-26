@@ -2,23 +2,23 @@
 # -*- coding: utf-8 -*-
 # -*- mode: org -*-
 
-#+title: Análise da Influência do /Runtime/ OpenMP no Desempenho de Aplicação com Tarefas
-#+author: Henrique Corrêa Pereira da Silva@@latex:\and@@
+#+title: Análise da Influência do /Runtime/ OpenMP no Desempenho de Aplicação com Tarefas @@latex: \vspace{-0.2cm}@@
+#+author: @@latex: \vspace{-0.1cm}@@ Henrique Corrêa Pereira da Silva@@latex:\and@@
 #+author: Marcelo Cogo Milletto@@latex:\and@@
 #+author: Vinicius Garcia Pinto@@latex:\and\\@@
-#+author: Lucas Mello Schnorr
+#+author: Lucas Mello Schnorr @@latex: \vspace{-0.2cm}@@
 
 #+begin_export latex
 \address{
-  Instituto de Informática -- Universidade Federal do Rio Grande do Sul (UFRGS)\\
-  Porto Alegre -- RS -- Brasil
+  \vspace{-0.1cm}
+  Instituto de Informática -- Universidade Federal do Rio Grande do Sul (UFRGS)
   \email{\{hcpsilva,marcelo.miletto,vgpinto,schnorr\}@inf.ufrgs.br}
 }
 
 \maketitle
 #+end_export
 
-#+Latex: \vspace{-0.8cm}
+#+Latex: \vspace{-0.5cm}
 
 #+begin_resumo
 Nesse trabalho verificamos o comportamento de cinco /runtimes/ numa
@@ -30,7 +30,7 @@ StarPU manteve bom desempenho mesmo com tarefas significativamente
 mais lentas que as de outras versões.
 #+end_resumo
 
-#+Latex: \vspace{-0.8cm}
+#+Latex: \vspace{-0.7cm}
 
 * Configuração                                                     :noexport:
 
