@@ -6,11 +6,11 @@
 #+author: @@latex: \vspace{-0.1cm}@@ Henrique Corrêa Pereira da Silva@@latex:\and@@
 #+author: Marcelo Cogo Milletto@@latex:\and@@
 #+author: Vinicius Garcia Pinto@@latex:\and\\@@
-#+author: Lucas Mello Schnorr @@latex: \vspace{-0.2cm}@@
+#+author: Lucas Mello Schnorr @@latex: \vspace{-0.5cm}@@
 
 #+begin_export latex
 \address{
-  \vspace{-0.2cm}
+  \vspace{-0.4cm}
   Instituto de Informática -- Universidade Federal do Rio Grande do Sul (UFRGS)
   \email{\{hcpsilva,marcelo.miletto,vgpinto,schnorr\}@inf.ufrgs.br}
 }
@@ -18,7 +18,7 @@
 \maketitle
 #+end_export
 
-#+latex: \vspace{-0.5cm}
+#+latex: \vspace{-0.7cm}
 
 #+begin_resumo
 Nesse trabalho verificamos o comportamento de cinco /runtimes/ numa
@@ -64,10 +64,8 @@ mais lentas que as de outras versões.
 #+latex_header: \usepackage{fancyvrb}
 #+latex_header: \hyphenation{e-la-bo-ra-ção re-pre-sen-tar}
 
-#+latex_header: \addtolength{\textfloatsep}{-0.0cm}
 #+latex_header: \setlength\textfloatsep{0.0cm}
 #+latex_header: \setlength\floatsep{0.0cm}
-#+latex_header: \addtolength\abovecaptionskip{-0.0cm}
 #+latex_header: \setlength\abovecaptionskip{-0.4cm}
 #+latex_header: \addtolength\belowcaptionskip{-0.0cm}
 #+latex_header: \setlength\belowcaptionskip{0.0cm}
@@ -120,10 +118,6 @@ qualidade da implementação ditar a performance desses sistemas, mas sim a
 escolha de biblioteca utilizada pelo programador. Com isso, surge a questão de
 definir qual dessas é a mais performática e, sobretudo, por que ela é.
 
-# achei sketchy até aqui
-# outra realização: não tem tanto espaço assim na verdade, e ainda falta muita
-# coisa!
-
 Podemos citar OpenMP \cite{dagum1998openmp}, a partir da versão 4, e StarPU
 \cite{augonnet2011starpu} como ferramentas de programação paralela que suportam
 modelos mais sofisticados de paralelismo, como a programação baseada em
@@ -135,6 +129,10 @@ seus /workers/ respeitando as dependências declaradas.
 # StarPU foi projetado especificamente com esse conceito em
 # mente e, na versão =3.0= de sua especificação, esse conceito foi
 # introduzido na especificação do OpenMP.
+
+# achei sketchy até aqui
+# outra realização: não tem tanto espaço assim na verdade, e ainda falta muita
+# coisa!
 
 Avaliaremos o desempenho e comportamento de uma fatoração QR para matriz densa
 com duas implementações, uma utilizando diretamente as diretivas de tarefas do
@@ -151,6 +149,8 @@ Deixa sem por eqto, só vamos citar o do marcelo. Depois na versão final, fazem
 este ajuste..
 #+end_comment
 
+#+latex: \vspace{-0.3cm}
+
 * Metodologia de Coleta e Análise de Dados
 
 #+begin_comment
@@ -159,37 +159,38 @@ este ajuste..
 #+end_comment
 
 Nessa seção versaremos sobre a metodologia experimental, assim como o
-ferramental de /software/ utilizado para a análise dos dados coletados. Além
-disso, abordaremos o /workflow/ adotado a fim de aprimorar a reprodutibilidade
-dos resultados aqui apresentados.
+ferramental de /software/ utilizado para a análise dos dados coletados.
 
-** Projeto Experimental
+#+begin_comment
+Além disso, abordaremos o /workflow/ adotado a fim de aprimorar a
+reprodutibilidade dos resultados aqui apresentados.
+#+end_comment
 
-A fim de analisar o impacto dos diferentes /runtimes/ aqui avaliados, definimos
-como fatores do projeto experimentar o tamanho da *matriz* e o tamanho do
-*bloco* de cada tarefa. O tamanho do bloco varia em fatores de potências de $2$
-entre $[32, 512]$, resultando, assim, em cinco níveis, enquanto o tamanho da
-matriz foi fixado em $8192$. Através da combinação fatorial completa de todos
-esses parâmetros de execução \cite{jain1991art}, obtivemos a acurácia necessária
-para que nós observássemos a tendência do impacto do número das tarefas geradas
-pela a aplicação. Cada combinação foi repetida 5 vezes para cada experimento em
-cada nó para a avaliação do /makespan/ e 1 vez para a coleta do traço das
-execuções.
+#+latex: \noindent
+*Projeto Experimental*: A fim de analisar o impacto dos diferentes /runtimes/
+aqui avaliados, definimos como fatores do projeto experimentar o tamanho da
+*matriz* e o tamanho do *bloco* de cada tarefa. O tamanho do bloco varia em
+fatores de potências de $2$ entre $[32, 512]$, resultando, assim, em cinco
+níveis, enquanto o tamanho da matriz foi fixado em $8192$. Através da combinação
+fatorial completa de todos esses parâmetros de execução \cite{jain1991art},
+obtivemos a acurácia necessária para que nós observássemos a tendência do
+impacto do número das tarefas geradas pela a aplicação. Cada combinação foi
+repetida 5 vezes para cada experimento em cada nó para a avaliação do /makespan/
+e 1 vez para a coleta do traço das execuções.
 
-** Manipulação de dados com ferramentas modernas de /data science/
-
-É essencial possuir um conjunto de ferramentas atualizado e apropriado para
-garantir a qualidade de quaisquer análises em qualquer estudo. Sendo assim,
-compreendemos essas garantias ao empregar a linguagem R em conjunto com o pacote
-tidyverse através de blocos de códigos embutidos em arquivos Org
-\cite{dominik2010orgmode} versionados na ferramenta =git=. Com tal abordagem
-construímos um caderno de laboratório (/labbook/) que centralizou o processo
-exploratório científico, as anotações decorrentes e todos os experimentos
-realizados, desde o projeto desses até o código de análise dos dados
-coletados. Acreditamos que dessa maneira pode-se assegurar a reprodutibilidade e
-a verificação dos resultados obtidos \cite{stanisic2015workflow} sem perder a
-flexibilidade necessária para que processos de desenvolvimento e de verificação
-ocorressem paralelamente.
+#+latex: \noindent
+*Manipulação de dados com ferramentas modernas de /data science/*: É essencial
+possuir um conjunto de ferramentas atualizado e apropriado para garantir a
+qualidade de quaisquer análises em qualquer estudo. Sendo assim, compreendemos
+essas garantias ao empregar a linguagem R em conjunto com o pacote tidyverse
+através de blocos de códigos embutidos em arquivos Org \cite{dominik2010orgmode}
+versionados na ferramenta =git=. Assim, construímos um caderno de laboratório
+(/labbook/) que centralizou o processo exploratório científico, as anotações
+decorrentes e todos os experimentos realizados, desde o projeto desses até o
+código de análise dos dados coletados. Acreditamos que dessa maneira pode-se
+assegurar a reprodutibilidade e a verificação dos resultados obtidos
+\cite{stanisic2015workflow} sem perder a flexibilidade necessária para que
+processos de desenvolvimento e de verificação ocorressem paralelamente.
 
 # O que eu quis dizer com isso exatamente? "flexibilidade dos processos de
 # desenvolvimento e de verificação"?
@@ -213,8 +214,8 @@ a fácil reprodução de um experimento numa só linha de comando.
 *Exploração e Análise dos Dados*: A integração das ferramentas previamente
 citadas no editor Emacs permitiu o uso de blocos de código de análise dos dados
 em R entrelaçados com notas sobre esses. Uma abordagem similar é a dos /Jupyter
-Notebooks/, que porém acaba mais restrita pelo versionamento mais limitado dos
-arquivos em /rich text/.
+Notebooks/, que porém é mais restrita pelo versionamento limitado dos arquivos
+em /rich text/.
 
 # essa última frase está especialmente fraca
 
@@ -227,6 +228,8 @@ de exportação da ferramenta.
 
 # acredito que é possível perceber que eu não sei mais o que falar sobre o
 # workflow.
+
+#+latex: \vspace{-0.3cm}
 
 * Resultados Experimentais e Observações
 
@@ -242,6 +245,8 @@ experimentação. Além disso, detalharemos as plataformas utilizadas.
   - Starpu/LWS
 #+end_comment
 
+#+latex: \vspace{0.1cm}
+
 #+name: tab:plataformas
 #+attr_latex: :float t :placement [!htb] :font \small
 #+caption: Configuração das plataformas utilizadas nos experimentos.
@@ -253,6 +258,8 @@ experimentação. Além disso, detalharemos as plataformas utilizadas.
 | =cei=   | $7, 1$    | $2 \times 12$ Xeon Silver 4116 2.1GHz | 32KB/1024KB/16.5MB | 93GB DDR4  |
 | =hype=  | $4, 1$    | $2 \times 10$ Xeon E5 2650 v3 2.3GHz  | 32KB/256KB/25MB    | 128GB DDR4 |
 |---------+-----------+---------------------------------------+--------------------+------------|
+
+#+latex: \vspace{-0.35cm}
 
 #+latex: \noindent
 *Configuração Experimental*: Na execução da aplicação, usamos as plataformas
@@ -322,10 +329,14 @@ coletando os tempos de execução que são apresentados nos gráficos da
 bloco de cada tarefa e na linhas observamos as diferentes máquinas utilizadas no
 experimento. Apresentamos ambas média das 5 observações e seu erro padrão.
 
+#+latex: \vspace{-0.3cm}
+
 #+name: fig:makespan
 #+attr_latex: :float t :placement [!htb]
 #+caption: Comparação do /makespan/ da execução de cada runtime.
 [[../img/makespan-all.png]]
+
+#+latex: \vspace{-0.5cm}
 
 Observamos que a tendência de comportamento se preserva entre as plataformas
 utilizadas. Sendo assim, analisaremos nas próximas seções os detalhes da
@@ -337,18 +348,16 @@ que, além do caso de tamanho $64$, os /runtimes/ mantém ociosidade similar par
 todos os casos. Com um tamanho de bloco $64$ os /runtimes/ necessitam lidar com
 um grande número de tarefas, o que estressa a capacidade de escalonamento, o
 que, por consequência, afeta na quantidade de tempo ocioso por /worker/ da
-plataforma.
+plataforma. Pela análise da figura, observamos que esse caso é especialmente
+interessante, já que ambos LIBKOMP_clang quanto KStar_{StarPU} apresentam
+ociosidade média significativamente alta. Em todos os casos, libgomp_{GCC},
+libomp_{LLVM} e StarPU mantém performance compatível em questão da efetividade
+do escalonamento das tarefas.
 
 #+name: fig:idleness
 #+attr_latex: :float t :placement [!htb]
 #+caption: Comparação do /idleness/ das tarefas em cada runtime e /worker/.
 [[../img/idleness-all-cei.png]]
-
-Pela análise da figura, observamos que esse caso é especialmente interessante,
-já que ambos LIBKOMP_clang quanto KStar_{StarPU} apresentam ociosidade média
-significativamente alta. Em todos os casos, libgomp_{GCC}, libomp_{LLVM} e
-StarPU mantém performance compatível em questão da efetividade do escalonamento
-das tarefas.
 
 #+begin_comment
 Figura que a gente conversou
@@ -362,7 +371,10 @@ Figura que a gente conversou
 3]] apresenta o tempo de início da tarefa =dgeqrt=, que é o primeiro
 procedimento realizado no laço de execução de uma fatoração QR. Ao observar este
 tempo, esperamos verificar a progressão da implementação no processo de
-fatoração e a eficiência desse.
+fatoração e a eficiência desse. Fora as implementações KStar_{StarPU} e StarPU,
+todas essas tarefas foram iniciadas no primeiro segundo de execução. Além disso,
+a implementação KStar_{StarPU} iniciou essas tarefas significativamente antes do
+que a em StarPU nativo.
 
 #+name: fig:dgeqrt
 #+attr_latex: :float t :placement [!htb]
@@ -370,11 +382,6 @@ fatoração e a eficiência desse.
 [[../img/dgeqrt-start-cei.png]]
 
 #+latex: \vspace{-0.5cm}
-
-Fora as implementações KStar_{StarPU} e StarPU, todas essas tarefas foram
-iniciadas no primeiro segundo de execução. Além disso, a implementação
-KStar_{StarPU} iniciou essas tarefas significativamente antes do que a em StarPU
-nativo.
 
 * Conclusão e Trabalhos Futuros
 
@@ -430,6 +437,8 @@ aqui realizada. Para trabalhos futuros, consideramos implementar a verificação
 da solução obtida pela execução, adicionar o /runtime/ OmpSs
 \cite{duran2011ompss} aos testes e também abranger diferentes arquiteturas de
 processador nos testes.
+
+#+latex: \vspace{-0.3cm}
 
 * Referências                                                        :ignore:
 
