@@ -2,23 +2,21 @@
 # -*- coding: utf-8 -*-
 # -*- mode: org -*-
 
-#+title: Análise da Influência do /Runtime/ OpenMP no Desempenho de Aplicação com Tarefas @@latex: \vspace{-0.2cm}@@
-#+author: @@latex: \vspace{-0.1cm}@@ Henrique Corrêa Pereira da Silva@@latex:\and@@
-#+author: Marcelo Cogo Milletto@@latex:\and@@
-#+author: Vinicius Garcia Pinto@@latex:\and\\@@
-#+author: Lucas Mello Schnorr @@latex: \vspace{-0.5cm}@@
+#+title: Análise da Influência do /Runtime/ OpenMP no Desempenho de Aplicação com Tarefas
+#+author: Henrique C. P. da Silva@@latex:\thanks{Bolsa do Projeto da Petrobras;}\and@@
+#+author: Marcelo C. Milletto@@latex:\thanks{Bolsa do Conselho Nacional de Desenvolvimento Científico e Tecnológico (CNPQ);}\and@@
+#+author: Vinicius G. Pinto@@latex:\and@@
+#+author: Lucas M. Schnorr
 
 #+begin_export latex
 \address{
-  \vspace{-0.4cm}
+  % \vspace{-0.2cm}
   Instituto de Informática -- Universidade Federal do Rio Grande do Sul (UFRGS)
   \email{\{hcpsilva,marcelo.miletto,vgpinto,schnorr\}@inf.ufrgs.br}
 }
 
 \maketitle
 #+end_export
-
-#+latex: \vspace{-0.7cm}
 
 #+begin_resumo
 Nesse trabalho verificamos o comportamento de cinco /runtimes/ numa
@@ -29,8 +27,6 @@ excessivo de tarefas nas versões LIBKOMP e KStar_{StarPU}. A versão
 StarPU manteve bom desempenho mesmo com tarefas significativamente
 mais lentas que as de outras versões.
 #+end_resumo
-
-#+latex: \vspace{-0.6cm}
 
 * Configuração                                                     :noexport:
 
@@ -74,6 +70,8 @@ mais lentas que as de outras versões.
 # If you do, just type make (thanks Luka Stanisic for this).
 
 * Introdução, Objetivos e Trabalhos Relacionados
+
+#+latex: \vspace{-0.2cm}
 
 #+begin_comment
 - HPC é tri; contexto (paralelismo de tarefas)
@@ -153,6 +151,8 @@ este ajuste..
 
 * Metodologia de Coleta e Análise de Dados
 
+#+latex: \vspace{-0.2cm}
+
 #+begin_comment
 - Visão geral do workflow
   - Figura mostrando o funcionamento (com o texto a explicando)
@@ -183,12 +183,12 @@ e 1 vez para a coleta do traço das execuções.
 possuir um conjunto de ferramentas atualizado e apropriado para garantir a
 qualidade de quaisquer análises em qualquer estudo. Sendo assim, compreendemos
 essas garantias ao empregar a linguagem R em conjunto com o pacote tidyverse
-através de blocos de códigos embutidos em arquivos Org \cite{dominik2010orgmode}
-versionados na ferramenta =git=. Assim, construímos um caderno de laboratório
-(/labbook/) que centralizou o processo exploratório científico, as anotações
-decorrentes e todos os experimentos realizados, desde o projeto desses até o
-código de análise dos dados coletados. Acreditamos que dessa maneira pode-se
-assegurar a reprodutibilidade e a verificação dos resultados obtidos
+através de blocos de códigos embutidos em arquivos Org versionados na ferramenta
+=git=. Assim, construímos um caderno de laboratório (/labbook/) que centralizou
+o processo exploratório científico, as anotações decorrentes e todos os
+experimentos realizados, desde o projeto desses até o código de análise dos
+dados coletados. Acreditamos que dessa maneira pode-se assegurar a
+reprodutibilidade e a verificação dos resultados obtidos
 \cite{stanisic2015workflow} sem perder a flexibilidade necessária para que
 processos de desenvolvimento e de verificação ocorressem paralelamente.
 
@@ -232,6 +232,8 @@ de exportação da ferramenta.
 #+latex: \vspace{-0.3cm}
 
 * Resultados Experimentais e Observações
+
+#+latex: \vspace{-0.2cm}
 
 Nessa seção apresentaremos, com auxilio de visualizadões, os fenômenos observados na
 experimentação. Além disso, detalharemos as plataformas utilizadas.
@@ -343,6 +345,7 @@ utilizadas. Sendo assim, analisaremos nas próximas seções os detalhes da
 execução das tarefas na plataforma =cei= com o tamanho $64$ de bloco.
 
 #+latex: \noindent
+<<sub:worker>>
 *Análise de Ociosidade por /Worker/*: Na [[fig:idleness][Figura 2]] observamos
 que, além do caso de tamanho $64$, os /runtimes/ mantém ociosidade similar para
 todos os casos. Com um tamanho de bloco $64$ os /runtimes/ necessitam lidar com
@@ -385,6 +388,8 @@ que a em StarPU nativo.
 
 * Conclusão e Trabalhos Futuros
 
+#+latex: \vspace{-0.1cm}
+
 #+begin_comment
 Precisamos aprofundar a investigação
 
@@ -426,11 +431,11 @@ identificamos que os tempos de duração das tarefas são incompatíveis com a t
 de ociosidade e tempo total observados, como é o caso das implementações
 libgomp_{GCC}, libomp_{LLVM} e LIBKOMP. Além disso, verificamos que as
 ferramentas KStar e LIBKOMP não obtiveram desem desejável quando o grão de
-trabalho era pequeno, conforme detalhado na [[/Análise de Ociosidade por
-/Worker/][Subseção 3.3]]. Pela visualização do /makespan/ da
-[[fig:makespan][Figura 1]] percebemos que existe um comportamento anômalo da
-ferramenta KStar_{StarPU} em quase todos os casos, o que acreditamos indicar que
-esta versão não está respeitando as dependências de dados entre as tarefas.
+trabalho era pequeno, conforme detalhado na [[sub:worker][Subseção 3.3]]. Pela
+visualização do /makespan/ da [[fig:makespan][Figura 1]] percebemos que existe
+um comportamento anômalo da ferramenta KStar_{StarPU} em quase todos os casos, o
+que acreditamos indicar que esta versão não está respeitando as dependências de
+dados entre as tarefas.
 
 Tais constatações pedem pela continuação e aprofundamento da investigação até
 aqui realizada. Para trabalhos futuros, consideramos implementar a verificação
@@ -531,12 +536,9 @@ Tangle this file with C-c C-v t
 }
 
 @article{augonnet2011starpu,
- author = {Augonnet, Cédric and Thibault, Samuel and Namyst, Raymond and Wacrenier, Pierre-André},
+ author = {Augonnet, Cédric and others},
  title = {{StarPU}: a unified platform for task scheduling on heterogeneous multicore architectures},
- journal = {Concurrency and Computation: Practice and Experience},
- volume = {23},
- number = {2},
- pages = {187-198},
+ journal = {Conc. and Comp.: Pract. and Exp.},
  keywords = {GPU, multicore, accelerator, scheduling, runtime system},
  doi = {10.1002/cpe.1631},
  url = {https://onlinelibrary.wiley.com/doi/abs/10.1002/cpe.1631},
@@ -737,10 +739,9 @@ Tangle this file with C-c C-v t
  volume = {21},
  doi = {10.1142/S0129626411000151},
  shorttitle = {Ompss},
- pages = {173--193},
- journaltitle = {Parallel Processing Letters},
+ journal = {Parallel Processing Letters},
  shortjournal = {Parallel Processing Letters},
- author = {Duran, Alejandro and Ayguadé, Eduard and Badia, Rosa M. and Labarta, Jesús and Martinell, Luis and Martorell, Xavier and Planas, Judit},
+ author = {Duran, Alejandro and others},
  date = {2011-06-01},
  year = {2011}
 }
