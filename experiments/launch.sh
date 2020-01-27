@@ -4,7 +4,7 @@ set -euo pipefail
 
 function usage {
 cat << EOF
-  $0 [OPTIONS] <EXP_ID> [REPO_DIRECTORY]
+  $0 [OPTIONS] <EXP_ID>
 
   WHERE <EXP_ID> is the identificator of the experiment
 
@@ -38,11 +38,10 @@ cat << EOF
       overwrite the install of all packages listed as a dependency
     -O | --strong-overwrite
       force the reinstall of all packages listed as a dependency
-
-  WHERE [REPO_DIRECTORY] is the *full* path to the repository
-    It is presumed that you are in it, if you don't provide this argument
 EOF
 }
+
+SCRIPT_PATH=$(readlink -f $0)
 
 for i in "$@"; do
     case $i in
@@ -186,8 +185,11 @@ INSTALL_DIR=${INSTALL_DIR:-$HOME/Installs/spack}
 # the experiment id
 EXPERIMENT_ID=$1
 
+# the experiments (emphasis on the plural) directory
+SCRIPT_DIR=$(dirname $SCRIPT_PATH)
+
 # the work (repo) dir
-REPO_DIR=${2:-$PWD}
+REPO_DIR=$(dirname $SCRIPT_DIR)
 
 # default run partition
 PARTITIONLIST=${PARTITIONLIST:-cei}
@@ -204,11 +206,6 @@ OVERWRITE=${OVERWRITE:-false}
 # the path to the spack installation
 SPACK_DIR=${SPACK_DIR:-$HOME/spack-erad}
 
-if [[ $REPO_DIR != /* ]]; then
-    echo "ERROR: Path to repository is not absolute, please use the absolute path..."
-    exit 2
-fi
-
 if [[ $INSTALL_DIR != /* ]]; then
     echo "ERROR: Path to installation dir is not absolute, please use the absolute path..."
     exit 2
@@ -219,7 +216,7 @@ if [[ $SPACK_DIR != /* ]]; then
     exit 2
 fi
 
-EXP_DIR=$(find $REPO_DIR -type d -path "*/experiments/$EXPERIMENT_ID")
+EXP_DIR=$(find $SCRIPT_DIR -type d -name $EXPERIMENT_ID)
 if [ ! -n "$EXP_DIR" ]; then
     echo "ERROR: There isn't any experiment with this ID..."
     exit 3
@@ -238,7 +235,7 @@ for partition in $PARTITIONLIST; do
             -N 1 \
             -J dependencies_${EXPERIMENT_ID}_${partition} \
             -W \
-            $(dirname $EXP_DIR)/deps.sh $INSTALL_DIR $EXP_DIR $SPACK_DIR $OVERWRITE
+            $SCRIPT_DIR/deps.sh $INSTALL_DIR $EXP_DIR $SPACK_DIR $OVERWRITE
         echo "... and done!"
     fi
     echo
@@ -271,7 +268,7 @@ for partition in $PARTITIONLIST; do
                 -p ${partition} \
                 -w ${node} \
                 -J dependencies_${EXPERIMENT_ID}_${node} \
-                $(dirname $EXP_DIR)/deps.sh $INSTALL_DIR $EXP_DIR $SPACK_DIR $OVERWRITE
+                $SCRIPT_DIR/deps.sh $INSTALL_DIR $EXP_DIR $SPACK_DIR $OVERWRITE
         fi
 
         # launch the slurm script for this node
