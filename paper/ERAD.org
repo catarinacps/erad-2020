@@ -60,11 +60,9 @@ mais lentas que as de outras versões.
 #+latex_header: \usepackage{fancyvrb}
 #+latex_header: \hyphenation{e-la-bo-ra-ção re-pre-sen-tar}
 
-#+latex_header: \setlength\textfloatsep{0.0cm}
-#+latex_header: \setlength\floatsep{0.0cm}
-#+latex_header: \setlength\abovecaptionskip{-0.4cm}
-#+latex_header: \addtolength\belowcaptionskip{-0.0cm}
-#+latex_header: \setlength\belowcaptionskip{0.0cm}
+#+latex_header: \setlength\textfloatsep{0.2cm}
+#+latex_header: \setlength\floatsep{0.2cm}
+#+latex_header: \setlength\abovecaptionskip{-0.3cm}
 
 # You need at least Org 9 and Emacs 24 to make this work.
 # If you do, just type make (thanks Luka Stanisic for this).
@@ -173,14 +171,14 @@ LLVM, o /runtime/ da biblioteca LIBKOMP baseado em X-Kaapi, e através da
 transpilação para StarPU via compilador KStar. Assim, visamos comparar
 o *escalonamento* das tarefas, observar a *ociosidade* dos trabalhadores
 de cada /runtime/ e identificar *anomalias* em quaisquer das bibliotecas
-avaliadas.  
-#+END_COMMENT marcelo
+avaliadas.
+#+END_COMMENT
 
-#+latex: \vspace{-0.3cm}
+#+latex: \vspace{-0.1cm}
 
 * Metodologia de Coleta e Análise de Dados
 
-#+latex: \vspace{-0.2cm}
+#+latex: \vspace{-0.1cm}
 
 #+begin_comment
 - Visão geral do workflow
@@ -196,28 +194,24 @@ reprodutibilidade dos resultados aqui apresentados.
 #+end_comment
 
 #+latex: \noindent
-*Projeto Experimental*: A fim de analisar o impacto dos diferentes /runtimes/
-aqui avaliados, definimos como fatores do projeto experimental o tamanho da
-*matriz* e o tamanho do *bloco* de cada tarefa. O tamanho do bloco varia em
-fatores de potências de $2$ entre $[32, 512]$, resultando, assim, em cinco
-níveis, enquanto o tamanho da matriz foi fixado em $8192$. Através da combinação
-fatorial completa de todos esses parâmetros de execução \cite{jain1991art},
-obtivemos a acurácia necessária para que nós observássemos a tendência do
+*Projeto Experimental*: A fim de analisar o impacto dos diferentes /runtimes/,
+definimos como fatores do projeto experimental o tamanho da *matriz* e o tamanho
+do *bloco* de cada tarefa. O tamanho do bloco varia em fatores de potências de
+$2$ entre $[32, 512]$, resultando, assim, em cinco níveis, enquanto o tamanho da
+matriz foi fixado em $8192$. Através da combinação fatorial completa desses
+parâmetros de execução \cite{jain1991art}, podemos observar a tendência do
 impacto do número das tarefas geradas pela a aplicação. Cada combinação foi
 repetida 5 vezes para cada experimento em cada nó para a avaliação do /makespan/
 e 1 vez para a coleta do traço das execuções.
 
 #+latex: \noindent
-*Manipulação de dados com ferramentas modernas de /data science/*: É essencial
-possuir um conjunto de ferramentas atualizado e apropriado para garantir a
-qualidade de quaisquer análises em qualquer estudo. Sendo assim, compreendemos
-essas garantias ao empregar a linguagem R em conjunto com o pacote tidyverse
-através de blocos de códigos embutidos em arquivos Org versionados na ferramenta
-=git=. Assim, construímos um caderno de laboratório (/labbook/) que centralizou
-o processo exploratório científico, as anotações decorrentes e todos os
-experimentos realizados, desde o projeto desses até o código de análise dos
-dados coletados. Acreditamos que dessa maneira pode-se assegurar a
-reprodutibilidade e a verificação dos resultados obtidos
+*Manipulação de dados com ferramentas modernas de /data science/*: Utilizamos a
+linguagem R em conjunto com o pacote tidyverse através de blocos de códigos
+embutidos em arquivos Org versionados na ferramenta =git=. Assim, construímos um
+caderno de laboratório (/labbook/) que centralizou o processo exploratório
+científico, as anotações decorrentes e todos os experimentos realizados, desde o
+projeto desses até o código de análise dos dados coletados. Dessa maneira
+pode-se assegurar a reprodutibilidade e a verificação dos resultados obtidos
 \cite{stanisic2015workflow} sem perder a flexibilidade necessária para que
 processos de desenvolvimento e de verificação ocorressem paralelamente.
 
@@ -234,10 +228,9 @@ processos de desenvolvimento e de verificação ocorressem paralelamente.
 #+latex: \noindent
 *Execução e Coleta dos Dados*: A automação dessas foi materializada por
 /scripts/ Shell executados pelo gerenciador de /jobs/ Slurm em cada nó de
-computação detalhado na [[tab:plataformas][Tabela 1]]. Dada inevitável
-complexidade de dependências dos /runtimes/ aqui abordados, também desenvolvemos
-um /script/ que abstrai detalhes pertinentes a plataforma do /cluster/ e permite
-a fácil reprodução de um experimento numa só linha de comando.
+computação detalhado na [[tab:plataformas][Tabela 1]]. Devido a complexidade de
+dependências dos /runtimes/, desenvolvemos um /script/ que abstrai detalhes a
+plataforma e permite a fácil reprodução de um experimento.
 
 #+latex: \noindent
 *Exploração e Análise dos Dados*: A integração das ferramentas previamente
@@ -258,11 +251,9 @@ de exportação da ferramenta.
 # acredito que é possível perceber que eu não sei mais o que falar sobre o
 # workflow.
 
-#+latex: \vspace{-0.3cm}
+#+latex: \vspace{-0.2cm}
 
 * Resultados Experimentais e Observações
-
-#+latex: \vspace{-0.2cm}
 
 Nessa seção apresentaremos, com auxilio de visualizadões, os fenômenos observados na
 experimentação. Além disso, detalharemos as plataformas utilizadas.
@@ -276,8 +267,6 @@ experimentação. Além disso, detalharemos as plataformas utilizadas.
   - Starpu/LWS
 #+end_comment
 
-#+latex: \vspace{0.1cm}
-
 #+name: tab:plataformas
 #+attr_latex: :float t :placement [!htb] :font \small
 #+caption: Configuração das plataformas utilizadas nos experimentos.
@@ -290,13 +279,19 @@ experimentação. Além disso, detalharemos as plataformas utilizadas.
 | =hype=  | $4, 1$    | $2 \times 10$ Xeon E5 2650 v3 2.3GHz  | 32KB/256KB/25MB    | 128GB DDR4 |
 |---------+-----------+---------------------------------------+--------------------+------------|
 
-#+latex: \vspace{-0.35cm}
+#+latex: \vspace{-0.2}
 
 #+latex: \noindent
 *Configuração Experimental*: Na execução da aplicação, usamos as plataformas
 descritas na [[tab:plataformas][Tabela 1]] e as ferramentas da
 [[tab:versoes][Tabela 2]]. Todas executam Debian (=10.2=) com /kernel/ Linux
-=4.19.0-6=.
+=4.19.0-6=. O rastreamento da aplicação utilizando a biblioteca libgomp_{GCC}
+foi realizado utilizando a ferramente ScoreP =6.0= e, quando utilizando a
+biblioteca libomp_{LLVM}, rastreamos a aplicação com uma biblioteca própria
+utilizando chamadas conforme a especificação OMPT =4.5=. O rastreamento das
+biblioteca e compilador StarPU e KStar_{StarPU} foi realizado através da
+biblioteca FxT =0.3.5= e o rastreamento das versões utilizando LIBKOMP foi
+realizado pelo próprio /runtime/, que implementa chamadas à /API/ OMPT.
 
 #+begin_comment
 Listamos em cada uma dessas o seu identificador, a quantidade de nós utilizados
@@ -341,14 +336,6 @@ versões em desenvolvimento das /branches/ =libkomp= (/commit hash/
 respectivamente.
 #+end_comment
 
-O rastreamento da aplicação utilizando a biblioteca libgomp_{GCC} foi realizado
-utilizando a ferramente ScoreP =6.0= e, quando utilizando a biblioteca
-libomp_{LLVM}, rastreamos a aplicação com uma biblioteca própria utilizando
-chamadas conforme a especificação OMPT =4.5=. O rastreamento das biblioteca e
-compilador StarPU e KStar_{StarPU} foi realizado através da biblioteca FxT
-=0.3.5= e o rastreamento das versões utilizando LIBKOMP foi realizado pelo
-próprio /runtime/, que implementa chamadas à /API/ OMPT.
-
 # [fn:1] O link para o /website/ da distribuição é: https://www.debian.org/
 # [fn:2] O link para o /website/ do Netlib é: https://www.netlib.org/
 
@@ -379,12 +366,12 @@ execução das tarefas na plataforma =cei= com o tamanho $64$ de bloco.
 que, além do caso de tamanho $64$, os /runtimes/ mantém ociosidade similar para
 todos os casos. Com um tamanho de bloco $64$ os /runtimes/ necessitam lidar com
 um grande número de tarefas, o que estressa a capacidade de escalonamento, o
-que, por consequência, afeta na quantidade de tempo ocioso por /worker/ da
-plataforma. Pela análise da figura, observamos que esse caso é especialmente
-interessante, já que ambos LIBKOMP_clang quanto KStar_{StarPU} apresentam
-ociosidade média significativamente alta. Em todos os casos, libgomp_{GCC},
-libomp_{LLVM} e StarPU mantém performance compatível em questão da efetividade
-do escalonamento das tarefas.
+que, por consequência, afeta o tempo ocioso por /worker/ da plataforma. Pela
+análise da figura, observamos que esse caso é especialmente interessante, já que
+ambos LIBKOMP_clang quanto KStar_{StarPU} apresentam ociosidade média
+significativamente alta. Em todos os casos, libgomp_{GCC}, libomp_{LLVM} e
+StarPU mantém performance compatível em questão da efetividade do escalonamento
+das tarefas.
 
 #+name: fig:idleness
 #+attr_latex: :float t :placement [!htb]
@@ -401,23 +388,19 @@ Figura que a gente conversou
 #+latex: \noindent
 *Comparação do Escalonamento entre os três /runtimes/*: A [[fig:dgeqrt][Figura
 3]] apresenta o tempo de início da tarefa =dgeqrt=, que é o primeiro
-procedimento realizado no laço de execução de uma fatoração QR. Ao observar este
-tempo, esperamos verificar a progressão da implementação no processo de
-fatoração e a eficiência desse. Fora as implementações KStar_{StarPU} e StarPU,
-todas essas tarefas foram iniciadas no primeiro segundo de execução. Além disso,
-a implementação KStar_{StarPU} iniciou essas tarefas significativamente antes do
-que a em StarPU nativo.
+procedimento do laço de execução de uma fatoração QR. Ao observar este tempo,
+verificamos a progressão da implementação no processo de fatoração e a
+eficiência desse. Com exceção do KStar_{StarPU} e StarPU, todas as tarefas foram
+iniciadas no primeiro segundo de execução. Além disso, a implementação
+KStar_{StarPU} iniciou essas tarefas significativamente antes do que a em StarPU
+nativo.
 
 #+name: fig:dgeqrt
 #+attr_latex: :float t :placement [!htb]
 #+caption: Comparação do escalonamento e progressão de cada /runtime/
 [[../img/dgeqrt-start-cei.png]]
 
-#+latex: \vspace{-0.5cm}
-
 * Conclusão e Trabalhos Futuros
-
-#+latex: \vspace{-0.1cm}
 
 #+begin_comment
 Precisamos aprofundar a investigação
@@ -459,20 +442,17 @@ implementando uma fatoração QR utilizando tarefas. A partir dessas observaçõ
 identificamos que os tempos de duração das tarefas são incompatíveis com a taxa
 de ociosidade e tempo total observados, como é o caso das implementações
 libgomp_{GCC}, libomp_{LLVM} e LIBKOMP. Além disso, verificamos que as
-ferramentas KStar e LIBKOMP não obtiveram desem desejável quando o grão de
+ferramentas KStar e LIBKOMP não obtiveram desempenho desejável quando o grão de
 trabalho era pequeno, conforme detalhado na [[sub:worker][Subseção 3.3]]. Pela
 visualização do /makespan/ da [[fig:makespan][Figura 1]] percebemos que existe
 um comportamento anômalo da ferramenta KStar_{StarPU} em quase todos os casos, o
 que acreditamos indicar que esta versão não está respeitando as dependências de
-dados entre as tarefas.
+dados entre as tarefas. As constatações pedem pelo aprofundamento do
+trabalho, então consideramos implementar a verificação da solução obtida
+pela execução, adicionar o /runtime/ OmpSs \cite{duran2011ompss} nos testes e
+também abranger diferentes arquiteturas de processador.
 
-Tais constatações pedem pela continuação e aprofundamento da investigação até
-aqui realizada. Para trabalhos futuros, consideramos implementar a verificação
-da solução obtida pela execução, adicionar o /runtime/ OmpSs
-\cite{duran2011ompss} aos testes e também abranger diferentes arquiteturas de
-processador nos testes.
-
-#+latex: \vspace{-0.3cm}
+#+latex: \vspace{-0.2cm}
 
 * Referências                                                        :ignore:
 
