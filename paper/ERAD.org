@@ -2,31 +2,35 @@
 # -*- coding: utf-8 -*-
 # -*- mode: org -*-
 
-#+title: Paper for ERAD 2020
-#+author: Henrique Corrêa Pereira da Silva@@latex:\and@@
+#+title: Análise da Influência do /Runtime/ OpenMP no Desempenho de Aplicação com Tarefas @@latex: \vspace{-0.2cm}@@
+#+author: @@latex: \vspace{-0.1cm}@@ Henrique Corrêa Pereira da Silva@@latex:\and@@
 #+author: Marcelo Cogo Milletto@@latex:\and@@
 #+author: Vinicius Garcia Pinto@@latex:\and\\@@
-#+author: Lucas Mello Schnorr
+#+author: Lucas Mello Schnorr @@latex: \vspace{-0.2cm}@@
 
 #+begin_export latex
 \address{
-  Instituto de Informática -- Universidade Federal do Rio Grande do Sul (UFRGS)\\
-  Porto Alegre -- RS -- Brasil
+  \vspace{-0.1cm}
+  Instituto de Informática -- Universidade Federal do Rio Grande do Sul (UFRGS)
   \email{\{hcpsilva,marcelo.miletto,vgpinto,schnorr\}@inf.ufrgs.br}
 }
 
 \maketitle
 #+end_export
 
+#+Latex: \vspace{-0.5cm}
+
 #+begin_resumo
-Nesse trabalho verificamos o comportamento de cinco /runtimes/ numa aplicação
-utilizando programação baseada em tarefas. Observamos discrepâncias na duração
-reportada das tarefas em relação ao tempo total de duração de algumas versões,
-além de dificuldades no gerenciamento das tarefas quando existe um excesso
-dessas nas versões LIBKOMP e KStar_{StarPU}. A versão StarPU manteve boa
-performance mesmo com tarefas significativamente mais lentas que as de outras
-versões.
+Nesse trabalho verificamos o comportamento de cinco /runtimes/ numa
+aplicação com programação baseada em tarefas. Observamos discrepâncias
+na duração das tarefas em relação ao tempo total de duração
+de algumas versões, além de dificuldades no gerenciamento com número
+excessivo de tarefas nas versões LIBKOMP e KStar_{StarPU}. A versão
+StarPU manteve bom desempenho mesmo com tarefas significativamente
+mais lentas que as de outras versões.
 #+end_resumo
+
+#+Latex: \vspace{-0.7cm}
 
 * Configuração                                                     :noexport:
 
@@ -146,7 +150,7 @@ este ajuste..
   - Figura mostrando o funcionamento (com o texto a explicando)
 #+end_comment
 
-Nessa seção versaremos sobre a metodologia experimental desse trabalho, assim
+Nessa seção versaremos sobre a metodologia experimental, assim
 como o ferramental de /software/ utilizado para a análise dos dados
 coletados. Além disso, abordaremos o /workflow/ adotado a fim de aprimorar a
 reprodutibilidade dos resultados aqui apresentados.
@@ -192,10 +196,10 @@ processos de desenvolvimento e de verificação ocorressem paralelamente.
 #+latex: \noindent
 *Execução e Coleta dos Dados*: A automação dessas foi materializada por
 /scripts/ Shell executados pelo gerenciador de /jobs/ Slurm em cada nó de
-computação detalhado na [[tab:plataformas][Tabela 1]]. Dada inevitável complexidade de dependências
-dos /runtimes/ aqui abordados, também desenvolvemos um /script/ que abstrai
-detalhes pertinentes a plataforma do /cluster/ de computação gerenciado pelo
-Slurm e permite a fácil reprodução de um experimento numa só linha de comando.
+computação detalhado na [[tab:plataformas][Tabela 1]]. Dada inevitável complexidade de
+dependências dos /runtimes/ aqui abordados, também desenvolvemos um
+/script/ que abstrai detalhes pertinentes a plataforma do /cluster/ e
+permite a fácil reprodução de um experimento numa só linha de comando.
 
 #+latex: \noindent
 *Exploração e Análise dos Dados*: A integração das ferramentas previamente
@@ -207,20 +211,19 @@ arquivos em /rich text/.
 # essa última frase está especialmente fraca
 
 #+latex: \noindent
-*Visualização e Concepção do Artigo*: Após análise das observações, a
-visualizações dessas constavam também nos mesmos blocos de código de análise,
-isto é, também embutidos no /labbook/. Com a criação das visualizações,
-utilizamos um arquivo Org secundário para escrever o artigo e exportá-lo para
-LaTeX através do sistema de exportação da ferramenta.
+*Visualização e Concepção do Artigo*: Após análise das observações, as
+visualizações dessas constavam também nos mesmos blocos de código de
+análise embutidos no /labbook/. Com a criação das visualizações,
+utilizamos um arquivo Org secundário para escrever o artigo e
+exportá-lo para LaTeX através do sistema de exportação da ferramenta.
 
 # acredito que é possível perceber que eu não sei mais o que falar sobre o
 # workflow.
 
 * Resultados Experimentais e Observações
 
-Nessa seção discorreremos sobre os fenômenos observados a partir da
-experimentação e sobre as visualizações a partir desses concebidas. Além disso,
-detalharemos as plataformas nas quais os experimentos foram realizados.
+Nessa seção apresentaremos, com auxilio de visualizadões, os fenômenos observados na
+experimentação. Além disso, detalharemos as plataformas utilizadas.
 
 ** Configuração Experimental
 
@@ -245,10 +248,9 @@ detalharemos as plataformas nas quais os experimentos foram realizados.
 | =hype=  | $4, 1$    | $2 \times 10$ Xeon E5 2650 v3 2.3GHz  | 32KB/256KB/25MB    | 128GB DDR4 |
 |---------+-----------+---------------------------------------+--------------------+------------|
 
-Para a execução da aplicação, utilizamos as plataformas descritas na
-[[tab:plataformas][Tabela 1]].  Todas executam /kernel/ Linux =4.19.0-6= da
-distribuição Debian (=10.2=). A [[tab:versoes][Tabela 2]] apresenta as versões
-das ferramentas utilizadas.
+Na execução da aplicação, usamos as plataformas descritas na
+[[tab:plataformas][Tabela 1]] e as ferramentas da  [[tab:versoes][Tabela 2]]. Todas executam
+Debian (=10.2=) com  /kernel/ Linux =4.19.0-6=.
 
 #+begin_comment
 Listamos em cada uma dessas o seu identificador, a quantidade de nós
@@ -308,16 +310,17 @@ próprio /runtime/, que implementa chamadas à /API/ OMPT.
 ** Diferenças de tempo de execução dos /kernels/ em função do /runtime/
 
 Executamos as versões das aplicações descritas na [[tab:versoes][Tabela 2]]
-buscando coletar o tempo de execução. Na [[fig:makespan][Figura 1]] observamos
-os resultados coletados nesse experimento, onde nas colunas observamos os
-diferentes tamanhos de bloco de cada tarefa e na linha observamos as diferentes
-máquinas utilizadas no experimento. Apresentamos ambas média das 5 observações e
+coletando os tempos de execução que são apresentados nos gráficos da [[fig:makespan][Figura 1]]. Nas colunas observamos os
+diferentes tamanhos de bloco de cada tarefa e na linhas observamos as diferentes
+máquinas utilizadas no experimento. Apresentamos ambas média das 5 ovsbservações e
 seu erro padrão.
 
 #+name: fig:makespan
 #+attr_latex: :float t :placement [!htb]
 #+caption: Comparação do /makespan/ da execução de cada runtime.
 [[../img/makespan-all.png]]
+
+#+Latex: \vspace{-0.4cm}
 
 Observamos que a tendência de comportamento se preserva entre as plataformas
 utilizadas. Sendo assim, analisaremos nas próximas seções os detalhes da
@@ -352,8 +355,8 @@ Figura que a gente conversou
 #+end_comment
 
 A [[fig:dgeqrt][Figura 3]] apresenta o tempo de início da tarefa =dgeqrt=, que é
-o primeiro procedimento realizado no loop de execução de uma fatoração QR. Ao
-observar o seu tempo de início, esperamos verificar a progressão da
+o primeiro procedimento realizado no laço de execução de uma fatoração QR. Ao
+observar este tempo, esperamos verificar a progressão da
 implementação no processo de fatoração e a eficiência desse.
 
 #+name: fig:dgeqrt
@@ -403,17 +406,16 @@ intrigante!!
   incluir ompss, testar outras arquiteturas (cpu)
 #+end_comment
 
-Nesse trabalho analisamos a performance e comportamento de cinco /runtimes/
+Nesse trabalho analisamos o desempenho e comportamento de cinco /runtimes/
 implementando uma fatoração QR utilizando tarefas. A partir dessas observações,
 identificamos que os tempos de duração das tarefas são incompatíveis com a taxa
 de ociosidade e tempo total observados, como é o caso das implementações
 libgomp_{GCC}, libomp_{LLVM} e LIBKOMP. Além disso, verificamos que as ferramentas
-KStar e LIBKOMP não obtiveram performance desejável quando o grão de trabalho
-era pequeno, conforme detalhado na [[Análise de Ociosidade por
-/Worker/][Subseção 3.3]]. Pela visualização do /makespan/ da
+KStar e LIBKOMP não obtiveram desem desejável quando o grão de trabalho
+era pequeno, conforme detalhado na [[/Análise de Ociosidade por /Worker/][Subseção 3.3]]. Pela visualização do /makespan/ da
 [[fig:makespan][Figura 1]] percebemos que existe um comportamento anômalo da
-ferramenta KStar_{StarPU} em quase todos os casos, o que acreditamos indicar que
-as tarefas executadas por essa versão não estavam respeitando suas dependências.
+ferramenta KStar_{StarPU} em quase todos os casos, o que acreditamos
+indicar que esta versão não está respeitando as dependências de dados entre as tarefas.
 
 Tais constatações pedem pela continuação e aprofundamento da investigação até
 aqui realizada. Para trabalhos futuros, consideramos implementar a verificação
