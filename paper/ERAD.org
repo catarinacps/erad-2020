@@ -235,8 +235,8 @@ processos de desenvolvimento e de verificação ocorressem paralelamente.
 *Execução e Coleta dos Dados*: A automação dessas foi materializada por
 /scripts/ Shell executados pelo gerenciador de /jobs/ Slurm em cada nó de
 computação detalhado na [[tab:plataformas][Tabela 1]]. Devido a complexidade de
-dependências dos /runtimes/, desenvolvemos um /script/ que abstrai detalhes a
-plataforma e permite a fácil reprodução de um experimento.
+dependências dos /runtimes/, desenvolvemos um /script/ que abstrai
+detalhes da plataforma e permite a fácil reprodução de um experimento.
 
 #+latex: \noindent
 *Exploração e Análise dos Dados*: A integração das ferramentas previamente
@@ -261,8 +261,9 @@ de exportação da ferramenta.
 
 * Resultados Experimentais e Observações
 
-Nessa seção apresentaremos, com auxilio de visualizadões, os fenômenos observados na
-experimentação. Além disso, detalharemos as plataformas utilizadas.
+Nessa seção apresentaremos, com auxilio de visualizações, os fenômenos
+observados na experimentação. Além disso, detalharemos as plataformas
+utilizadas. 
 
 #+begin_comment
 \noindent
@@ -294,10 +295,11 @@ descritas na [[tab:plataformas][Tabela 1]] e as ferramentas da
 =4.19.0-6=. O rastreamento da aplicação utilizando a biblioteca libgomp_{GCC}
 foi realizado utilizando a ferramente ScoreP =6.0= e, quando utilizando a
 biblioteca libomp_{LLVM}, rastreamos a aplicação com uma biblioteca própria
-utilizando chamadas conforme a especificação OMPT =4.5=. O rastreamento das
-biblioteca e compilador StarPU e KStar_{StarPU} foi realizado através da
-biblioteca FxT =0.3.5= e o rastreamento das versões utilizando LIBKOMP foi
-realizado pelo próprio /runtime/, que implementa chamadas à /API/ OMPT.
+utilizando chamadas conforme a especificação OMPT =4.5=. O rastreamento da
+biblioteca StarPU e e do compilador KStar_{StarPU} foram realizados
+através da biblioteca FxT =0.3.5= e o rastreamento das versões
+utilizando LIBKOMP foi realizado pelo próprio /runtime/, que implementa
+chamadas à /API/ OMPT. 
 
 #+begin_comment
 Listamos em cada uma dessas o seu identificador, a quantidade de nós utilizados
@@ -349,9 +351,10 @@ respectivamente.
 *Diferenças de tempo de execução dos /kernels/ em função do /runtime/*:
 Executamos as versões das aplicações descritas na [[tab:versoes][Tabela 2]]
 coletando os tempos de execução que são apresentados nos gráficos da
-[[fig:makespan][Figura 1]]. Nas colunas observamos os diferentes tamanhos de
+[[fig:makespan][Figura 1]]. Nas colunas, observamos os diferentes tamanhos de
 bloco de cada tarefa e na linhas observamos as diferentes máquinas utilizadas no
-experimento. Apresentamos ambas média das 5 observações e seu erro padrão.
+experimento. Apresentamos o valor médio de tempo das 5 observações e seu
+erro padrão. 
 
 #+latex: \vspace{-0.3cm}
 
@@ -381,7 +384,7 @@ todos os casos. Com um tamanho de bloco $64$ os /runtimes/ necessitam lidar com
 um grande número de tarefas, o que estressa a capacidade de escalonamento, o
 que, por consequência, afeta o tempo ocioso por /worker/ da plataforma. Pela
 análise da figura, observamos que esse caso é especialmente interessante, já que
-ambos LIBKOMP_clang quanto KStar_{StarPU} apresentam ociosidade média
+ambos LIBKOMP_clang e KStar_{StarPU} apresentam ociosidade média
 significativamente alta. Em todos os casos, libgomp_{GCC}, libomp_{LLVM} e
 StarPU mantém performance compatível em questão da efetividade do escalonamento
 das tarefas.
