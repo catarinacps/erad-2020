@@ -197,7 +197,7 @@ reprodutibilidade dos resultados aqui apresentados.
 
 #+latex: \noindent
 *Projeto Experimental*: A fim de analisar o impacto dos diferentes /runtimes/
-aqui avaliados, definimos como fatores do projeto experimentar o tamanho da
+aqui avaliados, definimos como fatores do projeto experimental o tamanho da
 *matriz* e o tamanho do *bloco* de cada tarefa. O tamanho do bloco varia em
 fatores de potências de $2$ entre $[32, 512]$, resultando, assim, em cinco
 níveis, enquanto o tamanho da matriz foi fixado em $8192$. Através da combinação
