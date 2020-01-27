@@ -28,6 +28,12 @@ StarPU manteve bom desempenho mesmo com tarefas significativamente
 mais lentas que as de outras versões.
 #+end_resumo
 
+#+BEGIN_COMMENT marcelo
+A ultima frase parace estranha. O que é um bom desempenho?
+O fato de o StarPU ter um bom desempenho com tarefas mais lentas não
+parece legal.
+#+END_COMMENT
+
 * Configuração                                                     :noexport:
 
 # Local Variables:
@@ -360,6 +366,13 @@ Observamos que a tendência de comportamento se preserva entre as plataformas
 utilizadas. Sendo assim, analisaremos nas próximas seções os detalhes da
 execução das tarefas na plataforma =cei= com o tamanho $64$ de bloco.
 
+#+BEGIN_COMMENT marcelo
+"Observamos que a tendência de comportamento se preserva entre as plataformas
+utilizadas"
+
+qual exatamente é essa tendência?
+#+END_COMMENT
+
 #+latex: \noindent
 <<sub:worker>>
 *Análise de Ociosidade por /Worker/*: Na [[fig:idleness][Figura 2]] observamos
@@ -395,10 +408,24 @@ iniciadas no primeiro segundo de execução. Além disso, a implementação
 KStar_{StarPU} iniciou essas tarefas significativamente antes do que a em StarPU
 nativo.
 
+#+BEGIN_COMMENT marcelo
+Figura 2 -> runtime ompt e scorep?
+Figura 3 -> runtime ompt e scorep?
+iniciou essas tarefas significativamente antes do que a em StarPU
+nativo
+o que isso significa?
+foi o caso em que o kstar nao funcionou?
+#+END_COMMENT
+
 #+name: fig:dgeqrt
 #+attr_latex: :float t :placement [!htb]
 #+caption: Comparação do escalonamento e progressão de cada /runtime/
 [[../img/dgeqrt-start-cei.png]]
+
+#+BEGIN_COMMENT marcelo
+acho que no eixo x aqui é em ms
+#+END_COMMENT
+
 
 * Conclusão e Trabalhos Futuros
 
@@ -451,6 +478,10 @@ dados entre as tarefas. As constatações pedem pelo aprofundamento do
 trabalho, então consideramos implementar a verificação da solução obtida
 pela execução, adicionar o /runtime/ OmpSs \cite{duran2011ompss} nos testes e
 também abranger diferentes arquiteturas de processador.
+
+#+BEGIN_COMMENT marcelo
+Subseção 3.3 não existe mais
+#+END_COMMENT
 
 #+latex: \vspace{-0.2cm}
 
