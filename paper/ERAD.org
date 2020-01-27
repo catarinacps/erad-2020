@@ -147,6 +147,35 @@ Deixa sem por eqto, só vamos citar o do marcelo. Depois na versão final, fazem
 este ajuste..
 #+end_comment
 
+#+BEGIN_COMMENT marcelo
+# sugestão para a introdução
+Após décadas trabalhando em sistemas e num ferramental a par da
+exponencial demanda por paralelismo, nos encontramos num período no
+qual o desenvolvedor de sistemas de alto desempenho tem diversas
+escolhas de bibliotecas, de /runtimes/ e de /APIs/ para utilizar
+efetivamente o /hardware/ desses sistemas. Entretanto, a diferença entre
+essas é tal que não se trata mais da qualidade da implementação ditar
+a performance desses sistemas, mas sim a escolha de biblioteca
+utilizada pelo programador. Com isso, surge a questão de definir qual
+dessas é a mais performática e, sobretudo, por que ela é. Atualmente,
+OpenMP \cite{dagum1998openmp} e StarPU \cite{augonnet2011starpu}
+suportam modelos mais sofisticados de paralelismo, como a programação
+baseada em tarefas. Nessa, a lógica de um programa é organizada em
+tarefas e o paralelismo é determinado pelas dependências de dados
+entre elas, o gerando um grafo direcionado acíclico (/DAG/). Assim, o
+/runtime/ em questão se assegura de escalonar e distribuir essas tarefas
+dentre seus /workers/ respeitando as dependências declaradas.
+
+Avaliaremos o desempenho e comportamento de uma fatoração QR para
+matriz densa com duas implementações, uma usando OpenMP, e outra
+StarPU. A primeira será executada com os /runtimes/ nativos do GCC e do
+LLVM, o /runtime/ da biblioteca LIBKOMP baseado em X-Kaapi, e através da
+transpilação para StarPU via compilador KStar. Assim, visamos comparar
+o *escalonamento* das tarefas, observar a *ociosidade* dos trabalhadores
+de cada /runtime/ e identificar *anomalias* em quaisquer das bibliotecas
+avaliadas.  
+#+END_COMMENT marcelo
+
 #+latex: \vspace{-0.3cm}
 
 * Metodologia de Coleta e Análise de Dados
@@ -168,7 +197,7 @@ reprodutibilidade dos resultados aqui apresentados.
 
 #+latex: \noindent
 *Projeto Experimental*: A fim de analisar o impacto dos diferentes /runtimes/
-aqui avaliados, definimos como fatores do projeto experimentar o tamanho da
+aqui avaliados, definimos como fatores do projeto experimental o tamanho da
 *matriz* e o tamanho do *bloco* de cada tarefa. O tamanho do bloco varia em
 fatores de potências de $2$ entre $[32, 512]$, resultando, assim, em cinco
 níveis, enquanto o tamanho da matriz foi fixado em $8192$. Através da combinação
