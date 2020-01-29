@@ -24,8 +24,8 @@ aplicação com programação baseada em tarefas. Observamos discrepâncias
 na duração das tarefas em relação ao tempo total de duração
 de algumas versões, além de dificuldades no gerenciamento com número
 excessivo de tarefas nas versões LIBKOMP e KStar_{StarPU}. A versão
-StarPU manteve bom desempenho mesmo com tarefas significativamente
-mais lentas que as de outras versões.
+StarPU manteve bom desempenho mesmo em cenários com significativo número de
+tarefas.
 #+end_resumo
 
 #+BEGIN_COMMENT marcelo
@@ -143,7 +143,9 @@ nativos do GCC e do LLVM, o /runtime/ da biblioteca LIBKOMP baseado em X-Kaapi e
 através da transpilação para StarPU via compilador KStar. Sendo assim, nossos
 objetivos nesse trabalho são comparar o *escalonamento* das tarefas, observar a
 *ociosidade* dos trabalhadores de cada /runtime/ e identificar *anomalias* em
-quaisquer das bibliotecas avaliadas.
+quaisquer das bibliotecas avaliadas. O /companion/ deste trabalho reprodutível
+está publicamente
+disponível[fn:1:https://gitlab.com/hcpsilva/companion-erad-2020].
 
 # lembrete pra eu colocar o paragrafo de related work aqui
 #+begin_comment
@@ -263,7 +265,7 @@ de exportação da ferramenta.
 
 Nessa seção apresentaremos, com auxilio de visualizações, os fenômenos
 observados na experimentação. Além disso, detalharemos as plataformas
-utilizadas. 
+utilizadas.
 
 #+begin_comment
 \noindent
@@ -299,7 +301,7 @@ utilizando chamadas conforme a especificação OMPT =4.5=. O rastreamento da
 biblioteca StarPU e e do compilador KStar_{StarPU} foram realizados
 através da biblioteca FxT =0.3.5= e o rastreamento das versões
 utilizando LIBKOMP foi realizado pelo próprio /runtime/, que implementa
-chamadas à /API/ OMPT. 
+chamadas à /API/ OMPT.
 
 #+begin_comment
 Listamos em cada uma dessas o seu identificador, a quantidade de nós utilizados
@@ -354,7 +356,7 @@ coletando os tempos de execução que são apresentados nos gráficos da
 [[fig:makespan][Figura 1]]. Nas colunas, observamos os diferentes tamanhos de
 bloco de cada tarefa e na linhas observamos as diferentes máquinas utilizadas no
 experimento. Apresentamos o valor médio de tempo das 5 observações e seu
-erro padrão. 
+erro padrão.
 
 #+latex: \vspace{-0.3cm}
 
