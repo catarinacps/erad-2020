@@ -34,6 +34,275 @@ O fato de o StarPU ter um bom desempenho com tarefas mais lentas não
 parece legal.
 #+END_COMMENT
 
+* Revisões ERAD/RS 2020 IC                                         :noexport:
+** Introdução
+
+Prezado(a) Mr. Henrique Silva:
+
+Temos o prazer de informar que o seu trabalho "Análise da Influência do
+Runtime OpenMP no Desempenho de Aplicação com Tarefas" submetido ao
+ERAD/RS 2020 Fórum de Iniciação Científica foi aprovado.
+
+As revisões encontram-se abaixo ou podem ser encontradas em
+https://jems.sbc.org.br/PaperShow.cgi?m=203863
+
+Para que o trabalho seja publicado é necessário que de pelo menos um dos
+autores, de preferência o(s) aluno(s), se inscreva até 19 de Março de
+2020.
+
+A versão final do texto deverá ser enviada até o dia 13 de Março de 2020
+pelo próprio sistema de submissão.
+
+Lembramos que todos os artigos devem seguir as recomendações do modelo
+da SBC. Adicionalmente, também solicitamos:
+
+- o uso de endereços de e-mail institucionais para todos os autores
+(quando possível)
+
+- a inclusão no JEMS todos os autores presentes no PDF submetido
+
+- que não sejam alterados o tamanho da fonte do texto e das referências
+bibliográficas
+
+- que o resumo seja de no máximo 6 linhas
+
+
+
+Atenciosamente,
+
+Coordenação Geral da ERAD/RS 2020 Fórum de Iniciação Científica
+
+---
+** ===== Review =====
+
+
+*** Originalidade (Avalie a originalidade do trabalho, considerando o
+estado-da-arte na área. Avalie se o trabalho apresenta novos resultados
+ou novas observações relevantes sobre um tema já tratado em outros
+trabalhos. Informe o autor caso você conheça  trabalhos relacionados que
+não tenham sido citados.): 5:Excelente 4:Bom 3:Regular 2:Fraco 1:Ruim
+
+Evaluation=Bom (4)
+
+*** Relevância (Avalie a importância do tema, das questões abordadas e
+dos resultados (esperados ou obtidos) do trabalho. Relacione esta
+importância com os objetivos do Fórum. Caso o trabalho deixe a desejar
+neste item, forneça sugestões ao autor para tornar o trabalho mais
+relevante.): 5:Excelente 4:Bom 3:Regular 2:Fraco 1:Ruim
+
+Evaluation=Excelente (5)
+
+*** Mérito técnico (Avalie o mérito do trabalho proposto, pesando a
+qualidade da sua idéia central e a profundidade do autor na compreensão
+do tema, dos problemas e das soluções apresentadas. Nos comentários ao
+autor, inclua sugestões que possam melhorar a qualidade e a profundidade
+do trabalho.): 5:Excelente 4:Bom 3:Regular 2:Fraco 1:Ruim
+
+Evaluation=Regular (3)
+
+*** Qualidade do texto (Avalie a organização do texto, sua legibilidade
+e a qualidade didática da redação. Verifique se a formatação está
+adequada ao estilo proposto.): 5:Excelente 4:Bom 3:Regular 2:Fraco
+1:Ruim
+
+Evaluation=Regular (3)
+
+*** Avaliação Geral (Indique sua impressão geral sobre o trabalho. Esta
+avaliação pode ser independente dos outros critérios, mas procure evitar
+grandes discrepâncias.): 5:Excelente 4:Bom 3:Regular 2:Fraco 1:Ruim
+
+Evaluation=Regular (3)
+
+*** Recomendação (Forneça seu parecer quanto à aceitação/rejeição deste
+trabalho.): 5:Aceitação 4:Aceitação fraca 3:Neutro 2:Rejeição fraca
+1:Rejeição
+
+Evaluation=Aceitação fraca (4)
+
+*** Comentários para o autor (Comente o que você entendeu sobre o
+trabalho. Forneça justificativas para as notas dadas acima
+(originalidade, relevância, mérito, forma). Aponte os pontos fortes e os
+pontos fracos do trabalho/texto, fornecendo sugestões para seu
+aprimoramento.): O artigo avalia o comportamento uma aplicação
+utilizando paralelismo de tarefas com 5 runtimes diferentes. É um estudo
+inicial e os resultados são inconclusivos.
+
+O tema do trabalho é bastante relevante, pois escolher previamente a
+biblioteca de paralelismo mais indicada para uma determinada aplicação
+pode ser uma tarefa difícil e paralelismo de tarefas ainda não é tão
+explorado como o de dados.
+
+A organização e estrutura do trabalho está boa, mas com uma ressalva
+para a seção 2. É importante garantir a reprodutibilidade dos
+experimentos, mas não vejo informações sobre ferramenta de
+versionamento, manipulação dos dados, editor de texto etc como sendo
+relevantes para esse fim, dado o contexto da ERAD e a limitação de 4
+páginas do artigo.
+
+O texto está razoavelmente bem escrito. Ainda deixo as observações e
+sugestões abaixo:
+
+Evite o uso de conjugações no futuro para coisas que já aconteceram,
+como: "avaliaremos", "apresentaremos", "detalharemos" etc. Os resultados
+já foram avaliados no passado e são apresentados no artigo no presente,
+nada de futuro.
+
+Uso indevido do "por que" no final do primeiro parágrafo. Se a ideia do
+autor é identificar qual é motivo de deteminada biblioteca ser mais
+performática, o mais correto seria utilizar "o porquê".
+
+"significativo", "significativamente" etc -> Evite esse tipo de
+descrição, pois ela pode ser interpretada de diferentes formas por cada
+leitor. Praticamente toda a análise dos resultados foi descrita dessa
+forma. Prefira sempre usar dados exatos ou aproximados, por exemplo: "A
+obteve x% de ganho de desempenho em relação à B com mais de y tarefas".
+
+Não foram discutidos trabalhos relacionados na primeira seção conforme
+descrito no título da mesma.
+
+O repositório do item 1 no rodapé da primeira página está vazio.
+
+Sugiro usar cores com maior contraste nos gráficos, especialmente na
+Figura 2. Achei a visualização um pouco difícil e uma pessoa daltônica
+certamente teria muito mais dificuldade.
+
+A análise dos resultados é muito superficial e consiste basicamente da
+descrição dos gráficos. A seção 2 possui várias informações não
+relacionadas ao objetivo do trabalho e esse espaço poderia ser utilizado
+para fazer uma melhor discussão dos resultados.
+
+** ===== Review =====
+
+
+*** Originalidade (Avalie a originalidade do trabalho, considerando o
+estado-da-arte na área. Avalie se o trabalho apresenta novos resultados
+ou novas observações relevantes sobre um tema já tratado em outros
+trabalhos. Informe o autor caso você conheça  trabalhos relacionados que
+não tenham sido citados.): 5:Excelente 4:Bom 3:Regular 2:Fraco 1:Ruim
+
+Evaluation=Excelente (5)
+
+*** Relevância (Avalie a importância do tema, das questões abordadas e
+dos resultados (esperados ou obtidos) do trabalho. Relacione esta
+importância com os objetivos do Fórum. Caso o trabalho deixe a desejar
+neste item, forneça sugestões ao autor para tornar o trabalho mais
+relevante.): 5:Excelente 4:Bom 3:Regular 2:Fraco 1:Ruim
+
+Evaluation=Excelente (5)
+
+*** Mérito técnico (Avalie o mérito do trabalho proposto, pesando a
+qualidade da sua idéia central e a profundidade do autor na compreensão
+do tema, dos problemas e das soluções apresentadas. Nos comentários ao
+autor, inclua sugestões que possam melhorar a qualidade e a profundidade
+do trabalho.): 5:Excelente 4:Bom 3:Regular 2:Fraco 1:Ruim
+
+Evaluation=Excelente (5)
+
+*** Qualidade do texto (Avalie a organização do texto, sua legibilidade
+e a qualidade didática da redação. Verifique se a formatação está
+adequada ao estilo proposto.): 5:Excelente 4:Bom 3:Regular 2:Fraco
+1:Ruim
+
+Evaluation=Excelente (5)
+
+*** Avaliação Geral (Indique sua impressão geral sobre o trabalho. Esta
+avaliação pode ser independente dos outros critérios, mas procure evitar
+grandes discrepâncias.): 5:Excelente 4:Bom 3:Regular 2:Fraco 1:Ruim
+
+Evaluation=Excelente (5)
+
+*** Recomendação (Forneça seu parecer quanto à aceitação/rejeição deste
+trabalho.): 5:Aceitação 4:Aceitação fraca 3:Neutro 2:Rejeição fraca
+1:Rejeição
+
+Evaluation=Aceitação (5)
+
+*** Comentários para o autor (Comente o que você entendeu sobre o
+trabalho. Forneça justificativas para as notas dadas acima
+(originalidade, relevância, mérito, forma). Aponte os pontos fortes e os
+pontos fracos do trabalho/texto, fornecendo sugestões para seu
+aprimoramento.): O trabalho é muito bem executado e de interesse à ERAD.
+
+Algumas observações pontuais: -Usar 3.a pessoa. Há alguns "avaliaremos",
+"versaremos" e outros verbos em 1.a pessoa no texto. - A referência de
+Dagum e Menon é de 1998. Provavelmente a referência não cobre a versão 4
+do OpenMP e a programação baseada em tarefas. Nesse sentido, atualizar a
+referência. - Tabela 1 não está muito clara quanto à descrição das
+máquinas. Não entendi o que significa #1,2, e a nomenclatura 2 x 8, por
+exemplo. - Na Figura 1, poderia padronizar o eixo Y, colocando na mesma
+escala.
+
+** ===== Review =====
+
+
+*** Originalidade (Avalie a originalidade do trabalho, considerando o
+estado-da-arte na área. Avalie se o trabalho apresenta novos resultados
+ou novas observações relevantes sobre um tema já tratado em outros
+trabalhos. Informe o autor caso você conheça  trabalhos relacionados que
+não tenham sido citados.): 5:Excelente 4:Bom 3:Regular 2:Fraco 1:Ruim
+
+Evaluation=Bom (4)
+
+*** Relevância (Avalie a importância do tema, das questões abordadas e
+dos resultados (esperados ou obtidos) do trabalho. Relacione esta
+importância com os objetivos do Fórum. Caso o trabalho deixe a desejar
+neste item, forneça sugestões ao autor para tornar o trabalho mais
+relevante.): 5:Excelente 4:Bom 3:Regular 2:Fraco 1:Ruim
+
+Evaluation=Bom (4)
+
+*** Mérito técnico (Avalie o mérito do trabalho proposto, pesando a
+qualidade da sua idéia central e a profundidade do autor na compreensão
+do tema, dos problemas e das soluções apresentadas. Nos comentários ao
+autor, inclua sugestões que possam melhorar a qualidade e a profundidade
+do trabalho.): 5:Excelente 4:Bom 3:Regular 2:Fraco 1:Ruim
+
+Evaluation=Bom (4)
+
+*** Qualidade do texto (Avalie a organização do texto, sua legibilidade
+e a qualidade didática da redação. Verifique se a formatação está
+adequada ao estilo proposto.): 5:Excelente 4:Bom 3:Regular 2:Fraco
+1:Ruim
+
+Evaluation=Regular (3)
+
+*** Avaliação Geral (Indique sua impressão geral sobre o trabalho. Esta
+avaliação pode ser independente dos outros critérios, mas procure evitar
+grandes discrepâncias.): 5:Excelente 4:Bom 3:Regular 2:Fraco 1:Ruim
+
+Evaluation=Bom (4)
+
+*** Recomendação (Forneça seu parecer quanto à aceitação/rejeição deste
+trabalho.): 5:Aceitação 4:Aceitação fraca 3:Neutro 2:Rejeição fraca
+1:Rejeição
+
+Evaluation=Aceitação fraca (4)
+
+*** Comentários para o autor (Comente o que você entendeu sobre o
+trabalho. Forneça justificativas para as notas dadas acima
+(originalidade, relevância, mérito, forma). Aponte os pontos fortes e os
+pontos fracos do trabalho/texto, fornecendo sugestões para seu
+aprimoramento.): O trabalho aborda a comparação entre runtimes OpenMP
+sobre uma aplicação de tarefas fatoração QR. O método de avaliação
+parece correto. Entretanto, o texto precisa de correções, teria que
+ajustar algumas decisões de experimentos e detalhar algumas informações.
+Comentários: - sec 1: "nós" se refere a quem? autores ? precisam
+reescrever a 1a frase. - sec 1: "num" não pode ser utilizado em artigos
+- performance -> desempenho - sec 2: "versaremos" este termo é usado em
+prosa, ou seja, literatura. Não em artigos. - sec 2: repetição de 5
+vezes é muito pouco - sec 2 e 3: "Tabela" se escreve em maiusculo apenas
+em inglês, não é necessário em português - sec 3: quando aparece libgomp
+aqui, não fica claro quais são as runtimes que serão avaliadas. Quando
+menciona anteriormente GCC deve ser dito que sua runtime é libgomp.... -
+sec 3: o LWS do StarPU é conhecido por não ser eficiente, e falta de
+publicações sobre avaliação deste escalonador. - sec 2: qual é o
+algoritmo base da fatoração QR com tarefas ? Acredito que os autores não
+criaram um novo algoritmo, e devem ter adaptado uma versão de
+publicações do StarPU ou PLASMA. - sec 3: não consigo entender porque a
+diferença entre Kstar e StarPU. Muito provavelmente um bug. - sec 4: em
+todos os casos, os resultados da fatoração estava corretos? Se ocorrer
+algum erro de dependencias, a fatoração terá saída errada.
+
 * Configuração                                                     :noexport:
 
 # Local Variables:
