@@ -56,17 +56,12 @@ pelo próprio sistema de submissão.
 Lembramos que todos os artigos devem seguir as recomendações do modelo
 da SBC. Adicionalmente, também solicitamos:
 
-- o uso de endereços de e-mail institucionais para todos os autores
+- [X] o uso de endereços de e-mail institucionais para todos os autores
 (quando possível)
-
-- a inclusão no JEMS todos os autores presentes no PDF submetido
-
-- que não sejam alterados o tamanho da fonte do texto e das referências
+- [X] a inclusão no JEMS todos os autores presentes no PDF submetido
+- [X] que não sejam alterados o tamanho da fonte do texto e das referências
 bibliográficas
-
-- que o resumo seja de no máximo 6 linhas
-
-
+- [X] que o resumo seja de no máximo 6 linhas
 
 Atenciosamente,
 
@@ -74,8 +69,6 @@ Coordenação Geral da ERAD/RS 2020 Fórum de Iniciação Científica
 
 ---
 ** ===== Review =====
-
-
 *** Originalidade (Avalie a originalidade do trabalho, considerando o
 estado-da-arte na área. Avalie se o trabalho apresenta novos resultados
 ou novas observações relevantes sobre um tema já tratado em outros
@@ -123,9 +116,11 @@ Evaluation=Aceitação fraca (4)
 trabalho. Forneça justificativas para as notas dadas acima
 (originalidade, relevância, mérito, forma). Aponte os pontos fortes e os
 pontos fracos do trabalho/texto, fornecendo sugestões para seu
-aprimoramento.): O artigo avalia o comportamento uma aplicação
-utilizando paralelismo de tarefas com 5 runtimes diferentes. É um estudo
-inicial e os resultados são inconclusivos.
+aprimoramento.):
+
+O artigo avalia o comportamento uma aplicação utilizando paralelismo
+de tarefas com 5 runtimes diferentes. É um estudo inicial e os
+resultados são inconclusivos.
 
 O tema do trabalho é bastante relevante, pois escolher previamente a
 biblioteca de paralelismo mais indicada para uma determinada aplicação
@@ -139,32 +134,40 @@ versionamento, manipulação dos dados, editor de texto etc como sendo
 relevantes para esse fim, dado o contexto da ERAD e a limitação de 4
 páginas do artigo.
 
+- [ ] Atualizar o Companion
+  - Veja o exemplo https://gitlab.in2p3.fr/schnorr/ccpe2017/
+- [ ] Refletir sobre o uso do DOI do zenodo.org ao invés de:
+  https://gitlab.com/hcpsilva/companion-erad-2020
+
 O texto está razoavelmente bem escrito. Ainda deixo as observações e
 sugestões abaixo:
 
-Evite o uso de conjugações no futuro para coisas que já aconteceram,
+- [ ] Evite o uso de conjugações no futuro para coisas que já aconteceram,
 como: "avaliaremos", "apresentaremos", "detalharemos" etc. Os resultados
 já foram avaliados no passado e são apresentados no artigo no presente,
 nada de futuro.
 
-Uso indevido do "por que" no final do primeiro parágrafo. Se a ideia do
+- [ ] Uso indevido do "por que" no final do primeiro parágrafo. Se a ideia do
 autor é identificar qual é motivo de deteminada biblioteca ser mais
 performática, o mais correto seria utilizar "o porquê".
 
-"significativo", "significativamente" etc -> Evite esse tipo de
+- [ ] "significativo", "significativamente" etc -> Evite esse tipo de
 descrição, pois ela pode ser interpretada de diferentes formas por cada
 leitor. Praticamente toda a análise dos resultados foi descrita dessa
 forma. Prefira sempre usar dados exatos ou aproximados, por exemplo: "A
 obteve x% de ganho de desempenho em relação à B com mais de y tarefas".
 
-Não foram discutidos trabalhos relacionados na primeira seção conforme
+- [ ] Não foram discutidos trabalhos relacionados na primeira seção conforme
 descrito no título da mesma.
+  - Remover "e Trabalhos Relacionados"
 
-O repositório do item 1 no rodapé da primeira página está vazio.
+- [ ] O repositório do item 1 no rodapé da primeira página está vazio.
 
-Sugiro usar cores com maior contraste nos gráficos, especialmente na
+- [ ] Sugiro usar cores com maior contraste nos gráficos, especialmente na
 Figura 2. Achei a visualização um pouco difícil e uma pessoa daltônica
 certamente teria muito mais dificuldade.
+- See figure at the end of http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
+  - Usar a paleta Set1
 
 A análise dos resultados é muito superficial e consiste basicamente da
 descrição dos gráficos. A seção 2 possui várias informações não
@@ -221,16 +224,23 @@ Evaluation=Aceitação (5)
 trabalho. Forneça justificativas para as notas dadas acima
 (originalidade, relevância, mérito, forma). Aponte os pontos fortes e os
 pontos fracos do trabalho/texto, fornecendo sugestões para seu
-aprimoramento.): O trabalho é muito bem executado e de interesse à ERAD.
+aprimoramento.): 
 
-Algumas observações pontuais: -Usar 3.a pessoa. Há alguns "avaliaremos",
-"versaremos" e outros verbos em 1.a pessoa no texto. - A referência de
-Dagum e Menon é de 1998. Provavelmente a referência não cobre a versão 4
-do OpenMP e a programação baseada em tarefas. Nesse sentido, atualizar a
-referência. - Tabela 1 não está muito clara quanto à descrição das
-máquinas. Não entendi o que significa #1,2, e a nomenclatura 2 x 8, por
-exemplo. - Na Figura 1, poderia padronizar o eixo Y, colocando na mesma
+O trabalho é muito bem executado e de interesse à ERAD.
+
+Algumas observações pontuais: 
+
 escala.
+- Usar 3.a pessoa. Há alguns "avaliaremos", "versaremos" e outros
+  verbos em 1.a pessoa no texto.
+- A referência de Dagum e Menon é de 1998. Provavelmente a referência
+  não cobre a versão 4 do OpenMP e a programação baseada em
+  tarefas. Nesse sentido, atualizar a referência.
+- [ ] Tabela 1 não está muito clara quanto à descrição das
+  máquinas. Não entendi o que significa #1,2, e a nomenclatura 2 x 8,
+  por exemplo.
+  - Tira a coluna, eventualmente falando no texto.
+- Na Figura 1, poderia padronizar o eixo Y, colocando na mesma
 
 ** ===== Review =====
 
@@ -282,21 +292,28 @@ Evaluation=Aceitação fraca (4)
 trabalho. Forneça justificativas para as notas dadas acima
 (originalidade, relevância, mérito, forma). Aponte os pontos fortes e os
 pontos fracos do trabalho/texto, fornecendo sugestões para seu
-aprimoramento.): O trabalho aborda a comparação entre runtimes OpenMP
+aprimoramento.):
+
+O trabalho aborda a comparação entre runtimes OpenMP
 sobre uma aplicação de tarefas fatoração QR. O método de avaliação
 parece correto. Entretanto, o texto precisa de correções, teria que
 ajustar algumas decisões de experimentos e detalhar algumas informações.
-Comentários: - sec 1: "nós" se refere a quem? autores ? precisam
-reescrever a 1a frase. - sec 1: "num" não pode ser utilizado em artigos
-- performance -> desempenho - sec 2: "versaremos" este termo é usado em
-prosa, ou seja, literatura. Não em artigos. - sec 2: repetição de 5
-vezes é muito pouco - sec 2 e 3: "Tabela" se escreve em maiusculo apenas
-em inglês, não é necessário em português - sec 3: quando aparece libgomp
-aqui, não fica claro quais são as runtimes que serão avaliadas. Quando
-menciona anteriormente GCC deve ser dito que sua runtime é libgomp.... -
-sec 3: o LWS do StarPU é conhecido por não ser eficiente, e falta de
-publicações sobre avaliação deste escalonador. - sec 2: qual é o
-algoritmo base da fatoração QR com tarefas ? Acredito que os autores não
+
+Comentários:
+- sec 1: "nós" se refere a quem? autores ? precisam reescrever a 1a frase.
+- [ ] sec 1: "num" não pode ser utilizado em artigos 
+- [ ] performance -> desempenho
+- [ ] sec 2: "versaremos" este termo é usado em prosa, ou seja,
+  literatura. Não em artigos.
+- sec 2: repetição de 5 vezes é muito pouco
+- sec 2 e 3: "Tabela" se escreve em maiusculo apenas em inglês, não é
+  necessário em português
+- [ ] sec 3: quando aparece libgomp aqui, não fica claro quais são as
+  runtimes que serão avaliadas. Quando menciona anteriormente GCC deve
+  ser dito que sua runtime é libgomp....
+- sec 3: o LWS do StarPU é conhecido por não ser eficiente, e falta de
+  publicações sobre avaliação deste escalonador.
+- sec 2: qual é o algoritmo base da fatoração QR com tarefas ? Acredito que os autores não
 criaram um novo algoritmo, e devem ter adaptado uma versão de
 publicações do StarPU ou PLASMA. - sec 3: não consigo entender porque a
 diferença entre Kstar e StarPU. Muito provavelmente um bug. - sec 4: em
