@@ -175,8 +175,6 @@ relacionadas ao objetivo do trabalho e esse espaço poderia ser utilizado
 para fazer uma melhor discussão dos resultados.
 
 ** ===== Review =====
-
-
 *** Originalidade (Avalie a originalidade do trabalho, considerando o
 estado-da-arte na área. Avalie se o trabalho apresenta novos resultados
 ou novas observações relevantes sobre um tema já tratado em outros
@@ -243,8 +241,6 @@ escala.
 - Na Figura 1, poderia padronizar o eixo Y, colocando na mesma
 
 ** ===== Review =====
-
-
 *** Originalidade (Avalie a originalidade do trabalho, considerando o
 estado-da-arte na área. Avalie se o trabalho apresenta novos resultados
 ou novas observações relevantes sobre um tema já tratado em outros
@@ -294,13 +290,13 @@ trabalho. Forneça justificativas para as notas dadas acima
 pontos fracos do trabalho/texto, fornecendo sugestões para seu
 aprimoramento.):
 
-O trabalho aborda a comparação entre runtimes OpenMP
-sobre uma aplicação de tarefas fatoração QR. O método de avaliação
-parece correto. Entretanto, o texto precisa de correções, teria que
-ajustar algumas decisões de experimentos e detalhar algumas informações.
+O trabalho aborda a comparação entre runtimes OpenMP sobre uma
+aplicação de tarefas fatoração QR. O método de avaliação parece
+correto. Entretanto, o texto precisa de correções, teria que ajustar
+algumas decisões de experimentos e detalhar algumas informações.
 
 Comentários:
-- sec 1: "nós" se refere a quem? autores ? precisam reescrever a 1a frase.
+- [ ] sec 1: "nos" se refere a quem? autores ? precisam reescrever a 1a frase.
 - [ ] sec 1: "num" não pode ser utilizado em artigos 
 - [ ] performance -> desempenho
 - [ ] sec 2: "versaremos" este termo é usado em prosa, ou seja,
@@ -313,12 +309,16 @@ Comentários:
   ser dito que sua runtime é libgomp....
 - sec 3: o LWS do StarPU é conhecido por não ser eficiente, e falta de
   publicações sobre avaliação deste escalonador.
-- sec 2: qual é o algoritmo base da fatoração QR com tarefas ? Acredito que os autores não
-criaram um novo algoritmo, e devem ter adaptado uma versão de
-publicações do StarPU ou PLASMA. - sec 3: não consigo entender porque a
-diferença entre Kstar e StarPU. Muito provavelmente um bug. - sec 4: em
-todos os casos, os resultados da fatoração estava corretos? Se ocorrer
-algum erro de dependencias, a fatoração terá saída errada.
+- [ ] sec 2: qual é o algoritmo base da fatoração QR com tarefas ?
+  Acredito que os autores não criaram um novo algoritmo, e devem ter
+  adaptado uma versão de publicações do StarPU ou PLASMA.
+  - Perguntar para o Marcelo
+- [ ] sec 3: não consigo entender porque a diferença entre Kstar e
+  StarPU. Muito provavelmente um bug.
+- [ ] sec 4: em todos os casos, os resultados da fatoração estava
+  corretos? Se ocorrer algum erro de dependencias, a fatoração terá
+  saída errada.
+  - Não foi feita a verificação dos resultados
 
 * Configuração                                                     :noexport:
 
