@@ -496,7 +496,7 @@ matriz foi fixado em $8192$. Através da combinação fatorial completa desses
 parâmetros de execução \cite{jain1991art}, observamos a tendência do impacto do
 número das tarefas geradas pela a aplicação. Cada combinação foi repetida 5
 vezes para cada experimento em cada nó para a avaliação do /makespan/ e 1 vez
-para a coleta do traço das execuções.
+para a coleta do rastro das execuções.
 
 #+latex: \noindent
 *Manipulação de dados com ferramentas modernas de /data science/*: Utilizamos a
