@@ -19,13 +19,12 @@
 #+end_export
 
 #+begin_resumo
-Nesse trabalho verificamos o comportamento de cinco /runtimes/ numa
-aplicação com programação baseada em tarefas. Observamos discrepâncias
-na duração das tarefas em relação ao tempo total de duração
-de algumas versões, além de dificuldades no gerenciamento com número
-excessivo de tarefas nas versões LIBKOMP e KStar_{StarPU}. A versão
-StarPU manteve bom desempenho mesmo em cenários com significativo número de
-tarefas.
+Nesse trabalho verificamos o comportamento de cinco /runtimes/ numa aplicação
+com programação baseada em tarefas. Observamos discrepâncias na duração das
+tarefas em relação ao tempo total de duração de algumas versões, além de
+dificuldades no gerenciamento com número excessivo de tarefas nas versões
+LIBKOMP e KStar_{StarPU}. A versão StarPU manteve bom desempenho mesmo em
+cenários com grande número de tarefas.
 #+end_resumo
 
 #+BEGIN_COMMENT marcelo
@@ -142,7 +141,7 @@ páginas do artigo.
 O texto está razoavelmente bem escrito. Ainda deixo as observações e
 sugestões abaixo:
 
-- [ ] Evite o uso de conjugações no futuro para coisas que já aconteceram,
+- [X] Evite o uso de conjugações no futuro para coisas que já aconteceram,
 como: "avaliaremos", "apresentaremos", "detalharemos" etc. Os resultados
 já foram avaliados no passado e são apresentados no artigo no presente,
 nada de futuro.
@@ -151,17 +150,17 @@ nada de futuro.
 autor é identificar qual é motivo de deteminada biblioteca ser mais
 performática, o mais correto seria utilizar "o porquê".
 
-- [ ] "significativo", "significativamente" etc -> Evite esse tipo de
+- [X] "significativo", "significativamente" etc -> Evite esse tipo de
 descrição, pois ela pode ser interpretada de diferentes formas por cada
 leitor. Praticamente toda a análise dos resultados foi descrita dessa
 forma. Prefira sempre usar dados exatos ou aproximados, por exemplo: "A
 obteve x% de ganho de desempenho em relação à B com mais de y tarefas".
 
-- [ ] Não foram discutidos trabalhos relacionados na primeira seção conforme
+- [X] Não foram discutidos trabalhos relacionados na primeira seção conforme
 descrito no título da mesma.
   - Remover "e Trabalhos Relacionados"
 
-- [ ] O repositório do item 1 no rodapé da primeira página está vazio.
+- [X] O repositório do item 1 no rodapé da primeira página está vazio.
 
 - [ ] Sugiro usar cores com maior contraste nos gráficos, especialmente na
 Figura 2. Achei a visualização um pouco difícil e uma pessoa daltônica
@@ -222,11 +221,11 @@ Evaluation=Aceitação (5)
 trabalho. Forneça justificativas para as notas dadas acima
 (originalidade, relevância, mérito, forma). Aponte os pontos fortes e os
 pontos fracos do trabalho/texto, fornecendo sugestões para seu
-aprimoramento.): 
+aprimoramento.):
 
 O trabalho é muito bem executado e de interesse à ERAD.
 
-Algumas observações pontuais: 
+Algumas observações pontuais:
 
 escala.
 - Usar 3.a pessoa. Há alguns "avaliaremos", "versaremos" e outros
@@ -234,7 +233,7 @@ escala.
 - A referência de Dagum e Menon é de 1998. Provavelmente a referência
   não cobre a versão 4 do OpenMP e a programação baseada em
   tarefas. Nesse sentido, atualizar a referência.
-- [ ] Tabela 1 não está muito clara quanto à descrição das
+- [X] Tabela 1 não está muito clara quanto à descrição das
   máquinas. Não entendi o que significa #1,2, e a nomenclatura 2 x 8,
   por exemplo.
   - Tira a coluna, eventualmente falando no texto.
@@ -296,24 +295,25 @@ correto. Entretanto, o texto precisa de correções, teria que ajustar
 algumas decisões de experimentos e detalhar algumas informações.
 
 Comentários:
-- [ ] sec 1: "nos" se refere a quem? autores ? precisam reescrever a 1a frase.
-- [ ] sec 1: "num" não pode ser utilizado em artigos 
-- [ ] performance -> desempenho
-- [ ] sec 2: "versaremos" este termo é usado em prosa, ou seja,
+- [X] sec 1: "nos" se refere a quem? autores ? precisam reescrever a 1a frase.
+- [X] sec 1: "num" não pode ser utilizado em artigos
+- [X] performance -> desempenho
+- [X] sec 2: "versaremos" este termo é usado em prosa, ou seja,
   literatura. Não em artigos.
 - sec 2: repetição de 5 vezes é muito pouco
 - sec 2 e 3: "Tabela" se escreve em maiusculo apenas em inglês, não é
   necessário em português
-- [ ] sec 3: quando aparece libgomp aqui, não fica claro quais são as
+- [X] sec 3: quando aparece libgomp aqui, não fica claro quais são as
   runtimes que serão avaliadas. Quando menciona anteriormente GCC deve
   ser dito que sua runtime é libgomp....
+  - ????? mas eu sempre coloco a runtime relacionada!
 - sec 3: o LWS do StarPU é conhecido por não ser eficiente, e falta de
   publicações sobre avaliação deste escalonador.
-- [ ] sec 2: qual é o algoritmo base da fatoração QR com tarefas ?
+- [X] sec 2: qual é o algoritmo base da fatoração QR com tarefas ?
   Acredito que os autores não criaram um novo algoritmo, e devem ter
   adaptado uma versão de publicações do StarPU ou PLASMA.
   - Perguntar para o Marcelo
-- [ ] sec 3: não consigo entender porque a diferença entre Kstar e
+- [X] sec 3: não consigo entender porque a diferença entre Kstar e
   StarPU. Muito provavelmente um bug.
 - [ ] sec 4: em todos os casos, os resultados da fatoração estava
   corretos? Se ocorrer algum erro de dependencias, a fatoração terá
@@ -359,7 +359,7 @@ Comentários:
 # You need at least Org 9 and Emacs 24 to make this work.
 # If you do, just type make (thanks Luka Stanisic for this).
 
-* Introdução, Objetivos e Trabalhos Relacionados
+* Introdução e Objetivos
 
 #+latex: \vspace{-0.2cm}
 
@@ -397,23 +397,24 @@ diretos já que o público alvo tem algum dominio/interesse na temática.
 # como único método confiável para prover o grau de performance desejado nesses
 # sistemas. :'(
 
-Após décadas trabalhando em sistemas e num ferramental a par da exponencial
-demanda por paralelismo, nos encontramos num período no qual o desenvolvedor de
-sistemas de alto desempenho tem diversas escolhas de bibliotecas, de /runtimes/
-e de /APIs/ para explorar a fim de utilizar efetivamente o /hardware/ desses
-sistemas. Entretanto, a diferença entre essas é tal que não se trata mais da
-qualidade da implementação ditar a performance desses sistemas, mas sim a
-escolha de biblioteca utilizada pelo programador. Com isso, surge a questão de
-definir qual dessas é a mais performática e, sobretudo, por que ela é.
+Após décadas trabalhando em sistemas e em um ferramental a par da exponencial
+demanda por paralelismo, o desenvolvedor de sistemas de alto desempenho tem
+diversas escolhas de bibliotecas, de /runtimes/ e de /APIs/ para explorar a fim
+de utilizar efetivamente o /hardware/ desses sistemas. Entretanto, a diferença
+entre essas é tal que não se trata mais da qualidade da implementação ditar o
+desempenho desses sistemas, mas sim a escolha de biblioteca utilizada pelo
+programador. Com isso, surge a questão de definir qual dessas possui melhor
+desempenho e, sobretudo, o porquê disso.
 
-Podemos citar OpenMP \cite{dagum1998openmp}, a partir da versão 4, e StarPU
+Podemos citar OpenMP \cite{openmp2015spec}, a partir da versão 4, e StarPU
 \cite{augonnet2011starpu} como ferramentas de programação paralela que suportam
-modelos mais sofisticados de paralelismo, como a programação baseada em
-tarefas. Nessa, a lógica de um programa é organizada em tarefas e o paralelismo
-é inferido implicitamente pelas dependências de dados entre cada uma dessas
-tarefas, o que se traduz num grafo direcionado acíclico (/DAG/). Assim, o
-/runtime/ em questão se assegura de escalonar e distribuir essas tarefas dentre
-seus /workers/ respeitando as dependências declaradas.
+modelos mais sofisticados de paralelismo, como a programação baseada em tarefas.
+Nessa, a lógica de um programa é organizada em tarefas e o paralelismo é
+inferido implicitamente pelas dependências de dados entre cada uma das tarefas,
+o que se traduz em um grafo direcionado acíclico (/DAG/). Assim, o /runtime/ se
+encarrega de escalonar e distribuir essas tarefas dentre seus /workers/
+respeitando as dependências declaradas.
+
 # StarPU foi projetado especificamente com esse conceito em
 # mente e, na versão =3.0= de sua especificação, esse conceito foi
 # introduzido na especificação do OpenMP.
@@ -422,18 +423,17 @@ seus /workers/ respeitando as dependências declaradas.
 # outra realização: não tem tanto espaço assim na verdade, e ainda falta muita
 # coisa!
 
-Avaliaremos o desempenho e comportamento de uma fatoração QR para matriz densa
-com duas implementações, uma utilizando diretamente as diretivas de tarefas do
-OpenMP e outra nativa em StarPU. A primeira será executada com os /runtimes/
-nativos do GCC e do LLVM, o /runtime/ da biblioteca LIBKOMP baseado em X-Kaapi e
-através da transpilação para StarPU via compilador KStar. Sendo assim, nossos
-objetivos nesse trabalho são comparar o *escalonamento* das tarefas, observar a
-*ociosidade* dos trabalhadores de cada /runtime/ e identificar *anomalias* em
-quaisquer das bibliotecas avaliadas. O /companion/ deste trabalho reprodutível
-está publicamente
+Avaliamos o desempenho e comportamento de uma fatoração QR em blocos para matriz
+densa baseada no PLASMA \cite{butari2009plasma} com duas implementações, uma
+utilizando diretamente as diretivas de tarefas do OpenMP e outra nativa em
+StarPU. A primeira foi executada com os /runtimes/ nativos OpenMP do GCC e do
+LLVM, o /runtime/ da biblioteca LIBKOMP baseado em X-Kaapi e através da
+transpilação para StarPU via KStar. Logo, nossos objetivos foram comparar o
+*escalonamento* das tarefas, observar a *ociosidade* dos trabalhadores de cada
+/runtime/ e identificar *anomalias* em quaisquer das bibliotecas avaliadas. O
+/companion/ deste trabalho está publicamente
 disponível[fn:1:https://gitlab.com/hcpsilva/companion-erad-2020].
 
-# lembrete pra eu colocar o paragrafo de related work aqui
 #+begin_comment
 Deixa sem por eqto, só vamos citar o do marcelo. Depois na versão final, fazemos
 este ajuste..
@@ -479,8 +479,8 @@ avaliadas.
   - Figura mostrando o funcionamento (com o texto a explicando)
 #+end_comment
 
-Nessa seção versaremos sobre a metodologia experimental, assim como o
-ferramental de /software/ utilizado para a análise dos dados coletados.
+Nessa seção abordamos sobre a metodologia experimental, assim como o ferramental
+de /software/ utilizado para a análise dos dados coletados.
 
 #+begin_comment
 Além disso, abordaremos o /workflow/ adotado a fim de aprimorar a
@@ -493,10 +493,10 @@ definimos como fatores do projeto experimental o tamanho da *matriz* e o tamanho
 do *bloco* de cada tarefa. O tamanho do bloco varia em fatores de potências de
 $2$ entre $[32, 512]$, resultando, assim, em cinco níveis, enquanto o tamanho da
 matriz foi fixado em $8192$. Através da combinação fatorial completa desses
-parâmetros de execução \cite{jain1991art}, podemos observar a tendência do
-impacto do número das tarefas geradas pela a aplicação. Cada combinação foi
-repetida 5 vezes para cada experimento em cada nó para a avaliação do /makespan/
-e 1 vez para a coleta do traço das execuções.
+parâmetros de execução \cite{jain1991art}, observamos a tendência do impacto do
+número das tarefas geradas pela a aplicação. Cada combinação foi repetida 5
+vezes para cada experimento em cada nó para a avaliação do /makespan/ e 1 vez
+para a coleta do traço das execuções.
 
 #+latex: \noindent
 *Manipulação de dados com ferramentas modernas de /data science/*: Utilizamos a
@@ -505,7 +505,7 @@ embutidos em arquivos Org versionados na ferramenta =git=. Assim, construímos u
 caderno de laboratório (/labbook/) que centralizou o processo exploratório
 científico, as anotações decorrentes e todos os experimentos realizados, desde o
 projeto desses até o código de análise dos dados coletados. Dessa maneira
-pode-se assegurar a reprodutibilidade e a verificação dos resultados obtidos
+assegura-se a reprodutibilidade e a verificação dos resultados obtidos
 \cite{stanisic2015workflow} sem perder a flexibilidade necessária para que
 processos de desenvolvimento e de verificação ocorressem paralelamente.
 
@@ -520,11 +520,11 @@ processos de desenvolvimento e de verificação ocorressem paralelamente.
 # sobre a reprodutibilidade aumentou sem utilizar palavras tão fortes.
 
 #+latex: \noindent
-*Execução e Coleta dos Dados*: A automação dessas foi materializada por
-/scripts/ Shell executados pelo gerenciador de /jobs/ Slurm em cada nó de
-computação detalhado na [[tab:plataformas][Tabela 1]]. Devido a complexidade de
-dependências dos /runtimes/, desenvolvemos um /script/ que abstrai
-detalhes da plataforma e permite a fácil reprodução de um experimento.
+*Execução e Coleta dos Dados*: A automação foi realizada com /scripts/ Shell
+executados pelo gerenciador de /jobs/ Slurm em cada nó de computação detalhado
+na [[tab:plataformas][Tabela 1]]. Devido a complexidade de dependências dos /runtimes/, desenvolvemos
+um /script/ que abstrai detalhes da plataforma e permite a fácil reprodução de
+um experimento.
 
 #+latex: \noindent
 *Exploração e Análise dos Dados*: A integração das ferramentas previamente
@@ -549,9 +549,8 @@ de exportação da ferramenta.
 
 * Resultados Experimentais e Observações
 
-Nessa seção apresentaremos, com auxilio de visualizações, os fenômenos
-observados na experimentação. Além disso, detalharemos as plataformas
-utilizadas.
+Nessa seção apresentamos, com auxilio de visualizações, os fenômenos observados
+na experimentação. Além disso, detalhamos as plataformas utilizadas.
 
 #+begin_comment
 \noindent
@@ -565,29 +564,27 @@ utilizadas.
 #+name: tab:plataformas
 #+attr_latex: :float t :placement [!htb] :font \small
 #+caption: Configuração das plataformas utilizadas nos experimentos.
-|---------+-----------+---------------------------------------+--------------------+------------|
-| <l>     | <l>       | <l>                                   | <l>                | <l>        |
-| *Nome*  | *#_{1,2}* | *CPU*                                 | *L1/L2/LLC*        | *RAM*      |
-|---------+-----------+---------------------------------------+--------------------+------------|
-| =draco= | $5, 1$    | $2 \times 8$ Xeon E5 2640 v2 2.5GHz   | 32KB/256KB/20MB    | 64GB DDR3  |
-| =cei=   | $7, 1$    | $2 \times 12$ Xeon Silver 4116 2.1GHz | 32KB/1024KB/16.5MB | 93GB DDR4  |
-| =hype=  | $4, 1$    | $2 \times 10$ Xeon E5 2650 v3 2.3GHz  | 32KB/256KB/25MB    | 128GB DDR4 |
-|---------+-----------+---------------------------------------+--------------------+------------|
+|---------+---------------------------------------+--------------------+------------|
+| <l>     | <l>                                   | <l>                | <l>        |
+| *Nome*  | *CPU*                                 | *L1/L2/LLC*        | *RAM*      |
+|---------+---------------------------------------+--------------------+------------|
+| =draco= | $2 \times 8$ Xeon E5 2640 v2 2.5GHz   | 32KB/256KB/20MB    | 64GB DDR3  |
+| =cei=   | $2 \times 12$ Xeon Silver 4116 2.1GHz | 32KB/1024KB/16.5MB | 93GB DDR4  |
+| =hype=  | $2 \times 10$ Xeon E5 2650 v3 2.3GHz  | 32KB/256KB/25MB    | 128GB DDR4 |
+|---------+---------------------------------------+--------------------+------------|
 
 #+latex: \vspace{-0.2}
 
 #+latex: \noindent
 *Configuração Experimental*: Na execução da aplicação, usamos as plataformas
-descritas na [[tab:plataformas][Tabela 1]] e as ferramentas da
-[[tab:versoes][Tabela 2]]. Todas executam Debian (=10.2=) com /kernel/ Linux
-=4.19.0-6=. O rastreamento da aplicação utilizando a biblioteca libgomp_{GCC}
-foi realizado utilizando a ferramente ScoreP =6.0= e, quando utilizando a
-biblioteca libomp_{LLVM}, rastreamos a aplicação com uma biblioteca própria
-utilizando chamadas conforme a especificação OMPT =4.5=. O rastreamento da
-biblioteca StarPU e e do compilador KStar_{StarPU} foram realizados
-através da biblioteca FxT =0.3.5= e o rastreamento das versões
-utilizando LIBKOMP foi realizado pelo próprio /runtime/, que implementa
-chamadas à /API/ OMPT.
+descritas na [[tab:plataformas][Tabela 1]] e as ferramentas da [[tab:versoes][Tabela 2]]. Todas executam Debian
+(=10.2=) com /kernel/ Linux =4.19.0-6=. O rastreamento da aplicação utilizando a
+biblioteca libgomp_{GCC} foi realizado com a ferramente ScoreP =6.0= e, quando
+utilizada a biblioteca libomp_{LLVM}, rastreamos a aplicação com uma biblioteca
+própria utilizando chamadas conforme a especificação OMPT =4.5=. O rastreamento
+da biblioteca StarPU e e do compilador KStar_{StarPU} foram realizados com a
+biblioteca FxT =0.3.5= e o rastreamento das versões LIBKOMP foi realizado pelo
+próprio /runtime/, que implementa chamadas à /API/ OMPT.
 
 #+begin_comment
 Listamos em cada uma dessas o seu identificador, a quantidade de nós utilizados
@@ -654,8 +651,8 @@ erro padrão.
 #+latex: \vspace{-0.5cm}
 
 Observamos que a tendência de comportamento se preserva entre as plataformas
-utilizadas. Sendo assim, analisaremos nas próximas seções os detalhes da
-execução das tarefas na plataforma =cei= com o tamanho $64$ de bloco.
+utilizadas. Sendo assim, analisamos nas próximas seções os detalhes da execução
+das tarefas na plataforma =cei= com o tamanho $64$ de bloco.
 
 #+BEGIN_COMMENT marcelo
 "Observamos que a tendência de comportamento se preserva entre as plataformas
@@ -666,16 +663,16 @@ qual exatamente é essa tendência?
 
 #+latex: \noindent
 <<sub:worker>>
-*Análise de Ociosidade por /Worker/*: Na [[fig:idleness][Figura 2]] observamos
-que, além do caso de tamanho $64$, os /runtimes/ mantém ociosidade similar para
-todos os casos. Com um tamanho de bloco $64$ os /runtimes/ necessitam lidar com
-um grande número de tarefas, o que estressa a capacidade de escalonamento, o
-que, por consequência, afeta o tempo ocioso por /worker/ da plataforma. Pela
-análise da figura, observamos que esse caso é especialmente interessante, já que
-ambos LIBKOMP_clang e KStar_{StarPU} apresentam ociosidade média
-significativamente alta. Em todos os casos, libgomp_{GCC}, libomp_{LLVM} e
-StarPU mantém performance compatível em questão da efetividade do escalonamento
-das tarefas.
+*Análise de Ociosidade por Trabalhador*: Na [[fig:idleness][Figura 2]] observamos que, além do
+caso de tamanho $64$, os /runtimes/ mantém ociosidade similar para todos os
+casos. Com um tamanho de bloco $64$, um grande número de tarefas é criado, o que
+estressa a capacidade de escalonamento dos /runtimes/, e, por consequência, o
+tempo ocioso por /worker/ da plataforma pode refletir isso. Pela análise da
+figura, observamos que esse caso é especialmente interessante, já que ambos
+LIBKOMP_clang e KStar_{StarPU} apresentam ociosidade média acima de 90% em todos
+os trabalhadores. Em todos os casos, libgomp_{GCC}, libomp_{LLVM} e StarPU
+mantém performance compatível em questão da efetividade do escalonamento das
+tarefas.
 
 #+name: fig:idleness
 #+attr_latex: :float t :placement [!htb]
@@ -690,14 +687,14 @@ Figura que a gente conversou
 #+end_comment
 
 #+latex: \noindent
-*Comparação do Escalonamento entre os três /runtimes/*: A [[fig:dgeqrt][Figura
-3]] apresenta o tempo de início da tarefa =dgeqrt=, que é o primeiro
-procedimento do laço de execução de uma fatoração QR. Ao observar este tempo,
-verificamos a progressão da implementação no processo de fatoração e a
-eficiência desse. Com exceção do KStar_{StarPU} e StarPU, todas as tarefas foram
-iniciadas no primeiro segundo de execução. Além disso, a implementação
-KStar_{StarPU} iniciou essas tarefas significativamente antes do que a em StarPU
-nativo.
+*Comparação do Escalonamento entre os três /runtimes/*: A [[fig:dgeqrt][Figura 3]] apresenta o
+tempo de início da tarefa =dgeqrt=, que é o primeiro procedimento do laço de
+execução de uma fatoração QR. Ao observar este tempo, verificamos a progressão
+da implementação no processo de fatoração e a eficiência desse. Com exceção do
+KStar_{StarPU} e StarPU, todas as tarefas foram iniciadas no primeiro segundo de
+execução. Além disso, observamos que a implementação KStar_{StarPU} iniciou suas
+tarefas quase instantaneamente, indicando possível anomalia no rastreamento ou
+na implementação.
 
 #+BEGIN_COMMENT marcelo
 Figura 2 -> runtime ompt e scorep?
@@ -716,7 +713,6 @@ foi o caso em que o kstar nao funcionou?
 #+BEGIN_COMMENT marcelo
 acho que no eixo x aqui é em ms
 #+END_COMMENT
-
 
 * Conclusão e Trabalhos Futuros
 
@@ -761,14 +757,14 @@ identificamos que os tempos de duração das tarefas são incompatíveis com a t
 de ociosidade e tempo total observados, como é o caso das implementações
 libgomp_{GCC}, libomp_{LLVM} e LIBKOMP. Além disso, verificamos que as
 ferramentas KStar e LIBKOMP não obtiveram desempenho desejável quando o grão de
-trabalho era pequeno, conforme detalhado na [[sub:worker][Subseção 3.3]]. Pela
-visualização do /makespan/ da [[fig:makespan][Figura 1]] percebemos que existe
-um comportamento anômalo da ferramenta KStar_{StarPU} em quase todos os casos, o
-que acreditamos indicar que esta versão não está respeitando as dependências de
-dados entre as tarefas. As constatações pedem pelo aprofundamento do
-trabalho, então consideramos implementar a verificação da solução obtida
-pela execução, adicionar o /runtime/ OmpSs \cite{duran2011ompss} nos testes e
-também abranger diferentes arquiteturas de processador.
+trabalho era pequeno, conforme detalhado na [[sub:worker][Subseção 3.3]]. Pela visualização do
+/makespan/ da [[fig:makespan][Figura 1]] percebemos que existe um comportamento anômalo da
+ferramenta KStar_{StarPU} em quase todos os casos, o que acreditamos indicar que
+esta versão não está respeitando as dependências de dados entre as tarefas. As
+constatações pedem pelo aprofundamento do trabalho, então consideramos
+implementar a verificação da solução obtida pela execução, adicionar o /runtime/
+OmpSs \cite{duran2011ompss} nos testes e também abranger diferentes arquiteturas
+de processador.
 
 #+BEGIN_COMMENT marcelo
 Subseção 3.3 não existe mais
@@ -801,6 +797,25 @@ Tangle this file with C-c C-v t
  doi = {10.1109/TPDS.2017.2697857},
  ISSN = {2161-9883},
  month = {Oct}
+}
+
+@article{butari2009plasma,
+ author = {Buttari, Alfredo and Langou, Julien and Kurzak, Jakub and Dongarra, Jack},
+ title = {A Class of Parallel Tiled Linear Algebra Algorithms for Multicore Architectures},
+ year = {2009},
+ issue_date = {January 2009},
+ publisher = {Elsevier Science Publishers B. V.},
+ address = {NLD},
+ volume = {35},
+ number = {1},
+ issn = {0167-8191},
+ url = {https://doi.org/10.1016/j.parco.2008.10.002},
+ doi = {10.1016/j.parco.2008.10.002},
+ journal = {Parallel Comput.},
+ month = jan,
+ pages = {38–53},
+ numpages = {16},
+ keywords = {Linear algebra, High performance computing, Mathematical software, Multicore}
 }
 
 @inproceedings{yoo2003slurm,
@@ -1007,7 +1022,7 @@ Tangle this file with C-c C-v t
 }
 
 @misc{openmp2015spec,
- author = {{OpenMP Architecture Review Board}},
+ author = {{OpenMP Review Board}},
  title = {{OpenMP} Application Program Interface Version 4.5},
  month = {November},
  year = {2015},
