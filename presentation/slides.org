@@ -26,24 +26,6 @@
 #+EXPORT_EXCLUDE_TAGS: noexport
 #+PROPERTY: header-args :eval never-export
 
-
-* TODO Metodologia                                                 :noexport:
-** Configuração Experimental: Máquinas
-  #+BEGIN_center
-  #+ATTR_LaTeX: :height 0.45\textwidth :center
-  [[./../img/machines.png]]
-  #+END_center
-** Configuração Experimental: Software
-  #+BEGIN_center
-  #+ATTR_LaTeX: :height 0.45\textwidth :center
-  [[./../img/software.png]]
-  #+END_center
-
-** Configuração Experimental: Parâmetros da Aplicação
-- Tamanho da matriz: 8192
-- Tamanho do bloco: [32, 64, 128, 256, 512]
-
-
 * Roteiro de apresentação                                          :noexport:
 Adicionar anotações e comentários sobre detalhes da apresentação
 aqui. 
@@ -165,6 +147,7 @@ aplicação. Assim, dada uma *mesma aplicação*, nossos objetivos são:
   #+ATTR_LaTeX: :height 0.45\textwidth :center
   [[./../img/DAG_2.pdf]]
   #+END_center
+
 ** Paralelismo de Tarefas Para fatoração QR Densa  
 
 - O pseudocódigo gera o seguinte DAG associado a estrutura da matriz
@@ -188,6 +171,7 @@ aplicação. Assim, dada uma *mesma aplicação*, nossos objetivos são:
   #+ATTR_LaTeX: :height 0.45\textwidth :center
   [[./../img/DAG_5.pdf]]
   #+END_center
+
 ** Paralelismo de Tarefas Para fatoração QR Densa  
 
 - O pseudocódigo gera o seguinte DAG associado a estrutura da matriz
@@ -200,10 +184,6 @@ aplicação. Assim, dada uma *mesma aplicação*, nossos objetivos são:
   [[./../img/DAG_9.pdf]]
   #+END_center
 
-* TODO Resultados
-* TODO Conclusão
-** Conclusão
-=======
 * Metodologia  
 ** Metodologia de Coleta
 - Projeto Experimental:
@@ -240,18 +220,19 @@ aplicação. Assim, dada uma *mesma aplicação*, nossos objetivos são:
 | StarPU         | Nativo    | StarPU (/LWS scheduler/) | =1.3.1=                        |
 |----------------+-----------+------------------------+------------------------------|
 
-
 * Resultados
 ** Resultados Experimentais e Observações
 - Diferenças de tempo de execução em função do /runtime/
 #+name: fig:makespan
-#+attr_latex: :float t :placement [!htb]
+#+attr_latex: :float t :placement [!htb] :height 0.42\textwidth
 [[../img/makespan-all.png]]
+
 - Conclusões:
   - comportamento se preserva entre plataformas @@latex:{\tiny@@(cei, draco, hype)@@latex:}@@
   - runtime kstar_starpu destoa
   - libkomp_clang é muito instável 
   # pois as vezes nao termina
+
 ** Resultados Experimentais e Observações
 - Análise de Ociosidade por Trabalhador
   - focaremos na plataforma cei com o tamanho de bloco 64
@@ -288,12 +269,11 @@ aplicação. Assim, dada uma *mesma aplicação*, nossos objetivos são:
   - implementar a verificação da solução obtida pela execução
   - adicionar o runtime OmpSs
   - incluir diferentes arquiteturas de processador
-
->>>>>>> cb6755e0a17fdee133a508e6f587b2c9d57b7a01
 ** Referências
-#+latex: \nocite{*}
-#+latex: \bibliographystyle{sbc}
-
+  :PROPERTIES:
+  :BEAMER_OPT: fragile,allowframebreaks,label=
+  :END:      
+  \printbibliography
 
 ** Obrigado!
    #+BEGIN_EXPORT latex
