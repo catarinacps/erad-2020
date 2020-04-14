@@ -18,7 +18,7 @@
 #+BEAMER_HEADER: \setbeamertemplate{headline} { \begin{beamercolorbox}[colsep=1.5pt]{upper separation line head} \end{beamercolorbox} \begin{beamercolorbox}{section in head/foot}  \vskip2pt\insertnavigation{\paperwidth}\vskip2pt \end{beamercolorbox} \begin{beamercolorbox}[colsep=1.5pt]{lower separation line head}  \end{beamercolorbox} }
 #+OPTIONS: toc:nil        (no default TOC at all)
 #+LATEX_HEADER: \usepackage[backend=bibtex]{biblatex}
-#+LATEX_HEADER: \bibliography{./../refs.bib}
+#+LATEX_HEADER: \bibliography{../paper/refs}
 #+BEAMER_HEADER: \setbeamertemplate{mini frames}{}
 #+STARTUP: overview indent
 #+TAGS: noexport(n) deprecated(d) Marcelo(m) Lucas(l)
@@ -268,6 +268,10 @@ aplicação. Assim, dada uma *mesma aplicação*, nossos objetivos são:
   - incluir diferentes arquiteturas de processador
 
 ** Referências
+#+latex: \nocite{*}
+#+latex: \bibliographystyle{sbc}
+
+
 ** Obrigado!
    #+BEGIN_EXPORT latex
    \vfill
