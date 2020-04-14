@@ -1,5 +1,5 @@
 #+TITLE:     Análise da Influência do Runtime OpenMP no Desempenho de Aplicação com Tarefas
-#+AUTHOR:    Henrique C. P. da Silva, Marcelo C. Milletto, Vinicius G. Pinto, Lucas M. Schnorr \linebreak {hcpsilva,marcelo.miletto,vgpinto,schnorr}@inf.ufrgs.br
+#+AUTHOR:    Henrique C. P. da Silva, *Marcelo C. Milletto*, Vinicius G. Pinto, Lucas M. Schnorr \linebreak {hcpsilva,marcelo.miletto,vgpinto,schnorr}@inf.ufrgs.br
 #+EMAIL:     {marcelo.miletto, schnorr}@inf.ufrgs.br
 #+DATE:      ERAD 2020 - Abril 15-17
 
