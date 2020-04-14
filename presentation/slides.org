@@ -182,10 +182,91 @@ aplicação. Assim, dada uma *mesma aplicação*, nossos objetivos são:
   [[./../img/DAG_9.pdf]]
   #+END_center
 
-* TODO Metodologia  
-* TODO Resultados
-* TODO Conclusão
-** Conclusão
+* Metodologia  
+** Metodologia de Coleta
+- Projeto Experimental:
+  - fatores: 
+    - tamanho da matriz: $8192\times8192$
+    - tamanho do bloco: potências de 2 entre [32, 512]
+  - repetições:
+    - $5\times$ para a avaliação do makespan
+    - $1\times$ para a coleta do rastro das execuções
+- Plataformas:
+#+name: tab:plataformas
+#+attr_latex: :float t :placement [!htb] :font \tiny
+|-------+----------------------------------+--------------------+------------|
+| <l>   | <l>                              | <l>                | <l>        |
+| *Nome*  | *CPU*                              | *L1/L2/LLC*          | *RAM*        |
+|-------+----------------------------------+--------------------+------------|
+| =draco= | $2 \times 8$ Xeon E5 2640 v2 2.5GHz   | 32KB/256KB/20MB    | 64GB DDR3  |
+| =cei=   | $2 \times 12$ Xeon Silver 4116 2.1GHz | 32KB/1024KB/16.5MB | 93GB DDR4  |
+| =hype=  | $2 \times 10$ Xeon E5 2650 v3 2.3GHz  | 32KB/256KB/25MB    | 128GB DDR4 |
+|-------+----------------------------------+--------------------+------------|
+- /Runtimes/:
+#+name: tab:versoes
+#+attr_latex: :float t :placement [!htb] :font \tiny
+|----------------+-----------+------------------------+------------------------------|
+| <l>            | <l>       | <l>                    | <l>                          |
+| *Identificador*  | *Fonte*     | *ABI/API Utilizada*      | *Versão*                       |
+|----------------+-----------+------------------------+------------------------------|
+| libgomp_{GCC}     |           | OpenMP/GCC             | =8.3.0=                        |
+| libomp_{LLVM}     |           | OpenMP/LLVM            | =6.0.0=                        |
+| KStar_{StarPU}    | Diretivas | StarPU (/LWS scheduler/) | =master=\xfeff_{=bf6af54e57bad130=} |
+| LIBKOMP_{libgomp} | OpenMP    | OpenMP/LIBKOMP-LLVM    | =master=\xfeff_{=32781b6dab10b1b5=} |
+| LIBKOMP_{libomp}  |           | OpenMP/LIBKOMP-GCC     | =master=\xfeff_{=32781b6dab10b1b5=} |
+|----------------+-----------+------------------------+------------------------------|
+| StarPU         | Nativo    | StarPU (/LWS scheduler/) | =1.3.1=                        |
+|----------------+-----------+------------------------+------------------------------|
+
+
+* Resultados
+** Resultados Experimentais e Observações
+- Diferenças de tempo de execução em função do /runtime/
+#+name: fig:makespan
+#+attr_latex: :float t :placement [!htb]
+[[../img/makespan-all.png]]
+- Conclusões:
+  - comportamento se preserva entre plataformas @@latex:{\tiny@@(cei, draco, hype)@@latex:}@@
+  - runtime kstar_starpu destoa
+  - libkomp_clang é muito instável 
+  # pois as vezes nao termina
+** Resultados Experimentais e Observações
+- Análise de Ociosidade por Trabalhador
+  - focaremos na plataforma cei com o tamanho de bloco 64
+    - grande número de tarefas estressa a capacidade de escalonamento dos runtimes
+  #+name: fig:idleness
+  #+attr_latex: :float t :placement [!htb]
+  [[../img/idleness-all-cei.png]]
+- Conclusões:
+  - libkomp_clang e kstar_{StarPU} apresentam ociosidade média acima de
+    90% 
+  - libgomp_{GCC}, libomp_{LLVM} e StarPU mantém ociosidade compatível
+** Resultados Experimentais e Observações
+- Comparação do Escalonamento entre os três /runtimes/
+  - início da tarefa ~dgeqrt~ (primeira de cada iteração)
+#+name: fig:dgeqrt
+#+attr_latex: :float t :placement [!htb]
+[[../img/dgeqrt-start-cei.png]]
+
+- Conclusões:
+  - todas iniciam no 1º segundo de execução
+    - exceto kstar_starpu e StarPU
+  - kstar_{starpu} inicia quase instantaneamente \to possível anomalia no
+    rastreamento ou na implementação.
+
+* Conclusões
+** Conclusões
+- Analise do desempenho e comportamento de 5 runtimes com uma fatoração QR 
+  - tempo de duração das tarefas incompatível com ociosidade e /makespan/
+     - libgomp_{GCC}, libomp_{LLVM} e libkomp
+  - KStar e libkomp não obtiveram bom desempenho com grão pequeno
+- suspeita de que kstar_starpu não está respeitando as dependências
+  entre tarefas
+- Trabalhos futuros:
+  - implementar a verificação da solução obtida pela execução
+  - adicionar o runtime OmpSs
+  - incluir diferentes arquiteturas de processador
+
 ** Referências
 ** Obrigado!
    #+BEGIN_EXPORT latex
