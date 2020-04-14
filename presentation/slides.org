@@ -26,6 +26,24 @@
 #+EXPORT_EXCLUDE_TAGS: noexport
 #+PROPERTY: header-args :eval never-export
 
+
+* TODO Metodologia                                                 :noexport:
+** Configuração Experimental: Máquinas
+  #+BEGIN_center
+  #+ATTR_LaTeX: :height 0.45\textwidth :center
+  [[./../img/machines.png]]
+  #+END_center
+** Configuração Experimental: Software
+  #+BEGIN_center
+  #+ATTR_LaTeX: :height 0.45\textwidth :center
+  [[./../img/software.png]]
+  #+END_center
+
+** Configuração Experimental: Parâmetros da Aplicação
+- Tamanho da matriz: 8192
+- Tamanho do bloco: [32, 64, 128, 256, 512]
+
+
 * Roteiro de apresentação                                          :noexport:
 Adicionar anotações e comentários sobre detalhes da apresentação
 aqui. 
@@ -182,7 +200,6 @@ aplicação. Assim, dada uma *mesma aplicação*, nossos objetivos são:
   [[./../img/DAG_9.pdf]]
   #+END_center
 
-* TODO Metodologia  
 * TODO Resultados
 * TODO Conclusão
 ** Conclusão
