@@ -1,0 +1,221 @@
+#+TITLE:     Análise da Influência do Runtime OpenMP no Desempenho de Aplicação com Tarefas
+#+AUTHOR:    Henrique C. P. da Silva, Marcelo C. Milletto, Vinicius G. Pinto, Lucas M. Schnorr \linebreak {hcpsilva,marcelo.miletto,vgpinto,schnorr}@inf.ufrgs.br
+#+EMAIL:     {marcelo.miletto, schnorr}@inf.ufrgs.br
+#+DATE:      ERAD 2020 - Abril 15-17
+
+#+LANGUAGE:  en
+#+OPTIONS:   H:2 num:t toc:t \n:nil ::t |:t ^:t -:t f:t *:t tex:t d:(HIDE) tags:not-in-toc <:t
+#+OPTIONS:   d:nil todo:t pri:nil
+#+TAGS: noexport(n) deprecated(d) ignore(i)
+#+STARTUP: beamer
+#+BEAMER_THEME: Dresden
+#+BEAMER_COLOR_THEME: beaver
+# #+BEAMER_HEADER: \titlegraphic{\includegraphics[height=1.2cm]{../img/logo_inf.pdf} \hfill \includegraphics[height=1.0cm]{../img/gppd-logo.png} \hfill \includegraphics[height=1.0cm]{./../img/ERAD.png}}
+#+BEAMER_HEADER: \titlegraphic{ \hfill \includegraphics[height=1.1cm]{./../img/logo_inf.png} \includegraphics[height=1.1cm]{../img/capes.jpg} \hfill \includegraphics[height=0.9cm]{../img/fapergs.jpg} \hfill \includegraphics[height=0.9cm]{./../img/cnpq.png} \hfill \includegraphics[height=0.9cm]{./../img/ERAD.png}}
+#+BEAMER_HEADER: \institute{Instituto de Informática PPGC - UFRGS}
+#+BEAMER_HEADER: \setbeamertemplate{navigation symbols}{}
+#+BEAMER_HEADER: \setbeamertemplate{footline}[page number]
+#+BEAMER_HEADER: \setbeamertemplate{headline} { \begin{beamercolorbox}[colsep=1.5pt]{upper separation line head} \end{beamercolorbox} \begin{beamercolorbox}{section in head/foot}  \vskip2pt\insertnavigation{\paperwidth}\vskip2pt \end{beamercolorbox} \begin{beamercolorbox}[colsep=1.5pt]{lower separation line head}  \end{beamercolorbox} }
+#+OPTIONS: toc:nil        (no default TOC at all)
+#+LATEX_HEADER: \usepackage[backend=bibtex]{biblatex}
+#+LATEX_HEADER: \bibliography{./../refs.bib}
+#+BEAMER_HEADER: \setbeamertemplate{mini frames}{}
+#+STARTUP: overview indent
+#+TAGS: noexport(n) deprecated(d) Marcelo(m) Lucas(l)
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+PROPERTY: header-args :eval never-export
+
+* Roteiro de apresentação                                          :noexport:
+Adicionar anotações e comentários sobre detalhes da apresentação
+aqui. 
+* Introdução 
+** Roteiro
+#+BEGIN_EXPORT latex
+\Large
+\begin{itemize}
+\item \textbf{Introdução}
+\vfill
+\item \textbf{Background}
+\vfill
+\item \textbf{Metodologia}
+\vfill
+\item \textbf{Resultados}
+\vfill
+\item \textbf{Conclusão}
+\end{itemize}
+\normalsize
+#+END_EXPORT
+** Introdução
+#+LaTeX: \vfill
+- A programação baseada em tarefas nos permite descrever uma
+  aplicação paralela como um Grafo Acíclico Dirigido (DAG).
+#+LaTeX: \vfill
+- Esse paradigma de programação possui uma camada entre a aplicação
+  e os recursos computacionais: A *camada de runtime*
+#+LaTeX: \vfill
+     #+BEGIN_CENTER     
+     #+ATTR_LaTeX: width=\textwidth
+     [[./../img/runtime.pdf]]
+     #+END_CENTER
+
+- Essas facilidades oferecidas pelo sistema de runtime vem juntamente
+  com um *sobrecusto* adicionado à aplicação, podendo afetar o seu
+  desempenho  
+
+** Objetivos
+*** A block                                           :B_ignoreheading:BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.8
+:END:
+Existem *diversas* bibliotecas oferecem superte a programação
+baseada em tarefas e muitas opções de *sistemas de runtime*
+  - Bibliotecas: OpenMP, StarPU
+  - Runtimes: GCC/libgomp, LLVM/libomp, CLANG/libkomp 
+Runtimes podem ter um impacto diferente sobre o desempenho da
+aplicação. Assim, dada uma *mesma aplicação*, nossos objetivos são:  
+  - Comparar o escalonamento das tarefas
+  - Observar a ociosidade dos trabalhadores
+  - Identificar anomalias nas bibliotecas avaliadas 
+#   - Observar a ociosidade dos trabalhadores dos runtime 
+*** A block                                           :B_ignoreheading:BMCOL:
+:PROPERTIES:
+:BEAMER_col: 0.2
+:END:
+#+BEGIN_center
+#+ATTR_LaTeX: :height 0.35\textwidth :center
+[[./../img/starpu.png]]
+
+
+\bigskip
+\bigskip
+#+ATTR_LaTeX: :height 0.4\textwidth :center
+[[./../img/llvm.png]]
+
+
+\bigskip
+\bigskip
+#+ATTR_LaTeX: :height 0.82\textwidth :center
+[[./../img/gcc.png]]
+#+END_center
+* Background
+** Fatoração QR por Blocos
+
+- A fatoração QR é utilizada para resolver sistemas de equações como o
+  problema de mínimos quadrados
+   
+- Este pseudocódigo representa o algoritmo de fatoração QR usando
+  quatro rotinas da *biblioteca LAPACK*:
+
+#+BEGIN_CENTER    
+#+ATTR_LaTeX: :height 0.4\textwidth :center
+[[./../img/pseudo.png]]
+#+END_CENTER
+
+** Paralelismo de Tarefas Para fatoração QR Densa  
+
+- O pseudocódigo gera o seguinte DAG associado a estrutura da matriz
+  do problema
+
+  #+BEGIN_center
+  #+ATTR_LaTeX: :height 0.45\textwidth :center
+  [[./../img/blockqr_0.pdf]]
+  #+ATTR_LaTeX: :height 0.45\textwidth :center
+  [[./../img/DAG_0.pdf]]
+  #+END_center
+
+** Paralelismo de Tarefas Para fatoração QR Densa  
+
+- O pseudocódigo gera o seguinte DAG associado a estrutura da matriz
+  do problema 
+
+  #+BEGIN_center
+  #+ATTR_LaTeX: :height 0.45\textwidth :center
+  [[./../img/blockqr_1.pdf]]
+  #+ATTR_LaTeX: :height 0.45\textwidth :center
+  [[./../img/DAG_1.pdf]]
+  #+END_center
+
+** Paralelismo de Tarefas Para fatoração QR Densa  
+
+- O pseudocódigo gera o seguinte DAG associado a estrutura da matriz
+  do problema
+
+  #+BEGIN_center
+  #+ATTR_LaTeX: :height 0.45\textwidth :center
+  [[./../img/blockqr_2.pdf]]
+  #+ATTR_LaTeX: :height 0.45\textwidth :center
+  [[./../img/DAG_2.pdf]]
+  #+END_center
+** Paralelismo de Tarefas Para fatoração QR Densa  
+
+- O pseudocódigo gera o seguinte DAG associado a estrutura da matriz
+  do problema
+
+  #+BEGIN_center
+  #+ATTR_LaTeX: :height 0.45\textwidth :center
+  [[./../img/blockqr_4.pdf]]
+  #+ATTR_LaTeX: :height 0.45\textwidth :center
+  [[./../img/DAG_3.pdf]]
+  #+END_center
+
+** Paralelismo de Tarefas Para fatoração QR Densa  
+
+- O pseudocódigo gera o seguinte DAG associado a estrutura da matriz
+  do problema
+
+  #+BEGIN_center
+  #+ATTR_LaTeX: :height 0.45\textwidth :center
+  [[./../img/blockqr_5.pdf]]
+  #+ATTR_LaTeX: :height 0.45\textwidth :center
+  [[./../img/DAG_5.pdf]]
+  #+END_center
+** Paralelismo de Tarefas Para fatoração QR Densa  
+
+- O pseudocódigo gera o seguinte DAG associado a estrutura da matriz
+  do problema
+
+  #+BEGIN_center
+  #+ATTR_LaTeX: :height 0.45\textwidth :center
+  [[./../img/blockqr_5.pdf]]
+  #+ATTR_LaTeX: :height 0.45\textwidth :center
+  [[./../img/DAG_9.pdf]]
+  #+END_center
+
+* TODO Metodologia  
+* TODO Resultados
+* TODO Conclusão
+** Conclusão
+** Referências
+** Obrigado!
+   #+BEGIN_EXPORT latex
+   \vfill
+    \centering
+    \linebreak
+    \Huge{\textbf{Perguntas?}}
+    \linebreak
+    \normalsize
+    \vfill
+    {hcpsilva,marcelo.miletto,vgpinto,schnorr}@inf.ufrgs.br
+    \linebreak
+    \vfill
+   #+END_EXPORT
+   Link do repositório que contém os dados utilizados no trabalho:
+   \url{https://gitlab.com/hcpsilva/companion-erad-2020}
+
+   #+BEGIN_center
+     \vfill
+     \hfill 
+     #+ATTR_LaTeX: :height 0.14\textwidth :center
+     [[./../img/capes.jpg]]
+     \hfill 
+     #+ATTR_LaTeX: :height 0.14\textwidth :center
+     [[./../img/fapergs.jpg]]
+     \hfill
+     #+ATTR_LaTeX: :height 0.14\textwidth :center
+     [[./../img/cnpq.png]]
+     \hfill 
+     #+ATTR_LaTeX: :height 0.14\textwidth :center
+     [[./../img/logo_inf.png]]
+   #+END_center
+

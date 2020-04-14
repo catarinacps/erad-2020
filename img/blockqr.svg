@@ -1,0 +1,226 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Created with svg_stack (http://github.com/astraw/svg_stack) -->
+<svg xmlns:lucid="lucid" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" version="1.1" width="1260.0" height="1460.55">
+  <defs/>
+  <g id="id0:id0" transform="translate(0.0,0.0)">
+    <g transform="translate(-80 -130)" lucid:page-tab-id="0_0">
+      <path d="M0 0h1760v1360H0z" fill="#fff"/>
+      <path d="M200 245c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5z" stroke="#000" stroke-width="7" fill="#96e3a2"/>
+      <path d="M200 345c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM300 345c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM300 245c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM400 245c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM400 345c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM400 445c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM300 445c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM200 445c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM620 245c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM620 345c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM720 345c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5z" stroke="#666" stroke-width="7" fill="#fff"/>
+      <path d="M720 245c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5z" stroke="#000" stroke-width="7" fill="#f68285"/>
+      <path d="M820 245c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM820 345c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM820 445c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM720 445c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM620 445c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM1040 345c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM1140 345c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM1140 245c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5z" stroke="#666" stroke-width="7" fill="#fff"/>
+      <path d="M1240 245c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5z" stroke="#000" stroke-width="7" fill="#f68285"/>
+      <path d="M1240 345c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM1240 445c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM1140 445c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM1040 445c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5z" stroke="#666" stroke-width="7" fill="#fff"/>
+      <path d="M176.46 316.46c1.96 1.96 3.54 1.3 3.54-1.46v-70c0-2.76-2.24-5-5-5h-70c-2.76 0-3.42 1.58-1.46 3.54z" stroke="#000" stroke-width="7" fill="#96e3a2"/>
+      <path d="M596.46 316.46c1.96 1.96 3.54 1.3 3.54-1.46v-70c0-2.76-2.24-5-5-5h-70c-2.76 0-3.42 1.58-1.46 3.54zM1016.46 316.46c1.96 1.96 3.54 1.3 3.54-1.46v-70c0-2.76-2.24-5-5-5h-70c-2.76 0-3.42 1.58-1.46 3.54z" stroke="#000" stroke-width="7" fill="#fff"/>
+      <path d="M200 150h280v60H200z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id0:a" transform="matrix(1,0,0,1,205,155) translate(21.148148148148124 42.66666666666667)"/>
+      <path d="M620 150h280v70H620z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id0:b" transform="matrix(1,0,0,1,625,155) translate(25.814814814814795 42.66666666666667)"/>
+      <path d="M1040 150h279.75v60H1040z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id0:b" transform="matrix(1,0,0,1,1045,155) translate(25.814814814814795 42.66666666666667)"/>
+      <path d="M275.5 316.46c1.96 1.96 3.54 1.3 3.54-1.46v-70c0-2.76-2.24-5-5-5h-70c-2.76 0-3.42 1.58-1.46 3.54z" stroke="#000" stroke-width="7" fill="#96e3a2"/>
+      <path d="M140 240h40v80h-40z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id0:c" transform="matrix(1,0,0,1,145,245) translate(2.833333333333334 43)"/>
+      <path d="M560 240h40v80h-40z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id0:c" transform="matrix(1,0,0,1,565,245) translate(2.833333333333334 43)"/>
+      <path d="M980 240h40v80h-40z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id0:c" transform="matrix(1,0,0,1,985,245) translate(2.833333333333334 43)"/>
+      <path d="M200 260h40v80h-40z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id0:d" transform="matrix(1,0,0,1,205,265) translate(1.6666666666666679 43)"/>
+      <path d="M239.04 240h40v60h-40z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id0:e" transform="matrix(1,0,0,1,244.04198062430527,245) translate(0.6111111111111125 33)"/>
+      <path d="M659.04 240h40v60h-40z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id0:f" transform="matrix(1,0,0,1,664.0419806243053,245) translate(0.6111111111111125 33)"/>
+      <path d="M623.54 243.54c-1.96-1.96-3.54-1.3-3.54 1.46v70c0 2.76 2.24 5 5 5h70c2.76 0 3.42-1.58 1.46-3.54z" stroke="#000" stroke-width="7" fill-opacity="0"/>
+      <path d="M620 260h40v80h-40z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id0:d" transform="matrix(1,0,0,1,625,265) translate(1.6666666666666679 43)"/>
+      <path d="M1040 245c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5z" stroke="#666" stroke-width="7" fill="#fff"/>
+      <path d="M1079.04 240h40v60h-40z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id0:f" transform="matrix(1,0,0,1,1084.0419806243053,245) translate(0.6111111111111125 33)"/>
+      <path d="M1043.54 243.54c-1.96-1.96-3.54-1.3-3.54 1.46v70c0 2.76 2.24 5 5 5h70c2.76 0 3.42-1.58 1.46-3.54z" stroke="#000" stroke-width="7" fill-opacity="0"/>
+      <path d="M1040 260h40v80h-40z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id0:d" transform="matrix(1,0,0,1,1045,265) translate(1.6666666666666679 43)"/>
+      <defs>
+        <path d="M24-248c120-7 223 5 221 122C244-46 201 0 124 0H24v-248zM76-40c74 7 117-18 117-86 0-67-45-88-117-82v168" id="id0:g"/>
+        <path d="M67-125c0 54 23 88 75 88 28 0 53-7 68-21v-34h-60v-39h108v91C232-14 192 4 140 4 58 4 20-42 15-125 8-236 126-280 215-234c19 10 29 26 37 47l-47 15c-11-23-29-39-63-39-53 1-75 33-75 86" id="id0:h"/>
+        <path d="M24 0v-248h195v40H76v63h132v40H76v65h150V0H24" id="id0:i"/>
+        <path d="M140-251c80 0 125 45 125 126 0 70-33 111-92 124 6 28 34 38 68 31l-1 36C177 83 129 55 120 2 51-6 15-50 15-125c0-81 44-126 125-126zm-1 214c52 0 73-35 73-88 0-50-21-86-72-86-52 0-73 35-73 86s22 88 72 88" id="id0:j"/>
+        <path d="M240-174c0 40-23 61-54 70L253 0h-59l-57-94H76V0H24v-248c93 4 217-23 216 74zM76-134c48-2 112 12 112-38 0-48-66-32-112-35v73" id="id0:k"/>
+        <path d="M136-208V0H84v-208H4v-40h212v40h-80" id="id0:l"/>
+        <g id="id0:a">
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,0,0)" xlink:href="#id0:g"/>
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,38.370370370370374,0)" xlink:href="#id0:h"/>
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,79.85185185185186,0)" xlink:href="#id0:i"/>
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,115.40740740740742,0)" xlink:href="#id0:j"/>
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,156.8888888888889,0)" xlink:href="#id0:k"/>
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,195.2592592592593,0)" xlink:href="#id0:l"/>
+        </g>
+        <path d="M24 0v-248h52v208h133V0H24" id="id0:m"/>
+        <path d="M199 0l-22-63H83L61 0H9l90-248h61L250 0h-51zm-33-102l-36-108c-10 38-24 72-36 108h72" id="id0:n"/>
+        <path d="M76-208v77h127v40H76V0H24v-248h183v40H76" id="id0:o"/>
+        <path d="M182-130c37 4 62 22 62 59C244 23 116-4 24 0v-248c84 5 203-23 205 63 0 31-19 50-47 55zM76-148c40-3 101 13 101-30 0-44-60-28-101-31v61zm0 110c48-3 116 14 116-37 0-48-69-32-116-35v72" id="id0:p"/>
+        <g id="id0:b">
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,0,0)" xlink:href="#id0:g"/>
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,38.370370370370374,0)" xlink:href="#id0:m"/>
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,70.81481481481482,0)" xlink:href="#id0:n"/>
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,109.18518518518518,0)" xlink:href="#id0:k"/>
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,147.55555555555557,0)" xlink:href="#id0:o"/>
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,180.00000000000003,0)" xlink:href="#id0:p"/>
+        </g>
+        <use transform="matrix(0.1111111111111111,0,0,0.1111111111111111,0,0)" xlink:href="#id0:l" id="id0:c"/>
+        <path d="M147 0H94L2-248h55l64 206c17-72 42-137 63-206h54" id="id0:q"/>
+        <use transform="matrix(0.1111111111111111,0,0,0.1111111111111111,0,0)" xlink:href="#id0:q" id="id0:d"/>
+        <use transform="matrix(0.1111111111111111,0,0,0.1111111111111111,0,0)" xlink:href="#id0:k" id="id0:e"/>
+        <path fill="#666" d="M240-174c0 40-23 61-54 70L253 0h-59l-57-94H76V0H24v-248c93 4 217-23 216 74zM76-134c48-2 112 12 112-38 0-48-66-32-112-35v73" id="id0:r"/>
+        <use transform="matrix(0.1111111111111111,0,0,0.1111111111111111,0,0)" xlink:href="#id0:r" id="id0:f"/>
+      </defs>
+    </g>
+  </g>
+  <g id="id1:id1" transform="translate(0.0,525.0)">
+    <g transform="translate(-80 -130)" lucid:page-tab-id="0_0">
+      <path d="M0 0h1760v1360H0z" fill="#fff"/>
+      <path d="M200 245c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5z" stroke="#666" stroke-width="7" fill="#fff"/>
+      <path d="M200 345c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5z" stroke="#000" stroke-width="7" fill="#d194d0"/>
+      <path d="M300 345c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM300 245c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM400 245c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM400 345c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM400 445c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM300 445c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM200 445c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM620 245c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5z" stroke="#666" stroke-width="7" fill="#fff"/>
+      <path d="M620 345c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5z" stroke="#000" stroke-width="7" fill="#fff"/>
+      <path d="M720 345c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM720 245c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5z" stroke="#000" stroke-width="7" fill="#9bb6dd"/>
+      <path d="M820 245c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM820 345c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM820 445c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM720 445c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM620 445c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5z" stroke="#666" stroke-width="7" fill="#fff"/>
+      <path d="M1040 345c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5z" stroke="#000" stroke-width="7" fill="#fff"/>
+      <path d="M1140 345c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM1140 245c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5z" stroke="#666" stroke-width="7" fill="#fff"/>
+      <path d="M1240 245c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM1240 345c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5z" stroke="#000" stroke-width="7" fill="#9bb6dd"/>
+      <path d="M1240 445c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM1140 445c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM1040 445c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5z" stroke="#666" stroke-width="7" fill="#fff"/>
+      <path d="M176.46 416.46c1.96 1.96 3.54 1.3 3.54-1.46v-70c0-2.76-2.24-5-5-5h-70c-2.76 0-3.42 1.58-1.46 3.54z" stroke="#000" stroke-width="7" fill="#d194d0"/>
+      <path d="M596.46 416.46c1.96 1.96 3.54 1.3 3.54-1.46v-70c0-2.76-2.24-5-5-5h-70c-2.76 0-3.42 1.58-1.46 3.54zM1016.46 416.46c1.96 1.96 3.54 1.3 3.54-1.46v-70c0-2.76-2.24-5-5-5h-70c-2.76 0-3.42 1.58-1.46 3.54z" stroke="#000" stroke-width="7" fill="#fff"/>
+      <path d="M200 150h280v60H200z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id1:a" transform="matrix(1,0,0,1,205,155) translate(25.666666666666643 42.66666666666667)"/>
+      <path d="M620 150h280v70H620z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id1:b" transform="matrix(1,0,0,1,625,155) translate(3.518518518518505 42.66666666666667)"/>
+      <path d="M1040 150h279.75v60H1040z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id1:b" transform="matrix(1,0,0,1,1045,155) translate(3.518518518518505 42.66666666666667)"/>
+      <path d="M276.46 316.46c1.96 1.96 3.54 1.3 3.54-1.46v-70c0-2.76-2.24-5-5-5h-70c-2.76 0-3.42 1.58-1.46 3.54z" stroke="#000" stroke-width="7" fill="#d194d0"/>
+      <path d="M140 340h40v80h-40z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id1:c" transform="matrix(1,0,0,1,145,345) translate(2.833333333333334 43)"/>
+      <path d="M560 340h40v80h-40z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id1:c" transform="matrix(1,0,0,1,565,345) translate(2.833333333333334 43)"/>
+      <path d="M980 340h40v80h-40z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id1:c" transform="matrix(1,0,0,1,985,345) translate(2.833333333333334 43)"/>
+      <path d="M200 260h40v80h-40z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id1:d" transform="matrix(1,0,0,1,205,265) translate(1.6666666666666679 43)"/>
+      <path d="M239.04 240h40v60h-40z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id1:e" transform="matrix(1,0,0,1,244.04198062430527,245) translate(0.6111111111111125 33)"/>
+      <path d="M1040 245c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5z" stroke="#666" stroke-width="7" fill="#fff"/>
+      <path d="M203.02 339.45H280V420h-76.98z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id1:f" transform="matrix(1,0,0,1,208.02181549288372,344.4517922378127) translate(20.166666666666668 43.5)"/>
+      <path d="M620 340h76.98v80.55H620z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id1:f" transform="matrix(1,0,0,1,625,345) translate(20.166666666666668 43.5)"/>
+      <path d="M1040 340h76.98v80.55H1040z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id1:f" transform="matrix(1,0,0,1,1045,345) translate(20.166666666666668 43.5)"/>
+      <defs>
+        <path d="M24-248c120-7 223 5 221 122C244-46 201 0 124 0H24v-248zM76-40c74 7 117-18 117-86 0-67-45-88-117-82v168" id="id1:g"/>
+        <path d="M136-208V0H84v-208H4v-40h212v40h-80" id="id1:h"/>
+        <path d="M24-248c93 1 206-16 204 79-1 75-69 88-152 82V0H24v-248zm52 121c47 0 100 7 100-41 0-47-54-39-100-39v80" id="id1:i"/>
+        <path d="M140-251c80 0 125 45 125 126 0 70-33 111-92 124 6 28 34 38 68 31l-1 36C177 83 129 55 120 2 51-6 15-50 15-125c0-81 44-126 125-126zm-1 214c52 0 73-35 73-88 0-50-21-86-72-86-52 0-73 35-73 86s22 88 72 88" id="id1:j"/>
+        <path d="M240-174c0 40-23 61-54 70L253 0h-59l-57-94H76V0H24v-248c93 4 217-23 216 74zM76-134c48-2 112 12 112-38 0-48-66-32-112-35v73" id="id1:k"/>
+        <g id="id1:a">
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,0,0)" xlink:href="#id1:g"/>
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,38.370370370370374,0)" xlink:href="#id1:h"/>
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,70.81481481481482,0)" xlink:href="#id1:i"/>
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,106.37037037037038,0)" xlink:href="#id1:j"/>
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,147.85185185185188,0)" xlink:href="#id1:k"/>
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,186.22222222222226,0)" xlink:href="#id1:h"/>
+        </g>
+        <path d="M230 0l2-204L168 0h-37L68-204 70 0H24v-248h70l56 185 57-185h69V0h-46" id="id1:l"/>
+        <g id="id1:b">
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,0,0)" xlink:href="#id1:g"/>
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,38.370370370370374,0)" xlink:href="#id1:h"/>
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,70.81481481481482,0)" xlink:href="#id1:i"/>
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,106.37037037037038,0)" xlink:href="#id1:l"/>
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,150.66666666666669,0)" xlink:href="#id1:j"/>
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,192.14814814814818,0)" xlink:href="#id1:k"/>
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,230.51851851851856,0)" xlink:href="#id1:h"/>
+        </g>
+        <use transform="matrix(0.1111111111111111,0,0,0.1111111111111111,0,0)" xlink:href="#id1:h" id="id1:c"/>
+        <path fill="#666" d="M147 0H94L2-248h55l64 206c17-72 42-137 63-206h54" id="id1:m"/>
+        <use transform="matrix(0.1111111111111111,0,0,0.1111111111111111,0,0)" xlink:href="#id1:m" id="id1:d"/>
+        <use transform="matrix(0.1111111111111111,0,0,0.1111111111111111,0,0)" xlink:href="#id1:k" id="id1:e"/>
+        <path d="M147 0H94L2-248h55l64 206c17-72 42-137 63-206h54" id="id1:n"/>
+        <use transform="matrix(0.1111111111111111,0,0,0.1111111111111111,0,0)" xlink:href="#id1:n" id="id1:f"/>
+      </defs>
+    </g>
+  </g>
+  <g id="id2:id2" transform="translate(0.0,1050.0)">
+    <g transform="translate(-80 -130)" lucid:page-tab-id="0_0">
+      <path d="M0 0h1760v1360H0z" fill="#fff"/>
+      <path d="M200 245c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5z" stroke="#666" stroke-width="7" fill="#fff"/>
+      <path d="M200 445c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5z" stroke="#000" stroke-width="7" fill="#d194d0"/>
+      <path d="M300 445c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM300 245c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM400 245c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM400 445c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM400 345c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM300 345c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM200 345c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM620 245c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5z" stroke="#666" stroke-width="7" fill="#fff"/>
+      <path d="M620 445c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5z" stroke="#000" stroke-width="7" fill="#fff"/>
+      <path d="M720 445c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM720 245c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5z" stroke="#000" stroke-width="7" fill="#9bb6dd"/>
+      <path d="M820 245c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM820 445c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM820 345c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM720 345c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM620 345c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5z" stroke="#666" stroke-width="7" fill="#fff"/>
+      <path d="M1040 445c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5z" stroke="#000" stroke-width="7" fill="#fff"/>
+      <path d="M1140 445c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM1140 245c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5z" stroke="#666" stroke-width="7" fill="#fff"/>
+      <path d="M1240 245c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM1240 445c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5z" stroke="#000" stroke-width="7" fill="#9bb6dd"/>
+      <path d="M1240 345c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM1140 345c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5zM1040 345c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5z" stroke="#666" stroke-width="7" fill="#fff"/>
+      <path d="M176.46 516.46c1.96 1.96 3.54 1.3 3.54-1.46v-70c0-2.76-2.24-5-5-5h-70c-2.76 0-3.42 1.58-1.46 3.54z" stroke="#000" stroke-width="7" fill="#d194d0"/>
+      <path d="M596.46 516.46c1.96 1.96 3.54 1.3 3.54-1.46v-70c0-2.76-2.24-5-5-5h-70c-2.76 0-3.42 1.58-1.46 3.54zM1016.46 516.46c1.96 1.96 3.54 1.3 3.54-1.46v-70c0-2.76-2.24-5-5-5h-70c-2.76 0-3.42 1.58-1.46 3.54z" stroke="#000" stroke-width="7" fill="#fff"/>
+      <path d="M200 150h280v60H200z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id2:a" transform="matrix(1,0,0,1,205,155) translate(25.666666666666643 42.66666666666667)"/>
+      <path d="M620 150h280v70H620z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id2:b" transform="matrix(1,0,0,1,625,155) translate(3.518518518518505 42.66666666666667)"/>
+      <path d="M1040 150h279.75v60H1040z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id2:b" transform="matrix(1,0,0,1,1045,155) translate(3.518518518518505 42.66666666666667)"/>
+      <path d="M276.46 316.46c1.96 1.96 3.54 1.3 3.54-1.46v-70c0-2.76-2.24-5-5-5h-70c-2.76 0-3.42 1.58-1.46 3.54z" stroke="#000" stroke-width="7" fill="#d194d0"/>
+      <path d="M140 440h40v80h-40z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id2:c" transform="matrix(1,0,0,1,145,445) translate(2.833333333333334 43)"/>
+      <path d="M560 440h40v80h-40z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id2:c" transform="matrix(1,0,0,1,565,445) translate(2.833333333333334 43)"/>
+      <path d="M980 440h40v80h-40z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id2:c" transform="matrix(1,0,0,1,985,445) translate(2.833333333333334 43)"/>
+      <path d="M200 260h40v80h-40z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id2:d" transform="matrix(1,0,0,1,205,265) translate(1.6666666666666679 43)"/>
+      <path d="M239.04 240h40v60h-40z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id2:e" transform="matrix(1,0,0,1,244.04198062430527,245) translate(0.6111111111111125 33)"/>
+      <path d="M1040 245c0-2.76 2.24-5 5-5h70c2.76 0 5 2.24 5 5v70c0 2.76-2.24 5-5 5h-70c-2.76 0-5-2.24-5-5z" stroke="#666" stroke-width="7" fill="#fff"/>
+      <path d="M203.02 439.45H280V520h-76.98z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id2:f" transform="matrix(1,0,0,1,208.02181549288372,444.4517922378127) translate(20.166666666666668 43.5)"/>
+      <path d="M620 440h76.98v80.55H620z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id2:f" transform="matrix(1,0,0,1,625,445) translate(20.166666666666668 43.5)"/>
+      <path d="M1040 440h76.98v80.55H1040z" stroke="#000" stroke-opacity="0" stroke-width="3" fill="#fff" fill-opacity="0"/>
+      <use xlink:href="#id2:f" transform="matrix(1,0,0,1,1045,445) translate(20.166666666666668 43.5)"/>
+      <defs>
+        <path d="M24-248c120-7 223 5 221 122C244-46 201 0 124 0H24v-248zM76-40c74 7 117-18 117-86 0-67-45-88-117-82v168" id="id2:g"/>
+        <path d="M136-208V0H84v-208H4v-40h212v40h-80" id="id2:h"/>
+        <path d="M24-248c93 1 206-16 204 79-1 75-69 88-152 82V0H24v-248zm52 121c47 0 100 7 100-41 0-47-54-39-100-39v80" id="id2:i"/>
+        <path d="M140-251c80 0 125 45 125 126 0 70-33 111-92 124 6 28 34 38 68 31l-1 36C177 83 129 55 120 2 51-6 15-50 15-125c0-81 44-126 125-126zm-1 214c52 0 73-35 73-88 0-50-21-86-72-86-52 0-73 35-73 86s22 88 72 88" id="id2:j"/>
+        <path d="M240-174c0 40-23 61-54 70L253 0h-59l-57-94H76V0H24v-248c93 4 217-23 216 74zM76-134c48-2 112 12 112-38 0-48-66-32-112-35v73" id="id2:k"/>
+        <g id="id2:a">
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,0,0)" xlink:href="#id2:g"/>
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,38.370370370370374,0)" xlink:href="#id2:h"/>
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,70.81481481481482,0)" xlink:href="#id2:i"/>
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,106.37037037037038,0)" xlink:href="#id2:j"/>
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,147.85185185185188,0)" xlink:href="#id2:k"/>
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,186.22222222222226,0)" xlink:href="#id2:h"/>
+        </g>
+        <path d="M230 0l2-204L168 0h-37L68-204 70 0H24v-248h70l56 185 57-185h69V0h-46" id="id2:l"/>
+        <g id="id2:b">
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,0,0)" xlink:href="#id2:g"/>
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,38.370370370370374,0)" xlink:href="#id2:h"/>
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,70.81481481481482,0)" xlink:href="#id2:i"/>
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,106.37037037037038,0)" xlink:href="#id2:l"/>
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,150.66666666666669,0)" xlink:href="#id2:j"/>
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,192.14814814814818,0)" xlink:href="#id2:k"/>
+          <use transform="matrix(0.14814814814814817,0,0,0.14814814814814817,230.51851851851856,0)" xlink:href="#id2:h"/>
+        </g>
+        <use transform="matrix(0.1111111111111111,0,0,0.1111111111111111,0,0)" xlink:href="#id2:h" id="id2:c"/>
+        <path fill="#666" d="M147 0H94L2-248h55l64 206c17-72 42-137 63-206h54" id="id2:m"/>
+        <use transform="matrix(0.1111111111111111,0,0,0.1111111111111111,0,0)" xlink:href="#id2:m" id="id2:d"/>
+        <use transform="matrix(0.1111111111111111,0,0,0.1111111111111111,0,0)" xlink:href="#id2:k" id="id2:e"/>
+        <path d="M147 0H94L2-248h55l64 206c17-72 42-137 63-206h54" id="id2:n"/>
+        <use transform="matrix(0.1111111111111111,0,0,0.1111111111111111,0,0)" xlink:href="#id2:n" id="id2:f"/>
+      </defs>
+    </g>
+  </g>
+</svg>
