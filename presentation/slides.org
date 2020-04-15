@@ -20,7 +20,7 @@
 #+LATEX_HEADER: \bibliography{../paper/refs}
 #+BEAMER_HEADER: \setbeamertemplate{mini frames}{}
 
-* Anotações
+* Anotações                                                        :noexport:
 ** Slide 13
   Nas observações sobre o makespan
 
@@ -37,7 +37,6 @@
 ** Slide 16
 
    - Tempo de duração das tarefas incompatível com ociosidade e makespan.
-
 
 * Roteiro de apresentação                                          :noexport:
 ** Introdução
