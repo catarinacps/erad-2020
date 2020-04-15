@@ -256,11 +256,13 @@ aplicação. Assim, dada uma *mesma aplicação*, nossos objetivos são:
 * Background
 ** Fatoração QR por Blocos
 
-- A fatoração QR é utilizada para resolver sistemas de equações como o
-  problema de mínimos quadrados
+A fatoração QR é utilizada para resolver sistemas de equações como o
+problema de mínimos quadrados
+
+#+latex: \bigskip
    
-- Este pseudocódigo representa o algoritmo de fatoração QR usando
-  quatro rotinas da *biblioteca LAPACK*:
+Este pseudocódigo representa o algoritmo de fatoração QR usando
+quatro rotinas da *biblioteca LAPACK*:
 
 #+BEGIN_CENTER    
 #+ATTR_LaTeX: :height 0.4\textwidth :center
@@ -269,8 +271,8 @@ aplicação. Assim, dada uma *mesma aplicação*, nossos objetivos são:
 
 ** Paralelismo de Tarefas Para fatoração QR Densa  
 
-- O pseudocódigo gera o seguinte DAG associado a estrutura da matriz
-  do problema
+O pseudocódigo gera o seguinte DAG associado a estrutura da matriz
+do problema
 
   #+BEGIN_center
   #+ATTR_LaTeX: :height 0.45\textwidth :center
@@ -281,8 +283,8 @@ aplicação. Assim, dada uma *mesma aplicação*, nossos objetivos são:
 
 ** Paralelismo de Tarefas Para fatoração QR Densa  
 
-- O pseudocódigo gera o seguinte DAG associado a estrutura da matriz
-  do problema 
+O pseudocódigo gera o seguinte DAG associado a estrutura da matriz
+do problema 
 
   #+BEGIN_center
   #+ATTR_LaTeX: :height 0.45\textwidth :center
@@ -293,8 +295,8 @@ aplicação. Assim, dada uma *mesma aplicação*, nossos objetivos são:
 
 ** Paralelismo de Tarefas Para fatoração QR Densa  
 
-- O pseudocódigo gera o seguinte DAG associado a estrutura da matriz
-  do problema
+O pseudocódigo gera o seguinte DAG associado a estrutura da matriz
+do problema
 
   #+BEGIN_center
   #+ATTR_LaTeX: :height 0.45\textwidth :center
@@ -305,8 +307,8 @@ aplicação. Assim, dada uma *mesma aplicação*, nossos objetivos são:
 
 ** Paralelismo de Tarefas Para fatoração QR Densa  
 
-- O pseudocódigo gera o seguinte DAG associado a estrutura da matriz
-  do problema
+O pseudocódigo gera o seguinte DAG associado a estrutura da matriz
+do problema
 
   #+BEGIN_center
   #+ATTR_LaTeX: :height 0.45\textwidth :center
@@ -317,8 +319,8 @@ aplicação. Assim, dada uma *mesma aplicação*, nossos objetivos são:
 
 ** Paralelismo de Tarefas Para fatoração QR Densa  
 
-- O pseudocódigo gera o seguinte DAG associado a estrutura da matriz
-  do problema
+O pseudocódigo gera o seguinte DAG associado a estrutura da matriz
+do problema
 
   #+BEGIN_center
   #+ATTR_LaTeX: :height 0.45\textwidth :center
@@ -329,8 +331,8 @@ aplicação. Assim, dada uma *mesma aplicação*, nossos objetivos são:
 
 ** Paralelismo de Tarefas Para fatoração QR Densa  
 
-- O pseudocódigo gera o seguinte DAG associado a estrutura da matriz
-  do problema
+O pseudocódigo gera o seguinte DAG associado a estrutura da matriz
+do problema
 
   #+BEGIN_center
   #+ATTR_LaTeX: :height 0.45\textwidth :center
