@@ -222,7 +222,7 @@ fatoração, que continua em submatrizes cada vez menores.
 :PROPERTIES:
 :BEAMER_col: 0.8
 :END:
-Existem *diversas* bibliotecas oferecem superte a programação
+Existem *diversas* bibliotecas que oferecem suporte a programação
 baseada em tarefas e muitas opções de *sistemas de runtime*
   - Bibliotecas: OpenMP, StarPU
   - Runtimes: libgomp_{GCC}, libomp_{LLVM} e libkomp_CLANG
