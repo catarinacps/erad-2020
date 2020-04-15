@@ -29,14 +29,30 @@
      execução
   O que acontece exatamento com o caso kstar_starpu? ele nao termina a
   execução assim como o libkomp_clang?
+
+  *Hipótese:* provavelmente houve um problema na transpilação?
   
 ** Slide 15
+
    Quanto aos outros casos fora o StarPU e kstarpu, que iniciam no
    primeiro segundo, também são anomalias no rastreamento?
    
+   *Hipótese:* Isso caracteriza algum possível problema no rastreamento.
+
 ** Slide 16
 
-   - Tempo de duração das tarefas incompatível com ociosidade e makespan.
+   - Tempo de duração das tarefas incompatível com ociosidade e
+     makespan.
+    
+   - Resposta:
+      A gente somou os tempos e mesmo qdo as tarefas parecem durar mto
+      mais tempo o makespan não aumenta.
+   
+      *Hipótese:* ele tá pausando as tarefas, então o end-start estaria
+      considerando um tempo em q a tarefa não estava executando.
+
+      E msmo qdo as tarefas parecem durar mto mais tempo
+      O makespan não aumenta.
 
 * Roteiro de apresentação                                          :noexport:
 ** Introdução
@@ -63,9 +79,9 @@ esse grafo, e isso pode afetar o desempenho da aplicação.
 
 Como existe diversos bibliotecas que suportam esse paradigma como o
 OpenMP e StarPU, tambpem temos muitos sistemas de runtime disponíveis
-como o libgomp do GCC, libomp do LLVM e libkomp do CLANG.
+como o libgomp do GCC, libomp do LLVM e libkomp do XKAAPI.
 
-Estes diferentes runtimes podem ter um impacto diferente do desempenho
+Estes diferentes runtimes podem ter um impacto diferente no desempenho
 da aplicação, apresentando custos de sobrecarga diferente e diferentes
 estratégias para criar e escalonar as tarefas.
 
@@ -84,7 +100,7 @@ A implementação do algoritmo pode ser feita usando rotinas LAPACK
 acordo com o seguinte pseudocódigo:
 
 São 4 laços que percorrem blocos em posições específicas da matriz
-realizando operações de fatoração e atalização de acordo com uma
+realizando operações de fatoração e atualização de acordo com uma
 certa ordem criada a partir desta estrutura.
 
 ** Paralelismo de Tarefas Para fatoração QR Densa 
@@ -117,15 +133,13 @@ fatoração, que continua em submatrizes cada vez menores.
    As plataformas computacionais são descritas nessa tabela, todas com
    dois processadores e com um diferente numero de cores.
 
-   No lado dos runtimes, foram explorados 6 runtimes diferentes:
+   No lado dos runtimes, foram explorados 5 runtimes diferentes:
 
-
-   5 deles foram usados com o código escrito usando diretivas OpenMP
+   4 deles foram usados com o código escrito usando diretivas OpenMP
    O último foi o runtime nativo do StarPU usando o código escrito com as
    diretivas StarPU.
-
-   Descrever cada runtime:
-
+   
+   Os runtimes utilizados foram:
    libgomp do GCC 
    libomp do LLVM
    KStarStarPU, que faz uma transpilação do código OpenMP para diretivas
@@ -145,7 +159,8 @@ fatoração, que continua em submatrizes cada vez menores.
      1. O comportamento se preserva entre as plataformas (por exemplo
         a libgomp foi mais lenta em todas as máquinas para casos com
         tamanho de bloco pequeno)
-     2. runtime kstar_starpu destoa
+     2. runtime kstar_starpu destoa, uma hipótese que a gente tem é que
+        provavelmente houve um problema na transpilação
      3. libkomp é muito instável pois as vezes não termina a execução
 
 ** Resultados: ociosidade
@@ -171,16 +186,36 @@ fatoração, que continua em submatrizes cada vez menores.
    iteração.
 
    Com isso vimos que todas exceto kstar e starpu iniciam no 1 segundo
-   de execução, o que representa uma anomalia no rastreamento ou
-   aplicação 
+   de execução, 
+
+   O que pode ser uma anomalia no rastreamento da aplicação para estes
+   runtimes  
 
 ** Conclusões
    
    Fizemos a análise de desempenho e comportamento de 5 runtimes com
    uma fatoração QR
 
-   suspeita de que kstar starpu não está respeitando as dependências
-   entre tarefas 
+
+   O tempo de duração das tarefas incompatível com ociosidade e makespan.
+  
+   A gente somou os tempos e mesmo quando as tarefas parecem durar
+   muito mais tempo o makespan não aumenta. 
+   
+   *Hipótese:* Runtimes estão pausando as tarefas, então o end-start
+   estaria considerando um tempo em que a tarefa não estava executando.  
+   
+   Observamos um desempenho ruim do Kstar e libkomp com grão pequeno,
+   devido a grande ociosidade.
+
+   Suspeita de que kstar starpu não está respeitando as dependências
+   entre tarefas.
+
+   Esse trabalho levantou uma série de hipóteses que demandam mais
+   investigações, então como trabalhos futuros pretendemos:
+   - implementar uma verificação da solução fornecida pela execução 
+   - adicionar o runtime OmpSS
+   - testar com diferentes arquiteturas de processador
 
 * Introdução 
 ** Roteiro
@@ -225,7 +260,7 @@ fatoração, que continua em submatrizes cada vez menores.
 Existem *diversas* bibliotecas que oferecem suporte a programação
 baseada em tarefas e muitas opções de *sistemas de runtime*
   - Bibliotecas: OpenMP, StarPU
-  - Runtimes: libgomp_{GCC}, libomp_{LLVM} e libkomp_CLANG
+  - Runtimes: libgomp_{GCC}, libomp_{LLVM} e libkomp_KAAPI
 Runtimes podem ter um impacto diferente sobre o desempenho da
 aplicação. Assim, dada uma *mesma aplicação*, nossos objetivos são:  
   - Comparar o escalonamento das tarefas
