@@ -1,9 +1,8 @@
 #+TITLE:     Análise da Influência do Runtime OpenMP no Desempenho de Aplicação com Tarefas
 #+AUTHOR:    Henrique C. P. da Silva, *Marcelo C. Milletto*, @@latex: \linebreak @@ Vinicius G. Pinto, Lucas M. Schnorr \linebreak {hcpsilva,marcelo.miletto,vgpinto,schnorr}@inf.ufrgs.br
-#+EMAIL:     {marcelo.miletto, schnorr}@inf.ufrgs.br
+#+EMAIL:     {hcpsilva,marcelo.miletto,vgpinto,schnorr}@inf.ufrgs.br
 #+DATE:      ERAD 2020 - Abril 15-17
-
-#+LANGUAGE:  en
+#+LANGUAGE:  pt-br
 #+OPTIONS:   H:2 num:t toc:t \n:nil ::t |:t ^:t -:t f:t *:t tex:t d:(HIDE) tags:not-in-toc <:t
 #+OPTIONS:   d:nil todo:t pri:nil
 #+TAGS: noexport(n) deprecated(d) ignore(i)
@@ -20,15 +19,170 @@
 #+LATEX_HEADER: \usepackage[backend=bibtex]{biblatex}
 #+LATEX_HEADER: \bibliography{../paper/refs}
 #+BEAMER_HEADER: \setbeamertemplate{mini frames}{}
-#+STARTUP: overview indent
-#+TAGS: noexport(n) deprecated(d) Marcelo(m) Lucas(l)
-#+EXPORT_SELECT_TAGS: export
-#+EXPORT_EXCLUDE_TAGS: noexport
-#+PROPERTY: header-args :eval never-export
+
+* Anotações
+** Slide 13
+  Nas observações sobre o makespan
+
+  1. runtime kstar_starpu destoa
+  2. libkomp_clang é muito instável pois as vezes não termina a
+     execução
+  O que acontece exatamento com o caso kstar_starpu? ele nao termina a
+  execução assim como o libkomp_clang?
+  
+** Slide 15
+   Quanto aos outros casos fora o StarPU e kstarpu, que iniciam no
+   primeiro segundo, também são anomalias no rastreamento?
+   
+** Slide 16
+
+   - Tempo de duração das tarefas incompatível com ociosidade e makespan.
+
 
 * Roteiro de apresentação                                          :noexport:
-Adicionar anotações e comentários sobre detalhes da apresentação
-aqui. 
+** Introdução
+Com o paradigma de programação baseado em tarefas podemos representar
+uma aplicação e sua carga e trabalho como um grafo acíclico dirigido,
+um DAG.
+
+A aplicação em forma de DAG representa as tarefas computacionas como
+os nós do grafo e as dependencias de dados como as arestas deste grafo.
+
+Nesse paradigma temos uma camada a mais entre a aplicação e os
+recursos computacionais que é a camada do sistema de runtime.
+
+Como a gente vê nesta figura, o sistema fica entre a aplicação e os
+recursos, ele conhece o DAG da aplicação e toma conta do seu
+escalonamento sobre os recursos computacionais disponíveis levando em
+conta aspectos como o balanceamento de carga.
+
+Essas facilidades oferecidas pelo runtime vem juntamente com um
+sobrecusto adicionado a aplicação ao ter que processar e escalonar
+esse grafo, e isso pode afetar o desempenho da aplicação.
+
+** Objetivos
+
+Como existe diversos bibliotecas que suportam esse paradigma como o
+OpenMP e StarPU, tambpem temos muitos sistemas de runtime disponíveis
+como o libgomp do GCC, libomp do LLVM e libkomp do CLANG.
+
+Estes diferentes runtimes podem ter um impacto diferente do desempenho
+da aplicação, apresentando custos de sobrecarga diferente e diferentes
+estratégias para criar e escalonar as tarefas.
+
+O objetivo deste trabalho então é avaliar o desempenho de uma mesma
+aplicação, quando associamos ela a diferentes runtimes.
+
+Queremos comparar o escalonamento das tarefas, observar a ociosidade
+dos trabalhadores e identificar possiveis anomalias nas bibliotecas ou
+runtimes avaliados.
+
+** Background
+A aplicação usada para avaliar os diferentes runtimes é uma fatoração
+QR por blocos de uma matriz densa.
+
+A implementação do algoritmo pode ser feita usando rotinas LAPACK
+acordo com o seguinte pseudocódigo:
+
+São 4 laços que percorrem blocos em posições específicas da matriz
+realizando operações de fatoração e atalização de acordo com uma
+certa ordem criada a partir desta estrutura.
+
+** Paralelismo de Tarefas Para fatoração QR Densa 
+Podemos ver a relação da criação do DAG e as tarefas que percorrem
+a matriz nessa sequência de figuras.
+
+Aqui as posições preenchidas da matriz é onde ocorrem escritas, e
+as linhas destacadas onde ocorrem leituras.
+
+Assim, podemos ver que diferentes operações podem ser feitas em
+paralelo por não criarem conflitos de acesso aos dados.
+
+O laço mais externo caracteriza uma iteração do proceso de
+fatoração, que continua em submatrizes cada vez menores.
+
+** Metodologia de Coleta
+   
+   Para guiar os experimentos foi criado um projeto experimental
+   consierando os seguintes fatores:
+   
+   - O tamanho da matriz foi fixado em 8192 x 8192
+
+   - O tamanho do bloco variou de 32 até 512 em potencias de 2 para
+     explorar diferentes quantidades de tarefas geradas e assim avaliar
+     os runtimes com diferentes níves de estresse.
+
+   definimos 5 repetições para cada configuração para avaliar o makespan
+   e mais uma para coletar os rastros.
+
+   As plataformas computacionais são descritas nessa tabela, todas com
+   dois processadores e com um diferente numero de cores.
+
+   No lado dos runtimes, foram explorados 6 runtimes diferentes:
+
+
+   5 deles foram usados com o código escrito usando diretivas OpenMP
+   O último foi o runtime nativo do StarPU usando o código escrito com as
+   diretivas StarPU.
+
+   Descrever cada runtime:
+
+   libgomp do GCC 
+   libomp do LLVM
+   KStarStarPU, que faz uma transpilação do código OpenMP para diretivas
+   StarPU e usa o runtime StarPU. \check
+   LIBKOMP que é baseado no runtime X-kaapi \check
+   E o runtime do StarPU nativo \check
+
+** Resultados: makespan
+   Agora na parte dos resultados, em relação a duração do tempo de
+   execução.
+
+   Temos essa imagem onde os resultados estão divididos por máquinas e
+   pelo tamanho do bloco, e no eixo y temos o tempo médio de
+   execução e cada cor representa um runtime.
+
+   Desse experimento chegamos as seguintes conclusões:
+     1. O comportamento se preserva entre as plataformas (por exemplo
+        a libgomp foi mais lenta em todas as máquinas para casos com
+        tamanho de bloco pequeno)
+     2. runtime kstar_starpu destoa
+     3. libkomp é muito instável pois as vezes não termina a execução
+
+** Resultados: ociosidade
+
+   Analisamos também a ociosidade por trabalhador
+
+   Analizando um caso onde o runtime foi estressado com uma quantidade
+   maior de tarefas, com o tamanho de bloco 64, na máquina cei.
+
+   Temos na figura os trabalhadores dispostos no eixo x, e uma
+   porcentagem de ociosidade no eixo Y.
+
+   Vimos que para este caso, libkomp_clang e kstar_starpu tem uma
+   ociosidade média alta.
+
+   libgomp_gcc, libomp_llvm e starpu possuem uma ociosidade compatível 
+  
+** Resultados: escalonamento
+   Também comparamos utilizando as informações rastreadas o
+   escalonamento entre os runtimes para o caso do tamanho de bloco 64.
+
+   Mapeamos o inicio de cada tarefa GEQRT que marca o inicio de cada
+   iteração.
+
+   Com isso vimos que todas exceto kstar e starpu iniciam no 1 segundo
+   de execução, o que representa uma anomalia no rastreamento ou
+   aplicação 
+
+** Conclusões
+   
+   Fizemos a análise de desempenho e comportamento de 5 runtimes com
+   uma fatoração QR
+
+   suspeita de que kstar starpu não está respeitando as dependências
+   entre tarefas 
+
 * Introdução 
 ** Roteiro
 #+BEGIN_EXPORT latex
@@ -46,6 +200,7 @@ aqui.
 \end{itemize}
 \normalsize
 #+END_EXPORT
+
 ** Introdução
 #+LaTeX: \vfill
 - A programação baseada em tarefas nos permite descrever uma
@@ -71,7 +226,7 @@ aqui.
 Existem *diversas* bibliotecas oferecem superte a programação
 baseada em tarefas e muitas opções de *sistemas de runtime*
   - Bibliotecas: OpenMP, StarPU
-  - Runtimes: GCC/libgomp, LLVM/libomp, CLANG/libkomp 
+  - Runtimes: libgomp_{GCC}, libomp_{LLVM} e libkomp_CLANG
 Runtimes podem ter um impacto diferente sobre o desempenho da
 aplicação. Assim, dada uma *mesma aplicação*, nossos objetivos são:  
   - Comparar o escalonamento das tarefas
@@ -98,6 +253,7 @@ aplicação. Assim, dada uma *mesma aplicação*, nossos objetivos são:
 #+ATTR_LaTeX: :height 0.82\textwidth :center
 [[./../img/gcc.png]]
 #+END_center
+
 * Background
 ** Fatoração QR por Blocos
 
@@ -245,7 +401,7 @@ aplicação. Assim, dada uma *mesma aplicação*, nossos objetivos são:
     90% 
   - libgomp_{GCC}, libomp_{LLVM} e StarPU mantém ociosidade compatível
 ** Resultados Experimentais e Observações
-- Comparação do Escalonamento entre os três /runtimes/
+- Comparação do Escalonamento entre os /runtimes/
   - início da tarefa ~dgeqrt~ (primeira de cada iteração)
 #+name: fig:dgeqrt
 #+attr_latex: :float t :placement [!htb]
@@ -270,10 +426,33 @@ aplicação. Assim, dada uma *mesma aplicação*, nossos objetivos são:
   - adicionar o runtime OmpSs
   - incluir diferentes arquiteturas de processador
 ** Referências
-  :PROPERTIES:
-  :BEAMER_OPT: fragile,allowframebreaks,label=
-  :END:      
-  \printbibliography
+#+LaTeX:  \vfill
+*[1] Augonnet, C. et al. (2011)*. StarPU: a unified platform for task scheduling on heteroge-
+neous multicore architectures. Conc. and Comp.: Pract. and Exp.
+
+#+LaTeX:  \vfill
+*[2] Buttari, A., Langou, J., Kurzak, J., and Dongarra, J. (2009)*. A class of parallel tiled linear
+algebra algorithms for multicore architectures. Parallel Comput.,
+35(1):38–53.
+#+LaTeX:  \vfill
+*[3] Duran, A. et al. (2011)*. OmpSs: a proposal for programming heterogeneous multi-core
+architectures. Parallel Processing Letters, 21.
+#+LaTeX:  \vfill
+*[4] Jain, R. (1991)*. The Art of Computer Systems Performance Analysis: Techniques for
+Experimental Design, Measurement, Simulation, and Modeling. Wiley, 1st
+edition.
+#+LaTeX:  \vfill
+*[5] OpenMP Review Board (2015)*. OpenMP application program interface version 4.5.
+Stanisic, L., Legrand, A., and Danjean, V. (2015). An effective git
+and org-mode based workflow for reproducible research. SIGOPS
+Oper. Syst. Rev., 49(1):61–70. 
+#+LaTeX:  \vfill
+
+
+
+
+
+
 
 ** Obrigado!
    #+BEGIN_EXPORT latex
