@@ -343,14 +343,16 @@ do problema
 
 * Metodologia  
 ** Metodologia de Coleta
-- Projeto Experimental:
-  - fatores: 
-    - tamanho da matriz: $8192\times8192$
-    - tamanho do bloco: potências de 2 entre [32, 512]
-  - repetições:
-    - $5\times$ para a avaliação do makespan
-    - $1\times$ para a coleta do rastro das execuções
-- Plataformas:
+Projeto Experimental, com os fatores
+- tamanho da matriz: $8192\times8192$
+- tamanho do bloco: potências de 2 entre [32, 512]
+e estas quantidades de repetições
+- $5\times$ para a avaliação do makespan
+- $1\times$ para a coleta do rastro das execuções
+
+#+latex: \bigskip
+
+Plataformas
 #+name: tab:plataformas
 #+attr_latex: :float t :placement [!htb] :font \tiny
 |-------+----------------------------------+--------------------+------------|
@@ -361,7 +363,8 @@ do problema
 | =cei=   | $2 \times 12$ Xeon Silver 4116 2.1GHz | 32KB/1024KB/16.5MB | 93GB DDR4  |
 | =hype=  | $2 \times 10$ Xeon E5 2650 v3 2.3GHz  | 32KB/256KB/25MB    | 128GB DDR4 |
 |-------+----------------------------------+--------------------+------------|
-- /Runtimes/:
+
+/Runtimes/
 #+name: tab:versoes
 #+attr_latex: :float t :placement [!htb] :font \tiny
 |----------------+-----------+------------------------+------------------------------|
@@ -379,53 +382,56 @@ do problema
 
 * Resultados
 ** Resultados Experimentais e Observações
-- Diferenças de tempo de execução em função do /runtime/
+Diferenças de tempo de execução em função do /runtime/
 #+name: fig:makespan
 #+attr_latex: :float t :placement [!htb] :height 0.42\textwidth
 [[../img/makespan-all.png]]
 
-- Conclusões:
-  - comportamento se preserva entre plataformas @@latex:{\tiny@@(cei, draco, hype)@@latex:}@@
-  - runtime kstar_starpu destoa
-  - libkomp_clang é muito instável 
+Conclusões:
+- comportamento se preserva entre plataformas @@latex:{\tiny@@(cei, draco, hype)@@latex:}@@
+- runtime kstar_starpu destoa
+- libkomp_clang é muito instável 
   # pois as vezes nao termina
 
 ** Resultados Experimentais e Observações
-- Análise de Ociosidade por Trabalhador
-  - focaremos na plataforma cei com o tamanho de bloco 64
-    - grande número de tarefas estressa a capacidade de escalonamento dos runtimes
+Análise de Ociosidade por Trabalhador
+- focaremos na plataforma cei com o tamanho de bloco 64
+  - grande número de tarefas estressa a capacidade de escalonamento dos runtimes
   #+name: fig:idleness
   #+attr_latex: :float t :placement [!htb]
   [[../img/idleness-all-cei.png]]
-- Conclusões:
-  - libkomp_clang e kstar_{StarPU} apresentam ociosidade média acima de
-    90% 
-  - libgomp_{GCC}, libomp_{LLVM} e StarPU mantém ociosidade compatível
+Conclusões:
+- libkomp_clang e kstar_{StarPU} apresentam ociosidade média acima de
+  90% 
+- libgomp_{GCC}, libomp_{LLVM} e StarPU mantém ociosidade compatível
 ** Resultados Experimentais e Observações
-- Comparação do Escalonamento entre os /runtimes/
-  - início da tarefa ~dgeqrt~ (primeira de cada iteração)
+Comparação do Escalonamento entre os /runtimes/
+- início da tarefa ~dgeqrt~ (primeira de cada iteração)
 #+name: fig:dgeqrt
 #+attr_latex: :float t :placement [!htb]
 [[../img/dgeqrt-start-cei.png]]
 
-- Conclusões:
-  - todas iniciam no 1º segundo de execução
-    - exceto kstar_starpu e StarPU
-  - kstar_{starpu} inicia quase instantaneamente \to possível anomalia no
-    rastreamento ou na implementação.
+Conclusões:
+- todas iniciam no 1º segundo de execução
+  - exceto kstar_starpu e StarPU
+- kstar_{starpu} inicia quase instantaneamente \to possível anomalia no
+  rastreamento ou na implementação.
 
 * Conclusões
 ** Conclusões
-- Analise do desempenho e comportamento de 5 runtimes com uma fatoração QR 
-  - tempo de duração das tarefas incompatível com ociosidade e /makespan/
-     - libgomp_{GCC}, libomp_{LLVM} e libkomp
-  - KStar e libkomp não obtiveram bom desempenho com grão pequeno
-- suspeita de que kstar_starpu não está respeitando as dependências
-  entre tarefas
-- Trabalhos futuros:
-  - implementar a verificação da solução obtida pela execução
-  - adicionar o runtime OmpSs
-  - incluir diferentes arquiteturas de processador
+Analise do desempenho e comportamento de 5 runtimes com uma fatoração QR 
+- duração das tarefas incompatível com ociosidade e /makespan/
+  - libgomp_{GCC}, libomp_{LLVM} e libkomp
+- Desempenho ruim de KStar e libkomp com grão pequeno
+
+Suspeita: =kstar_starpu= não respeita dependências entre tarefas
+
+#+latex: \bigskip
+
+Trabalhos futuros
+- implementar a verificação da solução obtida pela execução
+- adicionar o runtime OmpSs
+- incluir diferentes arquiteturas de processador
 ** Referências
 #+LaTeX:  \vfill
 *[1] Augonnet, C. et al. (2011)*. StarPU: a unified platform for task scheduling on heteroge-
@@ -464,7 +470,7 @@ Oper. Syst. Rev., 49(1):61–70.
     \linebreak
     \normalsize
     \vfill
-    {hcpsilva,marcelo.miletto,vgpinto,schnorr}@inf.ufrgs.br
+    \{hcpsilva,marcelo.miletto,vgpinto,schnorr\}@inf.ufrgs.br
     \linebreak
     \vfill
    #+END_EXPORT
