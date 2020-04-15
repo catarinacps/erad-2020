@@ -52,7 +52,7 @@ aqui.
   aplicação paralela como um Grafo Acíclico Dirigido (DAG).
 #+LaTeX: \vfill
 - Esse paradigma de programação possui uma camada entre a aplicação
-  e os recursos computacionais: A *camada de runtime*
+  e os recursos computacionais: a *camada de runtime*
 #+LaTeX: \vfill
      #+BEGIN_CENTER     
      #+ATTR_LaTeX: width=\textwidth
