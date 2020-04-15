@@ -214,8 +214,8 @@ fatoração, que continua em submatrizes cada vez menores.
      #+END_CENTER
 
 - Essas facilidades oferecidas pelo sistema de runtime vem juntamente
-  com um *sobrecusto* adicionado à aplicação, podendo afetar o seu
-  desempenho  
+  com um *sobrecusto* imposto à aplicação, podendo afetar
+  negativamente o seu desempenho
 
 ** Objetivos
 *** A block                                           :B_ignoreheading:BMCOL:
